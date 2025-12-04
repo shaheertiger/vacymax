@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, Suspense, lazy, useCallback, useMem
 import { OptimizationStrategy, TimeframeType, UserPreferences, OptimizationResult } from './types';
 import { Step1PTO, Step2Timeframe, Step3Strategy, Step4Location } from './components/StepWizard';
 import { generateVacationPlan } from './services/vacationService';
+import { SEOHead } from './components/SEOHead';
 // Import the new Aggressive PAS Components
 import { PainHero, BurnCalculator, SolutionGrid, BattleTestedMarquee, TrustedByStrip } from './components/LandingVisuals';
 
@@ -169,7 +170,14 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-[100dvh] flex flex-col text-slate-200 pb-12 overflow-x-hidden">
-        
+        {/* Dynamic SEO Meta Tags */}
+        <SEOHead
+          view={view}
+          prefs={prefs}
+          result={result || undefined}
+          country={prefs.country}
+        />
+
         {/* Navigation */}
         <nav className="w-full py-3 md:py-6 px-4 md:px-12 flex justify-between items-center z-50 fixed top-0 left-0 right-0 bg-[#020617]/90 backdrop-blur-sm border-b border-white/5 transition-all duration-300 safe-pt">
             <div className="flex items-center gap-2 cursor-pointer group flex-shrink-0" onClick={handleReset}>

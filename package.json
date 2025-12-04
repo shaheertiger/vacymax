@@ -6,13 +6,15 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "postbuild": "node scripts/generate-sitemap.js",
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^19.2.1",
-    "framer-motion": "^11.0.8",
     "@google/genai": "^1.31.0",
-    "react-dom": "^19.2.1"
+    "framer-motion": "^11.0.8",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "react-helmet-async": "^2.0.5"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

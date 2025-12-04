@@ -1,0 +1,16 @@
+# Robots.txt for VacyMax
+# Allow all search engines to crawl the site
+
+User-agent: *
+Allow: /
+
+# Disallow admin or API routes (if you add them later)
+# Disallow: /api/
+# Disallow: /admin/
+
+# Point to sitemap
+Sitemap: https://vacymax.com/sitemap.xml
+
+# Crawl-delay for aggressive bots (optional)
+# User-agent: Baiduspider
+# Crawl-delay: 5

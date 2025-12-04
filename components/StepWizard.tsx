@@ -143,10 +143,21 @@ const LocationSelector = ({
 
 // --- STEP COMPONENTS ---
 
+/**
+ * Ensures PTO inputs always resolve to a safe, non-negative integer.
+ * We sanitize user input before saving into prefs so validation logic
+ * can rely on deterministic numeric values.
+ */
+const normalizePtoValue = (rawValue: string) => {
+    const parsed = parseInt(rawValue, 10);
+    if (Number.isNaN(parsed) || parsed < 0) return 0;
+    return Math.min(parsed, 365); // prevent unrealistic values from skewing calculations
+};
+
 export const Step1PTO: React.FC<StepProps> = ({ prefs, updatePrefs, onNext }) => {
   const userDays = prefs.ptoDays;
   const buddyDays = prefs.buddyPtoDays || 0;
-  
+
   const [localPto, setLocalPto] = useState<string>(userDays.toString());
   const [localBuddyPto, setLocalBuddyPto] = useState<string>(buddyDays.toString());
 
@@ -160,27 +171,34 @@ export const Step1PTO: React.FC<StepProps> = ({ prefs, updatePrefs, onNext }) =>
 
   const handlePtoChange = (valStr: string) => {
     setLocalPto(valStr);
-    const val = parseInt(valStr);
-    if (!isNaN(val) && val >= 0) {
-        updatePrefs('ptoDays', val);
-    } else if (valStr === '') {
-        updatePrefs('ptoDays', 0);
-    }
+    updatePrefs('ptoDays', normalizePtoValue(valStr));
   };
 
   const handleBuddyPtoChange = (valStr: string) => {
     setLocalBuddyPto(valStr);
-    const val = parseInt(valStr);
-    if (!isNaN(val) && val >= 0) {
-        updatePrefs('buddyPtoDays', val);
-    } else if (valStr === '') {
-        updatePrefs('buddyPtoDays', 0);
-    }
+    updatePrefs('buddyPtoDays', normalizePtoValue(valStr));
   };
 
-  const totalDays = userDays + (prefs.hasBuddy ? buddyDays : 0);
-  const value = totalDays * DAILY_VALUE_ESTIMATE;
-  const potentialDays = Math.round(totalDays * EFFICIENCY_MULTIPLIER);
+  const totals = React.useMemo(() => {
+    const total = userDays + (prefs.hasBuddy ? buddyDays : 0);
+    const safeTotal = Number.isFinite(total) ? total : 0;
+
+    return {
+      totalDays: safeTotal,
+      valueEstimate: safeTotal * DAILY_VALUE_ESTIMATE,
+      potentialDays: Math.round(safeTotal * EFFICIENCY_MULTIPLIER),
+    };
+  }, [buddyDays, prefs.hasBuddy, userDays]);
+
+  const { totalDays, valueEstimate, potentialDays } = totals;
+
+  const canProceed = totalDays > 0;
+
+  // Guard against navigation even if a disabled state is bypassed (e.g., stale UI state)
+  const handleNextClick = () => {
+    if (!canProceed) return;
+    onNext();
+  };
 
   return (
     <div className="flex flex-col h-full relative pb-32">
@@ -235,7 +253,7 @@ export const Step1PTO: React.FC<StepProps> = ({ prefs, updatePrefs, onNext }) =>
                 </div>
                 <div className="mt-2 text-[10px] text-slate-500 font-medium flex items-center gap-1.5 opacity-80">
                     <svg className="w-3 h-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <span>Avg. 10-25 days. Enter 0 for holiday-only mode.</span>
+                    <span>Enter at least one PTO day to continue.</span>
                 </div>
              </div>
 
@@ -276,7 +294,7 @@ export const Step1PTO: React.FC<StepProps> = ({ prefs, updatePrefs, onNext }) =>
                  <div>
                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Joint Value</p>
                      <p className="text-2xl font-display font-bold text-white tracking-tight text-glow">
-                        ~${value.toLocaleString()}
+                        ~${valueEstimate.toLocaleString()}
                      </p>
                  </div>
             </div>
@@ -292,7 +310,7 @@ export const Step1PTO: React.FC<StepProps> = ({ prefs, updatePrefs, onNext }) =>
          </div>
       </div>
 
-      <NavButtons onNext={onNext} nextDisabled={false} nextLabel="Next Step" />
+      <NavButtons onNext={handleNextClick} nextDisabled={!canProceed} nextLabel="Next Step" />
     </div>
   );
 };

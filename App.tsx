@@ -30,45 +30,38 @@ const SolverTerminal = ({ timeframe }: { timeframe: TimeframeType }) => {
     useEffect(() => {
         const sequence = [
             "Scanning calendar...",
-            `Loading ${timeframe === TimeframeType.ROLLING_12 ? 'Upcoming Year' : timeframe.split(' ')[2]} dates...`,
+            "Loading dates...",
             "Adding public holidays...",
             "Finding long weekends...",
             "Connecting dates...",
             "Looking for travel windows...",
             "Extending your breaks...",
-            "Checking for burnout...",
             "Calculating best value...",
             "Plan ready!"
         ];
 
-        let startTime = performance.now();
         let stepIndex = 0;
-        let animationFrameId: number;
-
-        const animate = (time: number) => {
-            const elapsed = time - startTime;
-            if (elapsed > 200 * (stepIndex + 1) && stepIndex < sequence.length) {
+        const interval = setInterval(() => {
+            if (stepIndex < sequence.length) {
                 setLines(prev => [...prev, sequence[stepIndex]]);
                 stepIndex++;
+            } else {
+                clearInterval(interval);
             }
-            if (stepIndex < sequence.length) {
-                animationFrameId = requestAnimationFrame(animate);
-            }
-        };
+        }, 300);
 
-        animationFrameId = requestAnimationFrame(animate);
-        return () => cancelAnimationFrame(animationFrameId);
-    }, [timeframe]);
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <div className="w-full h-full min-h-[400px] flex flex-col items-center justify-center p-6">
+            <div className="w-full max-w-md bg-[#050505] border border-white/10 rounded-xl p-6 font-mono text-xs md:text-sm shadow-2xl relative overflow-hidden">
+                <div className="space-y-2 h-[250px] overflow-y-auto font-bold scrollbar-hide">
             <div className="w-full max-w-md bg-[#050505] border border-white/10 rounded-xl p-6 font-mono text-xs md:text-sm shadow-2xl relative overflow-hidden transform-gpu">
                 <div className="absolute top-0 left-0 w-full h-1 bg-lime-accent animate-shimmer"></div>
                 <div className="space-y-2 h-[250px] overflow-y-auto font-bold scrollbar-hide will-change-transform">
                     {lines.map((line, i) => (
-                        <div key={i} className="text-lime-accent/90 animate-fade-up">
-                            {">"} {line}
-                        </div>
+                        <div key={i} className="text-lime-accent/90 animate-fade-up">{">"} {line}</div>
                     ))}
                     <div className="animate-pulse text-lime-accent">_</div>
                 </div>
@@ -78,7 +71,6 @@ const SolverTerminal = ({ timeframe }: { timeframe: TimeframeType }) => {
     );
 };
 
-// Loading skeleton
 const LoadingFallback = () => (
     <div className="w-full min-h-screen flex items-center justify-center bg-[#020617]">
         <div className="w-12 h-12 border-4 border-lime-accent border-t-transparent rounded-full animate-spin"></div>
@@ -96,15 +88,23 @@ const App: React.FC = () => {
   
   const wizardRef = useRef<HTMLDivElement>(null);
 
+  const scrollWizardIntoView = useCallback(() => {
+    const element = wizardRef.current || document.getElementById('wizard-section');
+    element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
   useEffect(() => {
     if (step > 0) {
         wizardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, [step]);
 
+  // Scroll only when starting the wizard from hero/How it Works
   const scrollToWizard = useCallback(() => {
     if (view === 'how-it-works') {
         setView('landing');
+        setTimeout(() => {
+             scrollWizardIntoView();
+             if (step === 0) setStep(1);
         // Small timeout to allow render
         setTimeout(() => {
              const element = document.getElementById('wizard-section');
@@ -112,11 +112,10 @@ const App: React.FC = () => {
              if(step === 0) setStep(1);
         }, 100);
     } else {
-        const element = document.getElementById('wizard-section');
-        element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        if(step === 0) setStep(1);
+        scrollWizardIntoView();
+        if (step === 0) setStep(1);
     }
-  }, [view, step]);
+  }, [scrollWizardIntoView, view, step]);
 
   // FIX: Type-safe update
   const updatePrefs = useCallback(<K extends keyof UserPreferences>(key: K, value: UserPreferences[K]) => {
@@ -169,6 +168,8 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-[100dvh] flex flex-col text-slate-200 pb-12 overflow-x-hidden">
+        <SEOHead view={view} prefs={prefs} result={result || undefined} country={prefs.country} />
+
         <SEOHead
           view={view}
           prefs={prefs}
@@ -186,6 +187,10 @@ const App: React.FC = () => {
             </div>
             
             <div className="flex items-center gap-2 md:gap-6">
+                <button onClick={() => setView('how-it-works')} className="text-xs md:text-sm font-medium text-slate-400 hover:text-white transition-colors">
+                    How it Works
+                </button>
+                <button onClick={scrollToWizard} className="px-4 py-2 text-xs md:text-sm font-bold bg-white/10 hover:bg-white/20 text-white rounded-full transition-all active:scale-95">
                 <button 
                     onClick={() => setView('how-it-works')} 
                     className="text-xs md:text-sm font-medium text-slate-400 hover:text-white transition-colors"
@@ -222,6 +227,9 @@ const App: React.FC = () => {
                              <p className="text-slate-400">Build your optimized schedule in 60 seconds.</p>
                          </div>
 
+                         <div className="relative z-[60] bg-[#0F1014] border border-white/10 rounded-[2rem] p-6 md:p-12 shadow-2xl min-h-[550px] flex flex-col">
+                            {error && (
+                                <div className="bg-red-500/20 text-red-200 px-4 py-2 rounded-lg text-sm mb-4 border border-red-500/20 text-center">{error}</div>
                          {/* FIX: Removed 'overflow-hidden' and 'backdrop-blur' to fix mobile sticky buttons */}
                          {/* FIX: Added z-[60] to ensure it sits ABOVE the bg-noise layer */}
                          <div className="relative z-[60] bg-[#0F1014] border border-white/10 rounded-[2rem] p-6 md:p-12 shadow-2xl min-h-[550px] flex flex-col">
@@ -234,9 +242,7 @@ const App: React.FC = () => {
 
                             {step === 0 && (
                                 <div className="text-center space-y-8 animate-fade-up relative z-10 py-10 my-auto">
-                                    <div className="w-24 h-24 bg-gradient-to-br from-lime-accent/20 to-transparent rounded-full flex items-center justify-center mx-auto text-4xl border border-lime-accent/20 shadow-[0_0_30px_rgba(132,204,22,0.1)]">
-                                        ✨
-                                    </div>
+                                    <div className="w-24 h-24 bg-gradient-to-br from-lime-accent/20 to-transparent rounded-full flex items-center justify-center mx-auto text-4xl border border-lime-accent/20 shadow-[0_0_30px_rgba(132,204,22,0.1)]">✨</div>
                                     <div>
                                         <h3 className="text-3xl font-display font-bold text-white mb-2">Ready to plan?</h3>
                                         <p className="text-slate-400 max-w-xs mx-auto">Tell us how many days off you have, and we'll do the rest.</p>

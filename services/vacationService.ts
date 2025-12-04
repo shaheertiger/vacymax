@@ -9,9 +9,37 @@ const FLAG_HOLIDAY = 1 << 1;       // 0010
 const FLAG_BUDDY_HOLIDAY = 1 << 2; // 0100
 
 // --- CACHING LAYER ---
-const holidaysMapCache = new Map<string, Map<string, string>>();
-const planCache = new Map<string, OptimizationResult>();
-const resolvedRegionCache = new Map<string, string | undefined>();
+class LRUCache<K, V> {
+    private map: Map<K, V>;
+    constructor(private capacity: number) {
+        this.map = new Map();
+    }
+
+    has(key: K): boolean {
+        return this.map.has(key);
+    }
+
+    get(key: K): V | undefined {
+        const value = this.map.get(key);
+        if (value === undefined) return undefined;
+        this.map.delete(key);
+        this.map.set(key, value);
+        return value;
+    }
+
+    set(key: K, value: V): void {
+        if (this.map.has(key)) this.map.delete(key);
+        this.map.set(key, value);
+        if (this.map.size > this.capacity) {
+            const oldestKey = this.map.keys().next().value;
+            this.map.delete(oldestKey);
+        }
+    }
+}
+
+const holidaysMapCache = new LRUCache<string, Map<string, string>>(24);
+const planCache = new LRUCache<string, OptimizationResult>(32);
+const resolvedRegionCache = new LRUCache<string, string | undefined>(128);
 
 // --- STRING POOL FOR ZERO-ALLOCATION LOOKUPS ---
 class StringPool {
@@ -50,34 +78,71 @@ const fastDateStr = (year: number, monthZeroIndexed: number, day: number): strin
     return `${year}-${m < 10 ? '0' + m : m}-${day < 10 ? '0' + day : day}`;
 };
 
-const levenshtein = (a: string, b: string): number => {
-    const matrix = Array.from({ length: a.length + 1 }, () => []);
-    for (let i = 0; i <= a.length; i++) matrix[i][0] = i;
-    for (let j = 0; j <= b.length; j++) matrix[0][j] = j;
+const normalizeToken = (value: string): string => value.toLowerCase().replace(/[^a-z0-9]/g, '');
+const monthPad = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+const dayPad = Array.from({length: 31}, (_, i) => (i+1).toString().padStart(2, '0'));
 
-    for (let i = 1; i <= a.length; i++) {
-        for (let j = 1; j <= b.length; j++) {
-            const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-            matrix[i][j] = Math.min(
-                matrix[i - 1][j] + 1,      
-                matrix[i][j - 1] + 1,      
-                matrix[i - 1][j - 1] + cost 
-            );
+const levenshtein = (a: string, b: string): number => {
+    const lenA = a.length;
+    const lenB = b.length;
+    if (lenA === 0) return lenB;
+    if (lenB === 0) return lenA;
+
+    let prev = new Uint16Array(lenB + 1);
+    let curr = new Uint16Array(lenB + 1);
+
+    for (let j = 0; j <= lenB; j++) prev[j] = j;
+
+    for (let i = 1; i <= lenA; i++) {
+        curr[0] = i;
+        const ai = a.charCodeAt(i - 1);
+        for (let j = 1; j <= lenB; j++) {
+            const cost = ai === b.charCodeAt(j - 1) ? 0 : 1;
+            const deletion = prev[j] + 1;
+            const insertion = curr[j - 1] + 1;
+            const substitution = prev[j - 1] + cost;
+            curr[j] = deletion < insertion ? (deletion < substitution ? deletion : substitution) : (insertion < substitution ? insertion : substitution);
+        }
+        const swap = prev; prev = curr; curr = swap;
+    }
+
+    return prev[lenB];
+};
+
+type NormalizedRegions = { entries: { key: string; normalized: string }[]; exactMap: Map<string, string> };
+const normalizedRegionCache = new WeakMap<CountryData, NormalizedRegions>();
+
+const getNormalizedRegions = (countryData: CountryData): NormalizedRegions | undefined => {
+    if (!countryData.regions) return undefined;
+
+    let cached = normalizedRegionCache.get(countryData);
+    if (cached) return cached;
+
+    const entries: { key: string; normalized: string }[] = [];
+    const exactMap = new Map<string, string>();
+    for (const key of Object.keys(countryData.regions)) {
+        const normalized = normalizeToken(key);
+        entries.push({ key, normalized });
+        if (!exactMap.has(normalized)) {
+            exactMap.set(normalized, key);
         }
     }
-    return matrix[a.length][b.length];
+
+    cached = { entries, exactMap };
+    normalizedRegionCache.set(countryData, cached);
+    return cached;
 };
 
 const resolveRegion = (countryData: CountryData, inputRegion: string, countryName: string): string | undefined => {
     if (!inputRegion || !countryData.regions) return undefined;
 
-    // Check cache first to avoid repeated expensive Levenshtein calculations
     const cacheKey = `${countryName}:${inputRegion}`;
-    if (resolvedRegionCache.has(cacheKey)) {
-        return resolvedRegionCache.get(cacheKey);
+    const cachedRegion = resolvedRegionCache.get(cacheKey);
+    if (cachedRegion !== undefined || resolvedRegionCache.has(cacheKey)) {
+        return cachedRegion;
     }
 
-    const cleanInput = inputRegion.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const cleanInput = normalizeToken(inputRegion);
     if (!cleanInput) {
         resolvedRegionCache.set(cacheKey, undefined);
         return undefined;
@@ -85,44 +150,44 @@ const resolveRegion = (countryData: CountryData, inputRegion: string, countryNam
 
     if (countryData.regionAliases) {
         const rawLower = inputRegion.toLowerCase().trim();
-        if (countryData.regionAliases[rawLower]) {
-            const result = countryData.regionAliases[rawLower];
-            resolvedRegionCache.set(cacheKey, result);
-            return result;
-        }
-        if (countryData.regionAliases[cleanInput]) {
-            const result = countryData.regionAliases[cleanInput];
-            resolvedRegionCache.set(cacheKey, result);
-            return result;
+        const aliasMatch = countryData.regionAliases[rawLower] || countryData.regionAliases[cleanInput];
+        if (aliasMatch) {
+            resolvedRegionCache.set(cacheKey, aliasMatch);
+            return aliasMatch;
         }
     }
 
-    const regionKeys = Object.keys(countryData.regions);
+    const normalizedRegions = getNormalizedRegions(countryData);
+    if (!normalizedRegions) {
+        resolvedRegionCache.set(cacheKey, undefined);
+        return undefined;
+    }
 
-    const exactMatch = regionKeys.find(k => k.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanInput);
+    const exactMatch = normalizedRegions.exactMap.get(cleanInput);
     if (exactMatch) {
         resolvedRegionCache.set(cacheKey, exactMatch);
         return exactMatch;
     }
 
-    const prefixMatch = regionKeys.find(k => k.toLowerCase().replace(/[^a-z0-9]/g, '').startsWith(cleanInput));
-    if (prefixMatch) {
-        resolvedRegionCache.set(cacheKey, prefixMatch);
-        return prefixMatch;
+    for (const { key, normalized } of normalizedRegions.entries) {
+        if (normalized.startsWith(cleanInput)) {
+            resolvedRegionCache.set(cacheKey, key);
+            return key;
+        }
     }
 
-    const subMatch = regionKeys.find(k => k.toLowerCase().replace(/[^a-z0-9]/g, '').includes(cleanInput));
-    if (subMatch) {
-        resolvedRegionCache.set(cacheKey, subMatch);
-        return subMatch;
+    for (const { key, normalized } of normalizedRegions.entries) {
+        if (normalized.includes(cleanInput)) {
+            resolvedRegionCache.set(cacheKey, key);
+            return key;
+        }
     }
 
     let bestMatch: string | undefined;
     let minDistance = Infinity;
 
-    for (const key of regionKeys) {
-        const cleanKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
-        const dist = levenshtein(cleanInput, cleanKey);
+    for (const { key, normalized } of normalizedRegions.entries) {
+        const dist = levenshtein(cleanInput, normalized);
         const threshold = cleanInput.length > 4 ? 3 : 2;
 
         if (dist <= threshold && dist < minDistance) {
@@ -138,8 +203,9 @@ const resolveRegion = (countryData: CountryData, inputRegion: string, countryNam
 // Cached Holiday Map Fetcher
 const getHolidaysMap = async (country: string, region: string, startYear: number, endYear: number): Promise<Map<string, string>> => {
     const cacheKey = `${country}|${region}|${startYear}|${endYear}`;
-    if (holidaysMapCache.has(cacheKey)) {
-        return holidaysMapCache.get(cacheKey)!;
+    const cached = holidaysMapCache.get(cacheKey);
+    if (cached) {
+        return cached;
     }
 
     const map = new Map<string, string>();
@@ -148,22 +214,27 @@ const getHolidaysMap = async (country: string, region: string, startYear: number
     const data = await fetchCountryData(country);
     if (!data) return map;
 
+    const resolvedRegion = region ? resolveRegion(data, region, country) : undefined;
     for (let y = startYear; y <= endYear; y++) {
         const yStr = y.toString();
-        const rawList = [...(data.federal[yStr] || [])];
-        
-        if (region) {
-            const resolved = resolveRegion(data, region, country);
-            if (resolved && data.regions && data.regions[resolved] && data.regions[resolved][yStr]) {
-                rawList.push(...data.regions[resolved][yStr]);
-            }
+        const rawList: string[] = [];
+
+        const federal = data.federal[yStr];
+        if (federal && federal.length > 0) rawList.push(...federal);
+
+        if (resolvedRegion) {
+            const regionYears = data.regions?.[resolvedRegion]?.[yStr];
+            if (regionYears && regionYears.length > 0) rawList.push(...regionYears);
         }
 
         for (let i = 0; i < rawList.length; i++) {
-            const parts = rawList[i].split(':');
-            if (parts.length >= 2) {
-                map.set(parts[0].trim(), parts[1].trim());
-            }
+            const entry = rawList[i];
+            const sepIdx = entry.indexOf(':');
+            if (sepIdx <= 0 || sepIdx === entry.length - 1) continue;
+
+            const date = entry.slice(0, sepIdx).trim();
+            const name = entry.slice(sepIdx + 1).trim();
+            if (date && name) map.set(date, name);
         }
     }
     
@@ -175,9 +246,10 @@ const getHolidaysMap = async (country: string, region: string, startYear: number
 export const generateVacationPlan = async (prefs: UserPreferences): Promise<OptimizationResult> => {
     // Check Cache
     const cacheKey = JSON.stringify(prefs);
-    if (planCache.has(cacheKey)) {
+    const cachedPlan = planCache.get(cacheKey);
+    if (cachedPlan) {
         console.log("Serving plan from cache");
-        return planCache.get(cacheKey)!;
+        return cachedPlan;
     }
 
     const now = new Date();
@@ -236,9 +308,6 @@ export const generateVacationPlan = async (prefs: UserPreferences): Promise<Opti
 
     // Optimized loop using manual date tracking to avoid Date creation overhead
     // Pre-allocate string padding arrays for faster concatenation
-    const monthPad = ['01','02','03','04','05','06','07','08','09','10','11','12'];
-    const dayPad = Array.from({length: 31}, (_, i) => (i+1).toString().padStart(2, '0'));
-
     for (let i = 0; i < totalDays; i++) {
         // Optimized date string generation (avoid multiple string concatenations)
         const dString = `${curY}-${monthPad[curM]}-${dayPad[curD-1]}`;
@@ -326,18 +395,23 @@ export const generateVacationPlan = async (prefs: UserPreferences): Promise<Opti
     const runScan = (isRescue: boolean): Candidate[] => {
         const { min, max, threshold } = getStrategyConfig(isRescue);
         const candidates: Candidate[] = [];
-        const effThreshold = (!prefs.hasBuddy && !isRescue) ? threshold + 0.2 : threshold;
+        const hasBuddy = prefs.hasBuddy;
+        const gainFactor = hasBuddy ? 2 : 1;
+        const effThreshold = (!hasBuddy && !isRescue) ? threshold + 0.2 : threshold;
+        const maxStart = totalDays - min;
 
-        for (let i = 0; i <= totalDays - min; i++) {
-            for (let len = min; len <= max; len++) {
+        for (let i = 0; i <= maxStart; i++) {
+            const maxWindow = Math.min(max, totalDays - i);
+            const startDay = (startDayOfWeek + i) % 7;
+
+            for (let len = min; len <= maxWindow; len++) {
                 const endIdx = i + len;
-                if (endIdx > totalDays) break;
 
                 const ptoCost = ptoPrefix[endIdx] - ptoPrefix[i];
-                const buddyCost = prefs.hasBuddy ? (buddyPtoPrefix[endIdx] - buddyPtoPrefix[i]) : 0;
+                const buddyCost = hasBuddy ? (buddyPtoPrefix[endIdx] - buddyPtoPrefix[i]) : 0;
 
                 const combinedCost = ptoCost + buddyCost;
-                const gain = len * (prefs.hasBuddy ? 2 : 1);
+                const gain = len * gainFactor;
                 const efficiency = combinedCost === 0 ? 100 : gain / combinedCost;
 
                 if (combinedCost === 0 || efficiency >= effThreshold) {
@@ -346,20 +420,19 @@ export const generateVacationPlan = async (prefs: UserPreferences): Promise<Opti
                     const jointBonus = jointScorePrefix[endIdx] - jointScorePrefix[i];
 
                     let score = (efficiency * efficiency) + (efficiency * 5) + holidayBonusScore + jointBonus;
-                    
-                    if (ptoCost === 0 && (!prefs.hasBuddy || buddyCost === 0)) {
-                        score += 5000; 
+
+                    if (ptoCost === 0 && (!hasBuddy || buddyCost === 0)) {
+                        score += 5000;
                         if (holidayCount > 0) score += 1000;
-                    } else if (prefs.hasBuddy && (ptoCost === 0 || buddyCost === 0)) {
+                    } else if (hasBuddy && (ptoCost === 0 || buddyCost === 0)) {
                         score += 500;
                     }
 
                     if (prefs.strategy === OptimizationStrategy.LONG_WEEKENDS && len <= 5) score += 50;
                     if (prefs.strategy === OptimizationStrategy.EXTENDED && len >= 9) score += 40;
 
-                    const startDay = (startDayOfWeek + i) % 7;
-                    const endDay = (startDayOfWeek + (endIdx - 1)) % 7;
-                    if (startDay === 5) score += 20; 
+                    const endDay = (startDay + (len - 1)) % 7;
+                    if (startDay === 5) score += 20;
                     if (endDay === 0 || endDay === 1) score += 15;
 
                     candidates.push({ startIdx: i, len, ptoCost, buddyCost, efficiency, score });

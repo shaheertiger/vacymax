@@ -5,6 +5,7 @@ import { generateVacationPlan } from './services/vacationService';
 import { SEOHead } from './components/SEOHead';
 import { PainHero, BurnCalculator, SolutionGrid, BattleTestedMarquee } from './components/LandingVisuals';
 
+// Lazy load heavy components
 const ResultsView = lazy(() => import('./components/ResultsView').then(module => ({ default: module.ResultsView })));
 const HowItWorks = lazy(() => import('./components/HowItWorks').then(module => ({ default: module.HowItWorks })));
 
@@ -56,6 +57,9 @@ const SolverTerminal = ({ timeframe }: { timeframe: TimeframeType }) => {
         <div className="w-full h-full min-h-[400px] flex flex-col items-center justify-center p-6">
             <div className="w-full max-w-md bg-[#050505] border border-white/10 rounded-xl p-6 font-mono text-xs md:text-sm shadow-2xl relative overflow-hidden">
                 <div className="space-y-2 h-[250px] overflow-y-auto font-bold scrollbar-hide">
+            <div className="w-full max-w-md bg-[#050505] border border-white/10 rounded-xl p-6 font-mono text-xs md:text-sm shadow-2xl relative overflow-hidden transform-gpu">
+                <div className="absolute top-0 left-0 w-full h-1 bg-lime-accent animate-shimmer"></div>
+                <div className="space-y-2 h-[250px] overflow-y-auto font-bold scrollbar-hide will-change-transform">
                     {lines.map((line, i) => (
                         <div key={i} className="text-lime-accent/90 animate-fade-up">{">"} {line}</div>
                     ))}
@@ -88,6 +92,11 @@ const App: React.FC = () => {
     const element = wizardRef.current || document.getElementById('wizard-section');
     element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, []);
+  useEffect(() => {
+    if (step > 0) {
+        wizardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [step]);
 
   // Scroll only when starting the wizard from hero/How it Works
   const scrollToWizard = useCallback(() => {
@@ -96,6 +105,11 @@ const App: React.FC = () => {
         setTimeout(() => {
              scrollWizardIntoView();
              if (step === 0) setStep(1);
+        // Small timeout to allow render
+        setTimeout(() => {
+             const element = document.getElementById('wizard-section');
+             element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+             if(step === 0) setStep(1);
         }, 100);
     } else {
         scrollWizardIntoView();
@@ -103,12 +117,17 @@ const App: React.FC = () => {
     }
   }, [scrollWizardIntoView, view, step]);
 
+  // FIX: Type-safe update
   const updatePrefs = useCallback(<K extends keyof UserPreferences>(key: K, value: UserPreferences[K]) => {
     setPrefs((prev) => ({ ...prev, [key]: value }));
   }, []);
 
   const handleNext = useCallback(() => {
       setStep((prev) => prev + 1);
+      // Auto-scroll on mobile
+      if (window.innerWidth < 768) {
+          window.scrollTo({ top: wizardRef.current?.offsetTop || 0, behavior: 'smooth' });
+      }
   }, []);
 
   const handleBack = useCallback(() => setStep((prev) => prev - 1), []);
@@ -151,6 +170,14 @@ const App: React.FC = () => {
     <div className="min-h-[100dvh] flex flex-col text-slate-200 pb-12 overflow-x-hidden">
         <SEOHead view={view} prefs={prefs} result={result || undefined} country={prefs.country} />
 
+        <SEOHead
+          view={view}
+          prefs={prefs}
+          result={result || undefined}
+          country={prefs.country}
+        />
+
+        {/* Navigation */}
         <nav className="w-full py-3 md:py-6 px-4 md:px-12 flex justify-between items-center z-[60] fixed top-0 left-0 right-0 bg-[#020617]/90 backdrop-blur-sm border-b border-white/5 transition-all duration-300 safe-pt">
             <div className="flex items-center gap-2 cursor-pointer group flex-shrink-0" onClick={handleReset}>
                 <div className="w-8 h-8 bg-lime-accent rounded-xl flex items-center justify-center shadow-lg shadow-lime-accent/20">
@@ -164,6 +191,16 @@ const App: React.FC = () => {
                     How it Works
                 </button>
                 <button onClick={scrollToWizard} className="px-4 py-2 text-xs md:text-sm font-bold bg-white/10 hover:bg-white/20 text-white rounded-full transition-all active:scale-95">
+                <button 
+                    onClick={() => setView('how-it-works')} 
+                    className="text-xs md:text-sm font-medium text-slate-400 hover:text-white transition-colors"
+                >
+                    How it Works
+                </button>
+                <button 
+                    onClick={scrollToWizard} 
+                    className="px-4 py-2 text-xs md:text-sm font-bold bg-white/10 hover:bg-white/20 text-white rounded-full transition-all active:scale-95"
+                >
                     {step > 0 && view === 'landing' ? 'Resume' : 'Start Plan'}
                 </button>
             </div>
@@ -182,6 +219,7 @@ const App: React.FC = () => {
                 <SolutionGrid />
                 <BattleTestedMarquee />
 
+                {/* THE WIZARD */}
                 <div id="wizard-section" ref={wizardRef} className="w-full bg-[#020617] py-24 px-4 scroll-mt-24 relative z-[55]">
                      <div className="max-w-4xl mx-auto">
                          <div className="text-center mb-12">
@@ -192,6 +230,14 @@ const App: React.FC = () => {
                          <div className="relative z-[60] bg-[#0F1014] border border-white/10 rounded-[2rem] p-6 md:p-12 shadow-2xl min-h-[550px] flex flex-col">
                             {error && (
                                 <div className="bg-red-500/20 text-red-200 px-4 py-2 rounded-lg text-sm mb-4 border border-red-500/20 text-center">{error}</div>
+                         {/* FIX: Removed 'overflow-hidden' and 'backdrop-blur' to fix mobile sticky buttons */}
+                         {/* FIX: Added z-[60] to ensure it sits ABOVE the bg-noise layer */}
+                         <div className="relative z-[60] bg-[#0F1014] border border-white/10 rounded-[2rem] p-6 md:p-12 shadow-2xl min-h-[550px] flex flex-col">
+                            
+                            {error && (
+                                <div className="bg-red-500/20 text-red-200 px-4 py-2 rounded-lg text-sm mb-4 border border-red-500/20 text-center">
+                                    {error}
+                                </div>
                             )}
 
                             {step === 0 && (

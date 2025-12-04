@@ -143,10 +143,21 @@ const LocationSelector = ({
 
 // --- STEP COMPONENTS ---
 
+/**
+ * Ensures PTO inputs always resolve to a safe, non-negative integer.
+ * We sanitize user input before saving into prefs so validation logic
+ * can rely on deterministic numeric values.
+ */
+const normalizePtoValue = (rawValue: string) => {
+    const parsed = parseInt(rawValue, 10);
+    if (Number.isNaN(parsed) || parsed < 0) return 0;
+    return Math.min(parsed, 365); // prevent unrealistic values from skewing calculations
+};
+
 export const Step1PTO: React.FC<StepProps> = ({ prefs, updatePrefs, onNext }) => {
   const userDays = prefs.ptoDays;
   const buddyDays = prefs.buddyPtoDays || 0;
-  
+
   const [localPto, setLocalPto] = useState<string>(userDays.toString());
   const [localBuddyPto, setLocalBuddyPto] = useState<string>(buddyDays.toString());
 
@@ -160,22 +171,12 @@ export const Step1PTO: React.FC<StepProps> = ({ prefs, updatePrefs, onNext }) =>
 
   const handlePtoChange = (valStr: string) => {
     setLocalPto(valStr);
-    const val = parseInt(valStr);
-    if (!isNaN(val) && val >= 0) {
-        updatePrefs('ptoDays', val);
-    } else if (valStr === '') {
-        updatePrefs('ptoDays', 0);
-    }
+    updatePrefs('ptoDays', normalizePtoValue(valStr));
   };
 
   const handleBuddyPtoChange = (valStr: string) => {
     setLocalBuddyPto(valStr);
-    const val = parseInt(valStr);
-    if (!isNaN(val) && val >= 0) {
-        updatePrefs('buddyPtoDays', val);
-    } else if (valStr === '') {
-        updatePrefs('buddyPtoDays', 0);
-    }
+    updatePrefs('buddyPtoDays', normalizePtoValue(valStr));
   };
 
   const totalDays = userDays + (prefs.hasBuddy ? buddyDays : 0);
@@ -277,7 +278,7 @@ export const Step1PTO: React.FC<StepProps> = ({ prefs, updatePrefs, onNext }) =>
                  <div>
                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Joint Value</p>
                      <p className="text-2xl font-display font-bold text-white tracking-tight text-glow">
-                        ~${value.toLocaleString()}
+                        ~${valueEstimate.toLocaleString()}
                      </p>
                  </div>
             </div>

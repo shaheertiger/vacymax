@@ -6,9 +6,29 @@ import { SEOHead } from './components/SEOHead';
 import { PainHero, BurnCalculator, SolutionGrid, BattleTestedMarquee } from './components/LandingVisuals';
 import { TrustSection } from './components/TrustSection';
 
-// Lazy load heavy components
-const ResultsView = lazy(() => import('./components/ResultsView').then((module) => ({ default: module.ResultsView })));
-const HowItWorks = lazy(() => import('./components/HowItWorks').then((module) => ({ default: module.HowItWorks })));
+const lazyWithRetry = <T extends { default: React.ComponentType<any> }>(importer: () => Promise<T>) =>
+  lazy(async () => {
+    try {
+      return await importer();
+    } catch (error) {
+      const message = typeof error === 'object' && error !== null ? (error as Error).message : String(error);
+      const failedChunk = message.includes('Failed to fetch dynamically imported module');
+
+      if (failedChunk && typeof window !== 'undefined' && typeof sessionStorage !== 'undefined') {
+        const hasRefreshed = sessionStorage.getItem('vmx-chunk-reload');
+        if (!hasRefreshed) {
+          sessionStorage.setItem('vmx-chunk-reload', '1');
+          window.location.reload();
+        }
+      }
+
+      throw error;
+    }
+  });
+
+// Lazy load heavy components with retry guard for chunk load failures
+const ResultsView = lazyWithRetry(() => import('./components/ResultsView').then((module) => ({ default: module.ResultsView })));
+const HowItWorks = lazyWithRetry(() => import('./components/HowItWorks').then((module) => ({ default: module.HowItWorks })));
 
 const initialPrefs: UserPreferences = {
   ptoDays: 0,
@@ -94,22 +114,22 @@ const App: React.FC = () => {
     element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, []);
 
-  const isWizardMostlyVisible = useCallback(() => {
+  const isWizardTopInView = useCallback(() => {
     const node = wizardRef.current;
     if (!node) return false;
 
     const rect = node.getBoundingClientRect();
     const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
 
-    // Treat the wizard as visible if its shell is within a small buffer of the viewport.
-    return rect.top > -40 && rect.bottom < viewportHeight + 40;
+    // Treat the wizard as visible when its top is within a comfortable viewport buffer.
+    return rect.top > -120 && rect.top < viewportHeight * 0.6;
   }, []);
 
   useEffect(() => {
-    if (step > 0 && !isWizardMostlyVisible()) {
+    if (step > 0 && !isWizardTopInView()) {
       wizardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  }, [step, isWizardMostlyVisible]);
+  }, [step, isWizardTopInView]);
 
   // Scroll only when starting the wizard from hero/How it Works
   const scrollToWizard = useCallback(() => {
@@ -134,11 +154,11 @@ const App: React.FC = () => {
     setStep((prev) => prev + 1);
     // Auto-scroll on mobile
     if (window.innerWidth < 768) {
-      if (!isWizardMostlyVisible()) {
+      if (!isWizardTopInView()) {
         window.scrollTo({ top: wizardRef.current?.offsetTop || 0, behavior: 'smooth' });
       }
     }
-  }, [isWizardMostlyVisible]);
+  }, [isWizardTopInView]);
 
   const handleBack = useCallback(() => setStep((prev) => prev - 1), []);
 

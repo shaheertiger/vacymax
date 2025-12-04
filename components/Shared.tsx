@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 export const StepHeader = React.memo(({ stepNumber, title, subtitle }: { stepNumber: number, title: React.ReactNode, subtitle: string }) => (
     <div className="space-y-2 md:space-y-4 mb-4 md:mb-12 animate-fade-up px-1">
@@ -14,7 +14,8 @@ export const StepHeader = React.memo(({ stepNumber, title, subtitle }: { stepNum
 ));
 
 export const NavButtons = React.memo(({ onNext, onBack, nextDisabled, nextLabel = "Continue", isLoading = false }: { onNext: () => void, onBack?: () => void, nextDisabled?: boolean, nextLabel?: string, isLoading?: boolean }) => (
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 pb-8 bg-[#0F1014]/80 backdrop-blur-lg border-t border-white/10 md:absolute md:bottom-12 md:left-12 md:right-12 md:p-0 md:bg-transparent md:border-none flex flex-row justify-between items-center gap-4 animate-fade-up transition-all duration-300 safe-pb">
+    // FIX APPLIED HERE: Changed z-50 to z-[100] to fix mobile click issue
+    <div className="fixed bottom-0 left-0 right-0 z-[100] p-4 pb-8 bg-[#0F1014]/80 backdrop-blur-lg border-t border-white/10 md:absolute md:bottom-12 md:left-12 md:right-12 md:p-0 md:bg-transparent md:border-none flex flex-row justify-between items-center gap-4 animate-fade-up transition-all duration-300 safe-pb">
         {onBack ? (
              <button onClick={onBack} disabled={isLoading} className="text-slate-400 hover:text-white px-4 py-3 md:py-2 font-bold transition-colors flex items-center gap-2 text-xs uppercase tracking-widest group rounded-lg bg-white/5 hover:bg-white/10 md:bg-transparent disabled:opacity-50 active:scale-95">
                 <span className="group-hover:-translate-x-1 transition-transform">←</span>
@@ -158,20 +159,25 @@ export const DebouncedInput = ({
 }) => {
     const [localValue, setLocalValue] = useState(value);
 
+    // Use ref to always have current onChange
+    const onChangeRef = useRef(onChange);
+    useEffect(() => { 
+        onChangeRef.current = onChange; 
+    }, [onChange]);
+
     useEffect(() => {
         setLocalValue(value);
     }, [value]);
 
-    // True debounce implementation - triggers onChange after user stops typing
+    // Safe: always uses current callback
     useEffect(() => {
         const timer = setTimeout(() => {
             if (localValue !== value) {
-                onChange(localValue);
+                onChangeRef.current(localValue);  // ← Always current
             }
         }, debounceMs);
-
         return () => clearTimeout(timer);
-    }, [localValue, onChange, value, debounceMs]);
+    }, [localValue, value, debounceMs]);
 
     return (
         <input

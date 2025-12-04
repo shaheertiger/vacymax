@@ -208,43 +208,43 @@ export const SolutionGrid = () => {
 
             <div className="max-w-7xl mx-auto relative z-20">
                 <div className="text-center mb-20">
-                    <h2 className="text-4xl md:text-6xl font-display font-bold text-white mb-6">Built for real schedules.<br/>Not just 9-to-5s.</h2>
+                    <h2 className="text-4xl md:text-6xl font-display font-bold text-white mb-6">Built for the schedule you actually run.</h2>
                     <p className="text-teal-200/80 text-xl max-w-2xl mx-auto">
-                        Purpose-built for shift crews, parents, and unlimited PTO policies—every optimization below ships today, no vaporware. Quick wins, transparent math, and exportable plans.
+                        Every capability shown here ships today: holiday stacking, weekend protection, export-ready plans, and read-only syncing so you can trust the math before you commit.
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[300px]">
-                    
-                    {/* 1. Flex Schedule Engine */}
+
+                    {/* 1. Holiday Stack Engine */}
                     <div className="md:col-span-2 bg-teal-900/40 border border-teal-500/20 rounded-3xl p-10 flex flex-col justify-between hover:bg-teal-900/60 transition-colors group">
-                        <div className="w-12 h-12 bg-teal-500/20 rounded-2xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">⏰</div>
+                        <div className="w-12 h-12 bg-teal-500/20 rounded-2xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">🎯</div>
                         <div>
-                            <h3 className="text-2xl font-bold text-white mb-2">Flex-Schedule Engine</h3>
+                            <h3 className="text-2xl font-bold text-white mb-2">Holiday Stack Engine</h3>
                             <p className="text-teal-100/70 text-lg">
-                                Work 4/10s? Rotating shifts? Nursing roster? We optimize your specific schedule, not a generic Monday-Friday calendar.
+                                Automatically stacks PTO against public holidays to turn 1-3 days off into full-week escapes without burning extra balance.
                             </p>
                         </div>
                     </div>
 
-                    {/* 2. Parent Mode */}
-                    <div className="bg-teal-900/40 border border-teal-500/20 rounded-3xl p-10 flex flex-col justify-between hover:bg-teal-900/60 transition-colors group">
-                        <div className="w-12 h-12 bg-teal-500/20 rounded-2xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">🎒</div>
-                        <div>
-                            <h3 className="text-2xl font-bold text-white mb-2">Parent Mode</h3>
-                            <p className="text-teal-100/70">
-                                Filter results to align perfectly with school district breaks.
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* 3. Unlimited PTO Zone */}
+                    {/* 2. Weekend Protector */}
                     <div className="bg-teal-900/40 border border-teal-500/20 rounded-3xl p-10 flex flex-col justify-between hover:bg-teal-900/60 transition-colors group">
                         <div className="w-12 h-12 bg-teal-500/20 rounded-2xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">🛡️</div>
                         <div>
-                            <h3 className="text-2xl font-bold text-white mb-2">The "HR Safe Zone"</h3>
+                            <h3 className="text-2xl font-bold text-white mb-2">Weekend Protector</h3>
                             <p className="text-teal-100/70">
-                                Unlimited PTO anxiety? We calculate the industry-standard "safe max" so you can rest without flagging HR.
+                                Locks weekends into every block so you never waste days on stray Tuesdays. Default guardrails keep your balance focused on meaningful breaks.
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* 3. Export-Ready Plans */}
+                    <div className="bg-teal-900/40 border border-teal-500/20 rounded-3xl p-10 flex flex-col justify-between hover:bg-teal-900/60 transition-colors group">
+                        <div className="w-12 h-12 bg-teal-500/20 rounded-2xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">📤</div>
+                        <div>
+                            <h3 className="text-2xl font-bold text-white mb-2">Export-Ready Plans</h3>
+                            <p className="text-teal-100/70">
+                                Download .ICS files or push read-only links to Google, Outlook, and iCal after previewing the math—no account or card required.
                             </p>
                         </div>
                     </div>
@@ -264,11 +264,11 @@ export const SolutionGrid = () => {
 
                 <div className="mt-12 bg-teal-900/50 border border-teal-500/30 rounded-3xl p-8 md:p-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                     <div className="space-y-2 max-w-3xl">
-                        <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-teal-200/70">Conversion-backed copy</p>
-                        <h3 className="text-2xl md:text-3xl font-display font-bold text-white">Zero-waste planning that proves itself before you pay.</h3>
-                        <p className="text-teal-100/80 text-sm md:text-base leading-relaxed">Run the optimizer immediately, then lock it to your calendar in read-only mode. Export the .ICS and Google links only after the math checks out.</p>
+                        <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-teal-200/70">CRO-focused assurance</p>
+                        <h3 className="text-2xl md:text-3xl font-display font-bold text-white">Proof-first planning with exportable outputs.</h3>
+                        <p className="text-teal-100/80 text-sm md:text-base leading-relaxed">Run the optimizer instantly, review the stacked breaks, then export to .ICS or push a read-only sync once you are satisfied. No account or payment wall in the way.</p>
                         <div className="flex flex-wrap gap-3 text-sm text-teal-50/90">
-                            {['No accounts or cards', 'Local-first calculations', 'Exports to .ICS & Google Calendar', 'Weekend + holiday protection baked in'].map((item) => (
+                            {['Preview before connecting', 'Read-only Google/Outlook/iCal sync', 'Weekend + holiday protection', 'One-click .ICS export'].map((item) => (
                                 <span key={item} className="px-3 py-2 rounded-full bg-white/5 border border-white/10">{item}</span>
                             ))}
                         </div>

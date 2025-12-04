@@ -106,10 +106,10 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (step > 0) {
+    if (step > 0 && !isWizardMostlyVisible()) {
       wizardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  }, [step]);
+  }, [step, isWizardMostlyVisible]);
 
   // Scroll only when starting the wizard from hero/How it Works
   const scrollToWizard = useCallback(() => {

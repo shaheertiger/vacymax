@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { UserPreferences, OptimizationStrategy, TimeframeType } from '../types';
 import { StepHeader, NavButtons, SelectionCard, DebouncedInput } from './Shared';
 
+const TOTAL_STEPS = 4;
+
 // --- CONSTANTS & STATIC DATA ---
 const DAILY_VALUE_ESTIMATE = 460; 
 const EFFICIENCY_MULTIPLIER = 2.8;
@@ -91,9 +93,9 @@ const LocationSelector = ({
                     {label}
                 </div>
                 {onCopyMine && (
-                    <button 
+                    <button
                         onClick={onCopyMine}
-                        className="text-[10px] font-bold bg-brand-violet/10 text-brand-violet hover:bg-brand-violet/20 px-3 py-1.5 rounded-full transition-colors"
+                        className="text-[10px] font-bold bg-brand-violet/10 text-brand-violet hover:bg-brand-violet/20 px-3 py-2 rounded-full transition-colors min-h-[44px]"
                     >
                         Same as mine
                     </button>
@@ -105,7 +107,7 @@ const LocationSelector = ({
                     <button
                         key={c.name}
                         onClick={() => onCountryChange(c.name)}
-                        className={`p-4 md:p-5 rounded-2xl border text-left relative overflow-hidden transition-all duration-300 group active:scale-95 flex-shrink-0 ${
+                        className={`p-4 md:p-5 rounded-2xl border text-left relative overflow-hidden transition-all duration-300 group active:scale-95 flex-shrink-0 min-h-[84px] ${
                             countryValue === c.name
                             ? `bg-[#0F1014] ${borderClass} ${shadowClass} shadow-lg`
                             : 'bg-white/5 border-white/10 hover:bg-white/10'
@@ -201,23 +203,24 @@ export const Step1PTO: React.FC<StepProps> = ({ prefs, updatePrefs, onNext }) =>
   };
 
   return (
-    <div className="flex flex-col h-full relative pb-32">
+    <div className="flex flex-col h-full min-h-[540px] relative pb-32">
       <div className="pt-2">
-        <StepHeader 
-            stepNumber={1} 
+        <StepHeader
+            stepNumber={1}
+            totalSteps={TOTAL_STEPS}
             title="Your PTO Balance"
             subtitle="How many vacation days do you have to use?"
         />
       </div>
 
-      <div className="flex flex-col justify-start w-full mt-2 md:mt-4 overflow-y-auto pb-4 pr-1">
-         <div className="flex items-center gap-3 mb-6 bg-white/5 w-max px-4 py-2 rounded-full border border-white/10 hover:border-white/20 transition-colors">
+      <div className="flex flex-col justify-start w-full mt-2 md:mt-4 overflow-y-auto pb-4 pr-1 flex-1">
+         <div className="flex items-center gap-3 mb-6 bg-white/5 w-max px-4 py-3 rounded-full border border-white/10 hover:border-white/20 transition-colors min-h-[48px]">
              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Planning for Two?</span>
-             <button 
+             <button
                 onClick={() => updatePrefs('hasBuddy', !prefs.hasBuddy)}
-                className={`w-10 h-6 rounded-full relative transition-colors duration-300 ${prefs.hasBuddy ? 'bg-brand-violet shadow-[0_0_10px_rgba(124,58,237,0.4)]' : 'bg-slate-700'}`}
+                className={`w-16 h-11 rounded-full relative transition-colors duration-300 flex items-center ${prefs.hasBuddy ? 'bg-brand-violet shadow-[0_0_10px_rgba(124,58,237,0.4)]' : 'bg-slate-700'}`}
              >
-                 <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform duration-300 ${prefs.hasBuddy ? 'left-5 shadow-sm' : 'left-1'}`}></div>
+                 <div className={`w-7 h-7 bg-white rounded-full absolute top-2 transition-transform duration-300 ${prefs.hasBuddy ? 'translate-x-[20px] shadow-sm' : 'translate-x-1'}`}></div>
              </button>
          </div>
 
@@ -328,9 +331,10 @@ export const Step2Timeframe: React.FC<StepProps> = ({ prefs, updatePrefs, onNext
   };
 
   return (
-    <div className="flex flex-col h-full justify-between pb-32 md:pb-24 relative min-h-[60vh] md:min-h-0">
-      <StepHeader 
-        stepNumber={2} 
+    <div className="flex flex-col h-full justify-between pb-32 md:pb-24 relative min-h-[540px]">
+      <StepHeader
+        stepNumber={2}
+        totalSteps={TOTAL_STEPS}
         title="Select Year"
         subtitle="Which calendar should we look at?"
       />
@@ -361,9 +365,10 @@ export const Step3Strategy: React.FC<StepProps> = ({ prefs, updatePrefs, onNext,
   };
 
   return (
-    <div className="flex flex-col h-full justify-between pb-32 md:pb-24 relative min-h-[60vh] md:min-h-0">
-      <StepHeader 
-        stepNumber={3} 
+    <div className="flex flex-col h-full justify-between pb-32 md:pb-24 relative min-h-[540px]">
+      <StepHeader
+        stepNumber={3}
+        totalSteps={TOTAL_STEPS}
         title="Travel Style"
         subtitle="How do you like to spend your time off?"
       />
@@ -410,9 +415,10 @@ export const Step4Location: React.FC<StepProps> = ({ prefs, updatePrefs, onNext,
     };
 
     return (
-        <div className="flex flex-col h-full justify-between pb-32 md:pb-24 relative min-h-[60vh] md:min-h-0">
-             <StepHeader 
-                stepNumber={4} 
+        <div className="flex flex-col h-full justify-between pb-32 md:pb-24 relative min-h-[540px]">
+             <StepHeader
+                stepNumber={4}
+                totalSteps={TOTAL_STEPS}
                 title="Your Location"
                 subtitle="We need this to load your public holidays."
             />

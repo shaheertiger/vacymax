@@ -1,23 +1,34 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-export const StepHeader = React.memo(({ stepNumber, title, subtitle }: { stepNumber: number, title: React.ReactNode, subtitle: string }) => (
-    <div className="space-y-2 md:space-y-4 mb-4 md:mb-12 animate-fade-up px-1">
+export const StepHeader = React.memo(({ stepNumber, totalSteps, title, subtitle }: { stepNumber: number, totalSteps: number, title: React.ReactNode, subtitle: string }) => (
+    <div className="space-y-3 md:space-y-4 mb-6 md:mb-10 animate-fade-up px-1">
         <div className="flex items-center gap-3">
              <span className="w-8 h-[1px] bg-lime-accent"></span>
-             <span className="text-lime-accent font-mono text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase">STEP {stepNumber}</span>
+             <span className="text-lime-accent font-mono text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase">Step {stepNumber} of {totalSteps}</span>
         </div>
-        <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white tracking-tight leading-[1.1]">
-            {title}
-        </h2>
-        <p className="text-sm md:text-lg text-slate-400 max-w-xl leading-relaxed">{subtitle}</p>
+        <div className="flex items-center gap-3">
+            <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
+                <div
+                    className="h-full bg-gradient-to-r from-lime-accent to-emerald-400 transition-all duration-500"
+                    style={{ width: `${Math.min((stepNumber / totalSteps) * 100, 100)}%` }}
+                />
+            </div>
+            <span className="text-xs font-bold text-white/70 min-w-[46px] text-right">{Math.round((stepNumber / totalSteps) * 100)}%</span>
+        </div>
+        <div className="space-y-1">
+            <h2 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold text-white tracking-tight leading-[1.1]">
+                {title}
+            </h2>
+            <p className="text-sm md:text-lg text-slate-400 max-w-xl leading-relaxed">{subtitle}</p>
+        </div>
     </div>
 ));
 
 export const NavButtons = React.memo(({ onNext, onBack, nextDisabled, nextLabel = "Continue", isLoading = false }: { onNext: () => void, onBack?: () => void, nextDisabled?: boolean, nextLabel?: string, isLoading?: boolean }) => (
     // FIX APPLIED HERE: Changed z-50 to z-[100] to fix mobile click issue
-    <div className="fixed bottom-0 left-0 right-0 z-[100] p-4 pb-8 bg-[#0F1014]/80 backdrop-blur-lg border-t border-white/10 md:absolute md:bottom-12 md:left-12 md:right-12 md:p-0 md:bg-transparent md:border-none flex flex-row justify-between items-center gap-4 animate-fade-up transition-all duration-300 safe-pb">
+    <div className="fixed bottom-0 left-0 right-0 z-[100] p-4 pb-8 bg-[#0F1014]/85 backdrop-blur-lg border-t border-white/10 md:sticky md:bottom-6 md:left-12 md:right-12 md:p-0 md:bg-transparent md:border-none flex flex-row justify-between items-center gap-4 animate-fade-up transition-all duration-300 safe-pb">
         {onBack ? (
-             <button onClick={onBack} disabled={isLoading} className="text-slate-400 hover:text-white px-4 py-3 md:py-2 font-bold transition-colors flex items-center gap-2 text-xs uppercase tracking-widest group rounded-lg bg-white/5 hover:bg-white/10 md:bg-transparent disabled:opacity-50 active:scale-95">
+             <button onClick={onBack} disabled={isLoading} className="text-slate-400 hover:text-white px-4 py-3 md:py-2 font-bold transition-colors flex items-center gap-2 text-xs uppercase tracking-widest group rounded-lg bg-white/5 hover:bg-white/10 md:bg-transparent disabled:opacity-50 active:scale-95 min-h-[52px]">
                 <span className="group-hover:-translate-x-1 transition-transform">←</span>
                 <span className="inline">Back</span>
             </button>
@@ -26,10 +37,10 @@ export const NavButtons = React.memo(({ onNext, onBack, nextDisabled, nextLabel 
         <button
             onClick={onNext}
             disabled={nextDisabled || isLoading}
-            className="flex-1 md:flex-none md:w-auto relative group overflow-hidden px-6 md:px-10 py-4 rounded-xl bg-lime-accent text-dark-900 font-bold font-display text-lg tracking-wide hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(132,204,22,0.2)] hover:shadow-[0_0_30px_rgba(132,204,22,0.4)] active:scale-95 border border-lime-accent/50"
+            className="flex-1 md:flex-none md:w-auto relative group overflow-hidden px-6 md:px-10 py-4 rounded-xl bg-lime-accent text-dark-900 font-bold font-display text-lg tracking-wide hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(132,204,22,0.2)] hover:shadow-[0_0_30px_rgba(132,204,22,0.4)] active:scale-95 border border-lime-accent/50 min-h-[56px]"
         >
             {isLoading && (
-                <div 
+                <div
                     className="absolute inset-0 bg-white/30 z-0" 
                     style={{ 
                         width: '0%', 
@@ -96,7 +107,7 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
     return (
         <button
             onClick={onClick}
-            className={`group relative p-6 rounded-3xl border text-left transition-all duration-300 hover:scale-[1.01] active:scale-95 w-full ${
+            className={`group relative p-6 rounded-3xl border text-left transition-all duration-300 hover:scale-[1.01] active:scale-95 w-full min-h-[88px] ${
               selected
                 ? `${activeBg} ${activeBorder} ${shadow}`
                 : 'bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-white/20'

@@ -214,12 +214,15 @@ const App: React.FC = () => {
 
               {/* FIX: Removed 'overflow-hidden' and 'backdrop-blur' to fix mobile sticky buttons */}
               {/* FIX: Added z-[60] to ensure it sits ABOVE the bg-noise layer */}
-              <div className="relative z-[60] bg-[#0F1014] border border-white/10 rounded-[2rem] p-6 md:p-12 shadow-2xl min-h-[550px] flex flex-col">
-                {error && (
-                  <div className="bg-red-500/20 text-red-200 px-4 py-2 rounded-lg text-sm mb-4 border border-red-500/20 text-center">
-                    {error}
+              <div className="relative z-[60] bg-[#0F1014] border border-white/10 rounded-[2rem] p-6 md:p-12 shadow-2xl min-h-[600px] flex flex-col">
+                <div className="min-h-[52px] mb-4" aria-live="polite" aria-atomic="true">
+                  <div
+                    className={`bg-red-500/15 text-red-200 px-4 py-3 rounded-lg text-sm border border-red-500/20 text-center transition-all duration-300 ${error ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}`}
+                    role={error ? 'alert' : undefined}
+                  >
+                    {error || ' '}
                   </div>
-                )}
+                </div>
 
                 {step === 0 && (
                   <div className="text-center space-y-8 animate-fade-up relative z-10 py-10 my-auto">

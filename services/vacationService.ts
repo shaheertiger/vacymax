@@ -68,11 +68,11 @@ const levenshtein = (a: string, b: string): number => {
     return matrix[a.length][b.length];
 };
 
-const resolveRegion = (countryData: CountryData, inputRegion: string): string | undefined => {
+const resolveRegion = (countryData: CountryData, inputRegion: string, countryName: string): string | undefined => {
     if (!inputRegion || !countryData.regions) return undefined;
 
     // Check cache first to avoid repeated expensive Levenshtein calculations
-    const cacheKey = `${countryData.name}:${inputRegion}`;
+    const cacheKey = `${countryName}:${inputRegion}`;
     if (resolvedRegionCache.has(cacheKey)) {
         return resolvedRegionCache.get(cacheKey);
     }
@@ -153,7 +153,7 @@ const getHolidaysMap = async (country: string, region: string, startYear: number
         const rawList = [...(data.federal[yStr] || [])];
         
         if (region) {
-            const resolved = resolveRegion(data, region);
+            const resolved = resolveRegion(data, region, country);
             if (resolved && data.regions && data.regions[resolved] && data.regions[resolved][yStr]) {
                 rawList.push(...data.regions[resolved][yStr]);
             }

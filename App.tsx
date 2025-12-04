@@ -4,6 +4,7 @@ import { Step1PTO, Step2Timeframe, Step3Strategy, Step4Location } from './compon
 import { generateVacationPlan } from './services/vacationService';
 import { SEOHead } from './components/SEOHead';
 import { PainHero, BurnCalculator, SolutionGrid, BattleTestedMarquee } from './components/LandingVisuals';
+import { TrustSection } from './components/TrustSection';
 
 // Lazy load heavy components
 const ResultsView = lazy(() => import('./components/ResultsView').then((module) => ({ default: module.ResultsView })));
@@ -203,6 +204,7 @@ const App: React.FC = () => {
           <BurnCalculator />
           <SolutionGrid />
           <BattleTestedMarquee />
+          <TrustSection />
 
           {/* THE WIZARD */}
           <div id="wizard-section" ref={wizardRef} className="w-full bg-[#020617] py-24 px-4 scroll-mt-24 relative z-[55]">

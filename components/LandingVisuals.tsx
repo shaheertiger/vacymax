@@ -23,7 +23,7 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
             </div>
 
             <div className="max-w-5xl mx-auto relative z-10 text-center md:text-left">
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
@@ -38,22 +38,36 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-600">When You Waste PTO.</span>
                     </h1>
                     
-                    <p className="text-xl text-slate-400 max-w-2xl leading-relaxed mb-10">
-                        Every year, you leave <strong className="text-white">40% of your potential leisure time</strong> on the table. 
-                        That is thousands of dollars you are voluntarily donating back to your boss.
+                    <p className="text-xl text-slate-300 max-w-3xl leading-relaxed mb-8">
+                        Stop losing paid time to chaos meetings and HR fine print. VacationMax turns <strong className="text-white">3 PTO days into 9-day breaks</strong> by stitching holidays, weekends, and your odd shifts together.
                         <br/><br/>
-                        <span className="text-white border-b border-red-500/50">Stop being the "nice guy" who burns out.</span>
+                        Ship-ready in under a minute, no login walls.
                     </p>
 
-                    <button 
-                        onClick={onCta}
-                        className="group relative px-8 py-4 bg-white text-black font-bold text-lg rounded-full overflow-hidden hover:scale-105 transition-transform"
-                    >
-                        <span className="relative z-10 flex items-center gap-2">
-                            Reclaim My Time
-                            <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                        </span>
-                    </button>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+                        <button
+                            onClick={onCta}
+                            className="group relative px-8 py-4 bg-white text-black font-bold text-lg rounded-full overflow-hidden hover:scale-105 transition-transform"
+                        >
+                            <span className="relative z-10 flex items-center gap-2">
+                                Launch My Optimizer
+                                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                            </span>
+                        </button>
+                        <div className="text-sm text-slate-400 space-y-1">
+                            <p className="font-semibold text-white/90">No account required • Privacy-first • Under 60 seconds</p>
+                            <p>Built for tech leads, nurses on rotations, and remote nomads who refuse to leave PTO unused.</p>
+                        </div>
+                    </div>
+
+                    <div className="grid sm:grid-cols-3 gap-3 text-left">
+                        {["Read-only calendar sync", "Optimizes around holidays automatically", "Keeps your weekends intact"].map((item) => (
+                            <div key={item} className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-slate-200">
+                                <span className="w-8 h-8 rounded-full bg-red-500/15 flex items-center justify-center text-red-300 font-bold">✓</span>
+                                <span className="leading-snug">{item}</span>
+                            </div>
+                        ))}
+                    </div>
                 </motion.div>
             </div>
         </div>
@@ -75,14 +89,22 @@ export const BurnCalculator = () => {
         <div className="w-full bg-[#050505] border-y border-white/5 py-24 relative overflow-hidden">
             <div className="max-w-6xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
                 
-                <div className="space-y-8">
+                <div className="space-y-6">
                     <h2 className="text-4xl font-display font-bold text-white">Do The Math. <br/>It Hurts.</h2>
-                    <p className="text-slate-400 text-lg">
-                        Most people think unused PTO just "rolls over" or "disappears." 
-                        <br/>No. <strong className="text-white">It is wage theft.</strong>
-                        <br/><br/>
-                        Use the calculator to see exactly how much money you are setting on fire by not optimizing your calendar.
+                    <p className="text-slate-300 text-lg leading-relaxed">
+                        Most people think unused PTO just "rolls over" or "disappears." No. <strong className="text-white">It is wage theft.</strong>
+                        This is the cash value of donating your days back to the company.
                     </p>
+                    <div className="grid sm:grid-cols-2 gap-3 text-sm text-slate-200">
+                        <div className="flex items-start gap-3 bg-white/5 border border-white/10 rounded-2xl p-4">
+                            <span className="w-8 h-8 rounded-full bg-lime-accent/15 text-lime-accent flex items-center justify-center font-bold">✓</span>
+                            <span className="leading-relaxed">See the loss per day, then auto-sequence the exact PTO days that erase it.</span>
+                        </div>
+                        <div className="flex items-start gap-3 bg-white/5 border border-white/10 rounded-2xl p-4">
+                            <span className="w-8 h-8 rounded-full bg-lime-accent/15 text-lime-accent flex items-center justify-center font-bold">✓</span>
+                            <span className="leading-relaxed">No account walls or credit card forms—jump straight into the optimizer when you are ready.</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="bg-[#0F1014] border border-white/10 rounded-3xl p-8 md:p-12 shadow-2xl relative">

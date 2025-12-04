@@ -5,6 +5,8 @@ import { generateVacationPlan } from './services/vacationService';
 import { SEOHead } from './components/SEOHead';
 import { PainHero, BurnCalculator, SolutionGrid, BattleTestedMarquee } from './components/LandingVisuals';
 import { TrustSection } from './components/TrustSection';
+// Eagerly load the results view to remove chunk-fetch failures when users finish the wizard.
+import { ResultsView } from './components/ResultsView';
 
 const lazyWithRetry = <T extends { default: React.ComponentType<any> }>(importer: () => Promise<T>) =>
   lazy(async () => {
@@ -27,7 +29,6 @@ const lazyWithRetry = <T extends { default: React.ComponentType<any> }>(importer
   });
 
 // Lazy load heavy components with retry guard for chunk load failures
-const ResultsView = lazyWithRetry(() => import('./components/ResultsView').then((module) => ({ default: module.ResultsView })));
 const HowItWorks = lazyWithRetry(() => import('./components/HowItWorks').then((module) => ({ default: module.HowItWorks })));
 
 const initialPrefs: UserPreferences = {

@@ -9,9 +9,37 @@ const FLAG_HOLIDAY = 1 << 1;       // 0010
 const FLAG_BUDDY_HOLIDAY = 1 << 2; // 0100
 
 // --- CACHING LAYER ---
-const holidaysMapCache = new Map<string, Map<string, string>>();
-const planCache = new Map<string, OptimizationResult>();
-const resolvedRegionCache = new Map<string, string | undefined>();
+class LRUCache<K, V> {
+    private map: Map<K, V>;
+    constructor(private capacity: number) {
+        this.map = new Map();
+    }
+
+    has(key: K): boolean {
+        return this.map.has(key);
+    }
+
+    get(key: K): V | undefined {
+        const value = this.map.get(key);
+        if (value === undefined) return undefined;
+        this.map.delete(key);
+        this.map.set(key, value);
+        return value;
+    }
+
+    set(key: K, value: V): void {
+        if (this.map.has(key)) this.map.delete(key);
+        this.map.set(key, value);
+        if (this.map.size > this.capacity) {
+            const oldestKey = this.map.keys().next().value;
+            this.map.delete(oldestKey);
+        }
+    }
+}
+
+const holidaysMapCache = new LRUCache<string, Map<string, string>>(24);
+const planCache = new LRUCache<string, OptimizationResult>(32);
+const resolvedRegionCache = new LRUCache<string, string | undefined>(128);
 
 // --- STRING POOL FOR ZERO-ALLOCATION LOOKUPS ---
 class StringPool {
@@ -50,6 +78,10 @@ const fastDateStr = (year: number, monthZeroIndexed: number, day: number): strin
     return `${year}-${m < 10 ? '0' + m : m}-${day < 10 ? '0' + day : day}`;
 };
 
+const normalizeToken = (value: string): string => value.toLowerCase().replace(/[^a-z0-9]/g, '');
+const monthPad = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+const dayPad = Array.from({length: 31}, (_, i) => (i+1).toString().padStart(2, '0'));
+
 const levenshtein = (a: string, b: string): number => {
     const matrix = Array.from({ length: a.length + 1 }, () => []);
     for (let i = 0; i <= a.length; i++) matrix[i][0] = i;
@@ -71,13 +103,13 @@ const levenshtein = (a: string, b: string): number => {
 const resolveRegion = (countryData: CountryData, inputRegion: string, countryName: string): string | undefined => {
     if (!inputRegion || !countryData.regions) return undefined;
 
-    // Check cache first to avoid repeated expensive Levenshtein calculations
     const cacheKey = `${countryName}:${inputRegion}`;
-    if (resolvedRegionCache.has(cacheKey)) {
-        return resolvedRegionCache.get(cacheKey);
+    const cachedRegion = resolvedRegionCache.get(cacheKey);
+    if (cachedRegion !== undefined || resolvedRegionCache.has(cacheKey)) {
+        return cachedRegion;
     }
 
-    const cleanInput = inputRegion.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const cleanInput = normalizeToken(inputRegion);
     if (!cleanInput) {
         resolvedRegionCache.set(cacheKey, undefined);
         return undefined;
@@ -85,44 +117,39 @@ const resolveRegion = (countryData: CountryData, inputRegion: string, countryNam
 
     if (countryData.regionAliases) {
         const rawLower = inputRegion.toLowerCase().trim();
-        if (countryData.regionAliases[rawLower]) {
-            const result = countryData.regionAliases[rawLower];
-            resolvedRegionCache.set(cacheKey, result);
-            return result;
-        }
-        if (countryData.regionAliases[cleanInput]) {
-            const result = countryData.regionAliases[cleanInput];
-            resolvedRegionCache.set(cacheKey, result);
-            return result;
+        const aliasMatch = countryData.regionAliases[rawLower] || countryData.regionAliases[cleanInput];
+        if (aliasMatch) {
+            resolvedRegionCache.set(cacheKey, aliasMatch);
+            return aliasMatch;
         }
     }
 
     const regionKeys = Object.keys(countryData.regions);
+    const normalizedRegions = regionKeys.map((key) => ({ key, normalized: normalizeToken(key) }));
 
-    const exactMatch = regionKeys.find(k => k.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanInput);
+    const exactMatch = normalizedRegions.find(({ normalized }) => normalized === cleanInput);
     if (exactMatch) {
-        resolvedRegionCache.set(cacheKey, exactMatch);
-        return exactMatch;
+        resolvedRegionCache.set(cacheKey, exactMatch.key);
+        return exactMatch.key;
     }
 
-    const prefixMatch = regionKeys.find(k => k.toLowerCase().replace(/[^a-z0-9]/g, '').startsWith(cleanInput));
+    const prefixMatch = normalizedRegions.find(({ normalized }) => normalized.startsWith(cleanInput));
     if (prefixMatch) {
-        resolvedRegionCache.set(cacheKey, prefixMatch);
-        return prefixMatch;
+        resolvedRegionCache.set(cacheKey, prefixMatch.key);
+        return prefixMatch.key;
     }
 
-    const subMatch = regionKeys.find(k => k.toLowerCase().replace(/[^a-z0-9]/g, '').includes(cleanInput));
+    const subMatch = normalizedRegions.find(({ normalized }) => normalized.includes(cleanInput));
     if (subMatch) {
-        resolvedRegionCache.set(cacheKey, subMatch);
-        return subMatch;
+        resolvedRegionCache.set(cacheKey, subMatch.key);
+        return subMatch.key;
     }
 
     let bestMatch: string | undefined;
     let minDistance = Infinity;
 
-    for (const key of regionKeys) {
-        const cleanKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
-        const dist = levenshtein(cleanInput, cleanKey);
+    for (const { key, normalized } of normalizedRegions) {
+        const dist = levenshtein(cleanInput, normalized);
         const threshold = cleanInput.length > 4 ? 3 : 2;
 
         if (dist <= threshold && dist < minDistance) {
@@ -138,8 +165,9 @@ const resolveRegion = (countryData: CountryData, inputRegion: string, countryNam
 // Cached Holiday Map Fetcher
 const getHolidaysMap = async (country: string, region: string, startYear: number, endYear: number): Promise<Map<string, string>> => {
     const cacheKey = `${country}|${region}|${startYear}|${endYear}`;
-    if (holidaysMapCache.has(cacheKey)) {
-        return holidaysMapCache.get(cacheKey)!;
+    const cached = holidaysMapCache.get(cacheKey);
+    if (cached) {
+        return cached;
     }
 
     const map = new Map<string, string>();
@@ -175,9 +203,10 @@ const getHolidaysMap = async (country: string, region: string, startYear: number
 export const generateVacationPlan = async (prefs: UserPreferences): Promise<OptimizationResult> => {
     // Check Cache
     const cacheKey = JSON.stringify(prefs);
-    if (planCache.has(cacheKey)) {
+    const cachedPlan = planCache.get(cacheKey);
+    if (cachedPlan) {
         console.log("Serving plan from cache");
-        return planCache.get(cacheKey)!;
+        return cachedPlan;
     }
 
     const now = new Date();
@@ -236,9 +265,6 @@ export const generateVacationPlan = async (prefs: UserPreferences): Promise<Opti
 
     // Optimized loop using manual date tracking to avoid Date creation overhead
     // Pre-allocate string padding arrays for faster concatenation
-    const monthPad = ['01','02','03','04','05','06','07','08','09','10','11','12'];
-    const dayPad = Array.from({length: 31}, (_, i) => (i+1).toString().padStart(2, '0'));
-
     for (let i = 0; i < totalDays; i++) {
         // Optimized date string generation (avoid multiple string concatenations)
         const dString = `${curY}-${monthPad[curM]}-${dayPad[curD-1]}`;

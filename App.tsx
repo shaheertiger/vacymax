@@ -106,6 +106,13 @@ const App: React.FC = () => {
   
   const wizardRef = useRef<HTMLDivElement>(null);
 
+  // Ensure the wizard is always in view when users progress through steps
+  useEffect(() => {
+    if (step > 0) {
+        wizardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [step]);
+
   const scrollToWizard = useCallback(() => {
     if (view === 'how-it-works') {
         setView('landing');

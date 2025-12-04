@@ -84,21 +84,24 @@ const App: React.FC = () => {
   
   const wizardRef = useRef<HTMLDivElement>(null);
 
+  const scrollWizardIntoView = useCallback(() => {
+    const element = wizardRef.current || document.getElementById('wizard-section');
+    element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
+
   // Scroll only when starting the wizard from hero/How it Works
   const scrollToWizard = useCallback(() => {
     if (view === 'how-it-works') {
         setView('landing');
         setTimeout(() => {
-             const element = wizardRef.current || document.getElementById('wizard-section');
-             element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-             if(step === 0) setStep(1);
+             scrollWizardIntoView();
+             if (step === 0) setStep(1);
         }, 100);
     } else {
-        const element = wizardRef.current || document.getElementById('wizard-section');
-        element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        if(step === 0) setStep(1);
+        scrollWizardIntoView();
+        if (step === 0) setStep(1);
     }
-  }, [view, step]);
+  }, [scrollWizardIntoView, view, step]);
 
   const updatePrefs = useCallback(<K extends keyof UserPreferences>(key: K, value: UserPreferences[K]) => {
     setPrefs((prev) => ({ ...prev, [key]: value }));

@@ -1,3 +1,4 @@
+import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { UserPreferences, OptimizationResult } from '../types';
 
@@ -107,8 +108,8 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       return `${APP_URL}/api/og?days=${result.totalDaysOff}&country=${country}&year=${result.targetYear}`;
     }
 
-    // Default social share image (create this in /public folder)
-    return `${APP_URL}/og-image.png`;
+    // Default social share image (created in /public folder)
+    return `${APP_URL}/og-image.svg`;
   };
 
   // --- SOCIAL SHARING TITLE (More engaging than SEO title) ---

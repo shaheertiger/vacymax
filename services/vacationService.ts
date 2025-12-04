@@ -165,8 +165,8 @@ const resolveRegion = (countryData: CountryData, inputRegion: string, countryNam
 
     const exactMatch = normalizedRegions.exactMap.get(cleanInput);
     if (exactMatch) {
-        resolvedRegionCache.set(cacheKey, exactMatch);
-        return exactMatch;
+        resolvedRegionCache.set(cacheKey, exactMatch.key);
+        return exactMatch.key;
     }
 
     for (const { key, normalized } of normalizedRegions.entries) {

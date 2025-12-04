@@ -94,6 +94,17 @@ const App: React.FC = () => {
     element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, []);
 
+  const isWizardMostlyVisible = useCallback(() => {
+    const node = wizardRef.current;
+    if (!node) return false;
+
+    const rect = node.getBoundingClientRect();
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+    // Treat the wizard as visible if its shell is within a small buffer of the viewport.
+    return rect.top > -40 && rect.bottom < viewportHeight + 40;
+  }, []);
+
   useEffect(() => {
     if (step > 0) {
       wizardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -123,9 +134,11 @@ const App: React.FC = () => {
     setStep((prev) => prev + 1);
     // Auto-scroll on mobile
     if (window.innerWidth < 768) {
-      window.scrollTo({ top: wizardRef.current?.offsetTop || 0, behavior: 'smooth' });
+      if (!isWizardMostlyVisible()) {
+        window.scrollTo({ top: wizardRef.current?.offsetTop || 0, behavior: 'smooth' });
+      }
     }
-  }, []);
+  }, [isWizardMostlyVisible]);
 
   const handleBack = useCallback(() => setStep((prev) => prev - 1), []);
 

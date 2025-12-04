@@ -179,10 +179,26 @@ export const Step1PTO: React.FC<StepProps> = ({ prefs, updatePrefs, onNext }) =>
     updatePrefs('buddyPtoDays', normalizePtoValue(valStr));
   };
 
-  const totalDays = userDays + (prefs.hasBuddy ? buddyDays : 0);
+  const totals = React.useMemo(() => {
+    const total = userDays + (prefs.hasBuddy ? buddyDays : 0);
+    const safeTotal = Number.isFinite(total) ? total : 0;
+
+    return {
+      totalDays: safeTotal,
+      valueEstimate: safeTotal * DAILY_VALUE_ESTIMATE,
+      potentialDays: Math.round(safeTotal * EFFICIENCY_MULTIPLIER),
+    };
+  }, [buddyDays, prefs.hasBuddy, userDays]);
+
+  const { totalDays, valueEstimate, potentialDays } = totals;
+
   const canProceed = totalDays > 0;
-  const value = totalDays * DAILY_VALUE_ESTIMATE;
-  const potentialDays = Math.round(totalDays * EFFICIENCY_MULTIPLIER);
+
+  // Guard against navigation even if a disabled state is bypassed (e.g., stale UI state)
+  const handleNextClick = () => {
+    if (!canProceed) return;
+    onNext();
+  };
 
   return (
     <div className="flex flex-col h-full relative pb-32">
@@ -294,7 +310,7 @@ export const Step1PTO: React.FC<StepProps> = ({ prefs, updatePrefs, onNext }) =>
          </div>
       </div>
 
-      <NavButtons onNext={onNext} nextDisabled={!canProceed} nextLabel="Next Step" />
+      <NavButtons onNext={handleNextClick} nextDisabled={!canProceed} nextLabel="Next Step" />
     </div>
   );
 };

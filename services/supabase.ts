@@ -1,20 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
+// Supabase helpers for client-side tracking
+// These make API calls to serverless functions that handle the actual Supabase operations
 
-const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || '';
-
-if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('Supabase credentials not found. Database features will be disabled.');
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-    auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-    },
-});
-
-// Helper functions for common operations
 export const supabaseHelpers = {
     // Track user plan generation
     async logPlanGeneration(data: {
@@ -26,19 +12,11 @@ export const supabaseHelpers = {
         strategy: string;
     }) {
         try {
-            const { error } = await supabase
-                .from('plan_generations')
-                .insert({
-                    user_id: data.userId || null,
-                    pto_used: data.ptoUsed,
-                    total_days_off: data.totalDaysOff,
-                    monetary_value: data.monetaryValue,
-                    region: data.region,
-                    strategy: data.strategy,
-                    created_at: new Date().toISOString(),
-                });
-
-            if (error) console.error('Error logging plan generation:', error);
+            await fetch('/api/analytics/log-plan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
         } catch (err) {
             console.error('Failed to log plan generation:', err);
         }
@@ -53,18 +31,11 @@ export const supabaseHelpers = {
         planStats: any;
     }) {
         try {
-            const { error } = await supabase
-                .from('payments')
-                .insert({
-                    user_id: data.userId || null,
-                    stripe_payment_id: data.stripePaymentId,
-                    amount: data.amount,
-                    currency: data.currency,
-                    plan_stats: data.planStats,
-                    created_at: new Date().toISOString(),
-                });
-
-            if (error) console.error('Error logging payment:', error);
+            await fetch('/api/analytics/log-payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
         } catch (err) {
             console.error('Failed to log payment:', err);
         }
@@ -73,41 +44,27 @@ export const supabaseHelpers = {
     // Get analytics data
     async getAnalytics() {
         try {
-            const { data, error } = await supabase
-                .from('plan_generations')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(100);
-
-            if (error) {
-                console.error('Error fetching analytics:', error);
-                return null;
-            }
-
-            return data;
+            const response = await fetch('/api/analytics/get-analytics');
+            if (!response.ok) return null;
+            return await response.json();
         } catch (err) {
             console.error('Failed to fetch analytics:', err);
             return null;
         }
     },
 
-    // Track user sessions (optional)
+    // Track user sessions
     async trackSession(sessionData: {
         userId?: string;
         userAgent: string;
         referrer: string;
     }) {
         try {
-            const { error } = await supabase
-                .from('sessions')
-                .insert({
-                    user_id: sessionData.userId || null,
-                    user_agent: sessionData.userAgent,
-                    referrer: sessionData.referrer,
-                    created_at: new Date().toISOString(),
-                });
-
-            if (error) console.error('Error tracking session:', error);
+            await fetch('/api/analytics/log-session', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(sessionData),
+            });
         } catch (err) {
             console.error('Failed to track session:', err);
         }

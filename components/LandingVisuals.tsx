@@ -56,13 +56,19 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center gap-6">
-                        <button
-                            onClick={onCta}
-                            className="w-full sm:w-auto px-10 py-5 bg-lime-accent hover:bg-lime-400 text-dark-900 font-bold text-lg rounded-2xl hover:scale-[1.02] transition-all shadow-[0_0_40px_rgba(190,242,100,0.3)] flex items-center justify-center gap-3 group"
-                        >
-                            Analyze My 2026 Calendar
-                            <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                        </button>
+                        <div className="flex flex-col items-center sm:items-start gap-3 w-full sm:w-auto">
+                            <button
+                                onClick={onCta}
+                                className="w-full sm:w-auto px-10 py-5 bg-lime-accent hover:bg-lime-400 text-dark-900 font-bold text-lg rounded-2xl hover:scale-[1.02] transition-all shadow-[0_0_40px_rgba(190,242,100,0.3)] flex items-center justify-center gap-3 group"
+                            >
+                                Hack My 2026 Calendar
+                                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                            </button>
+                            <p className="text-xs text-slate-500 font-medium flex items-center gap-2">
+                                <svg className="w-3 h-3 text-lime-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                                No credit card required to start
+                            </p>
+                        </div>
                     </div>
 
                     <div className="mt-12 pt-8 border-t border-white/5 flex items-center gap-6">
@@ -74,6 +80,9 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
                             ))}
                         </div>
                         <div className="text-sm">
+                            <div className="flex text-yellow-500 mb-0.5 text-[10px] gap-0.5">
+                                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                            </div>
                             <p className="text-white font-bold">14,203 Planners</p>
                             <p className="text-slate-500">Optimizing 2026 right now</p>
                         </div>
@@ -262,6 +271,9 @@ export const BurnCalculator = () => {
                             >
                                 Stop Losing Money
                             </button>
+                            <p className="text-center mt-3 text-[10px] text-slate-600 uppercase tracking-widest">
+                                <span className="text-red-500 font-bold animate-pulse">●</span> Only 8 days left to plan
+                            </p>
                         </div>
                     </div>
                 </div>

@@ -22,10 +22,10 @@ const ContentPageLayout: React.FC<ContentPageProps> = ({ title, lastUpdated, chi
                     [ Return_To_Base ]
                 </button>
 
-                <div className="border-l-2 border-lime-accent/30 pl-8 mb-16 relative">
-                    <div className="absolute -left-[5px] -top-1 w-2 H-2 bg-lime-accent"></div>
+                <div className="border-l-2 border-lime-accent/30 pl-4 md:pl-8 mb-16 relative">
+                    <div className="absolute -left-[5px] -top-1 w-2 h-2 bg-lime-accent"></div>
                     <div className="text-xs text-slate-500 uppercase tracking-[0.3em] mb-4">Designation: System_File</div>
-                    <h1 className="text-5xl md:text-7xl font-display font-black text-white uppercase tracking-tighter leading-none mb-2">
+                    <h1 className="text-4xl md:text-7xl font-display font-black text-white uppercase tracking-tighter leading-none mb-2 break-words">
                         {title.split(' ').map((word, i) => (
                             <span key={i} className="block">{word}</span>
                         ))}

@@ -5,6 +5,7 @@ import { generateVacationPlan } from './services/vacationService';
 import { SEOHead } from './components/SEOHead';
 import { PainHero, BurnCalculator, SolutionGrid, BattleTestedMarquee } from './components/LandingVisuals';
 import { TrustSection } from './components/TrustSection';
+import { supabaseHelpers } from './services/supabase';
 // Eagerly load the results view to remove chunk-fetch failures when users finish the wizard.
 import { ResultsView } from './components/ResultsView';
 
@@ -156,10 +157,15 @@ const App: React.FC = () => {
 
   const handleNext = useCallback(() => {
     setStep((prev) => prev + 1);
-    // Auto-scroll on mobile
+    // Auto-scroll on mobile (with header offset)
     if (window.innerWidth < 768) {
       if (!isWizardTopInView()) {
-        window.scrollTo({ top: wizardRef.current?.offsetTop || 0, behavior: 'smooth' });
+        // Offset by 100px to account for fixed header and some padding
+        const offsetPosition = (wizardRef.current?.offsetTop || 0) - 100;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
       }
     }
   }, [isWizardTopInView]);
@@ -173,6 +179,16 @@ const App: React.FC = () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       const data = await generateVacationPlan(prefs);
       setResult(data);
+
+      // Track plan generation in Supabase
+      supabaseHelpers.logPlanGeneration({
+        ptoUsed: data.totalPtoUsed,
+        totalDaysOff: data.totalDaysOff,
+        monetaryValue: data.totalValueRecovered,
+        region: prefs.region || prefs.country,
+        strategy: prefs.strategy,
+      }).catch(err => console.error('Failed to log plan:', err));
+
       setStep(6);
       setView('results');
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -200,6 +216,40 @@ const App: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
+  // Track session on app load
+  useEffect(() => {
+    supabaseHelpers.trackSession({
+      userAgent: navigator.userAgent,
+      referrer: document.referrer,
+    }).catch(err => console.error('Failed to track session:', err));
+  }, []);
+
+  // Handle payment success from Stripe redirect
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    const sessionId = urlParams.get('session_id');
+
+    if (paymentStatus === 'success' && sessionId) {
+      // Payment successful - unlock the plan
+      setIsLocked(false);
+      setShowSuccessMessage(true);
+
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      // Scroll to top to show success message
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Hide success message after 10 seconds
+      setTimeout(() => setShowSuccessMessage(false), 10000);
+    } else if (paymentStatus === 'cancelled') {
+      // Payment was cancelled
+      console.log('Payment was cancelled by user');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
   const handleFooterLink = useCallback((e: React.MouseEvent, viewName: ViewState) => {
     e.preventDefault();
     setView(viewName);
@@ -217,12 +267,12 @@ const App: React.FC = () => {
       <SEOHead view={view} prefs={prefs} result={result || undefined} country={prefs.country} />
 
       {/* Navigation */}
-      <nav className="w-full py-3 md:py-6 px-4 md:px-12 flex justify-between items-center z-[60] fixed top-0 left-0 right-0 bg-[#020617]/90 backdrop-blur-sm border-b border-white/5 transition-all duration-300 safe-pt">
+      <nav className="w-full py-3 md:py-6 px-3 md:px-12 flex justify-between items-center z-[60] fixed top-0 left-0 right-0 bg-[#020617]/90 backdrop-blur-sm border-b border-white/5 transition-all duration-300 safe-pt">
         <div className="flex items-center gap-2 cursor-pointer group flex-shrink-0" onClick={handleReset}>
           <div className="w-8 h-8 bg-lime-accent rounded-xl flex items-center justify-center shadow-lg shadow-lime-accent/20">
             <div className="w-3 h-3 bg-dark-900 rounded-sm"></div>
           </div>
-          <span className="font-display font-bold text-lg md:text-xl text-white">VacationMax</span>
+          <span className="font-display font-bold text-base md:text-xl text-white">VacationMax</span>
         </div>
 
         <div className="flex items-center gap-2 md:gap-6">
@@ -343,8 +393,8 @@ const App: React.FC = () => {
               </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-6 relative z-20 pt-8">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
+            <div className="max-w-7xl mx-auto px-6 relative z-20 pt-8 pb-8">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-8 md:mb-16">
 
                 {/* Left: Terminal Header */}
                 <div className="lg:col-span-6 flex flex-col justify-between">
@@ -408,8 +458,8 @@ const App: React.FC = () => {
               </div>
 
               {/* Footer Status Bar */}
-              <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-end gap-6 text-[10px] uppercase tracking-widest text-slate-600">
-                <div className="flex gap-8">
+              <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 text-[10px] uppercase tracking-widest text-slate-600">
+                <div className="flex flex-wrap gap-x-8 gap-y-4">
                   <div className="flex flex-col gap-1">
                     <span className="text-lime-accent/50">Core</span>
                     <span className="text-white">Online</span>

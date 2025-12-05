@@ -99,7 +99,10 @@ export const TrustSection: React.FC = () => {
         <div className="grid md:grid-cols-2 gap-6">
           <div className="glass-panel rounded-3xl p-8 border border-white/10 flex flex-col justify-between">
             <div>
-              <h3 className="text-xl font-bold text-white mb-2">Seamless Integration</h3>
+              <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                Seamless Integration
+                <span className="bg-lime-accent/10 border border-lime-accent/20 text-lime-accent text-[10px] px-2 py-0.5 rounded-full">142x ROI</span>
+              </h3>
               <p className="text-slate-400 text-sm">Connects with your existing tools in seconds.</p>
             </div>
             <div className="mt-8 flex gap-4">

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { UserPreferences } from '../types';
+import { supabaseHelpers } from '../services/supabase';
 
 interface PaymentModalProps {
     isOpen: boolean;
@@ -70,13 +71,41 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 throw new Error('Please add an email so we can send your receipt.');
             }
 
-            // Redirect to hosted Stripe Checkout
-            window.open('https://buy.stripe.com/14A7sN7KUbup5yQf4Y6Zy00', '_blank', 'noopener');
+            // Call your serverless function to create a Stripe Checkout Session
+            const response = await fetch('/api/create-checkout-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email,
+                    amount: price.amount,
+                    currency: price.currency,
+                    planStats,
+                    userPrefs: prefs,
+                }),
+            });
 
-            setPaymentStep('confirming');
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to create checkout session');
+            }
+
+            const { url, sessionId } = await response.json();
+
+            // Store session ID for verification
+            if (sessionId) {
+                sessionStorage.setItem('stripe_session_id', sessionId);
+            }
+
+            // Redirect to Stripe Checkout
+            if (url) {
+                window.location.href = url;
+            } else {
+                throw new Error('No checkout URL received');
+            }
         } catch (err: any) {
             setError(err.message || 'Unable to start checkout. Please try again.');
-        } finally {
             setLoading(false);
         }
     };
@@ -86,6 +115,15 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         // Simulate verification delay
         setTimeout(() => {
             setLoading(false);
+
+            // Track payment in Supabase
+            supabaseHelpers.logPayment({
+                stripePaymentId: `manual_${Date.now()}`, // In production, use actual Stripe payment ID
+                amount: price.amount,
+                currency: price.currency,
+                planStats: planStats || { totalDays: 0, efficiency: 0, ptoUsed: 0 },
+            }).catch(err => console.error('Failed to log payment:', err));
+
             onSuccess();
         }, 2000);
     };

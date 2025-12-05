@@ -472,111 +472,143 @@ const generateVacationPlan = async (prefs: UserPreferences): Promise<Optimizatio
         candidates = runScan(true);
     }
 
-    const sortedIndices = candidates.getSortedIndices();
+    // --- SELECTION LOGIC (GREEDY KNAPSACK) ---
+    const generatePlanFromOrder = (indices: Int32Array): { blocks: VacationBlock[], totalDays: number, totalValue: number } => {
+        const selected: VacationBlock[] = [];
+        const occupied = new Uint8Array(totalDays);
+        let remPto = prefs.ptoDays;
+        let remBuddy = prefs.buddyPtoDays || 0;
+        let tDays = 0;
+        let tVal = 0;
 
-    const selectedBlocks: VacationBlock[] = [];
-    const occupied = new Uint8Array(totalDays);
-    let remainingPto = prefs.ptoDays;
-    let remainingBuddyPto = prefs.buddyPtoDays || 0;
+        for (let i = 0; i < candidates.count; i++) {
+            if (selected.length >= 40) break;
 
-    const MAX_BLOCKS = 40;
-    let blockCount = 0;
+            const idx = indices[i];
+            const cStart = candidates.startIdx[idx];
+            const cLen = candidates.len[idx];
+            const cPto = candidates.ptoCost[idx];
+            const cBuddy = candidates.buddyCost[idx];
 
-    // Iterate through sorted indices
-    for (let i = 0; i < candidates.count; i++) {
-        if (blockCount >= MAX_BLOCKS) break;
+            if (cPto > 0 && remPto < cPto) continue;
+            if (prefs.hasBuddy && cBuddy > 0 && remBuddy < cBuddy) continue;
 
-        const idx = sortedIndices[i];
-        const cStartIdx = candidates.startIdx[idx];
-        const cLen = candidates.len[idx];
-        const cPtoCost = candidates.ptoCost[idx];
-        const cBuddyCost = candidates.buddyCost[idx];
-        const cEfficiency = candidates.efficiency[idx];
-
-        if (cPtoCost > 0 && remainingPto < cPtoCost) continue;
-        if (prefs.hasBuddy && cBuddyCost > 0 && remainingBuddyPto < cBuddyCost) continue;
-
-        let overlap = false;
-        const endIdx = cStartIdx + cLen;
-        for (let k = cStartIdx; k < endIdx; k++) {
-            if (occupied[k] === 1) { overlap = true; break; }
-        }
-        if (overlap) continue;
-
-        remainingPto -= cPtoCost;
-        if (prefs.hasBuddy) remainingBuddyPto -= cBuddyCost;
-        for (let k = cStartIdx; k < endIdx; k++) occupied[k] = 1;
-
-        const bStart = new Date(startTs + (cStartIdx * msPerDay));
-        const bEnd = new Date(startTs + ((endIdx - 1) * msPerDay));
-
-        const holidaysUsed: HolidayInfo[] = [];
-        for (let k = cStartIdx; k < endIdx; k++) {
-            const hid = holidayNameIds[k];
-            const bid = buddyHolidayNameIds[k];
-
-            if (hid > 0) {
-                const d = new Date(startTs + (k * msPerDay));
-                holidaysUsed.push({
-                    date: fastDateStr(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()),
-                    name: stringPool.get(hid)
-                });
-            } else if (bid > 0) {
-                const d = new Date(startTs + (k * msPerDay));
-                holidaysUsed.push({
-                    date: fastDateStr(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()),
-                    name: `${stringPool.get(bid)} (Buddy)`
-                });
+            let overlap = false;
+            const cEnd = cStart + cLen;
+            for (let k = cStart; k < cEnd; k++) {
+                if (occupied[k] === 1) { overlap = true; break; }
             }
+            if (overlap) continue;
+
+            remPto -= cPto;
+            if (prefs.hasBuddy) remBuddy -= cBuddy;
+            for (let k = cStart; k < cEnd; k++) occupied[k] = 1;
+            tDays += cLen;
+
+            // Hydrate Block Data
+            const bStart = new Date(startTs + (cStart * msPerDay));
+            const bEnd = new Date(startTs + ((cEnd - 1) * msPerDay));
+
+            const holidaysUsed: HolidayInfo[] = [];
+            for (let k = cStart; k < cEnd; k++) {
+                const hid = holidayNameIds[k];
+                const bid = buddyHolidayNameIds[k];
+                if (hid > 0) {
+                    const d = new Date(startTs + (k * msPerDay));
+                    holidaysUsed.push({ date: fastDateStr(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()), name: stringPool.get(hid) });
+                } else if (bid > 0) {
+                    const d = new Date(startTs + (k * msPerDay));
+                    holidaysUsed.push({ date: fastDateStr(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()), name: `${stringPool.get(bid)} (Buddy)` });
+                }
+            }
+
+            let desc = "Vacation";
+            const mainHoliday = holidaysUsed.length > 0 ? holidaysUsed[0].name.split(' (')[0].split(':')[0] : null;
+            const cEff = candidates.efficiency[idx];
+
+            if (mainHoliday) {
+                if (cEff >= 3.5 && cLen >= 9) desc = `${mainHoliday} Mega Bridge`;
+                else if (cEff >= 2.5) desc = `${mainHoliday} Super Bridge`;
+                else desc = `${mainHoliday} Break`;
+            } else {
+                if (cLen <= 4) desc = "Long Weekend";
+                else if (cLen <= 6) desc = "Mini-Getaway";
+                else if (cLen <= 9) desc = "Week-Long Recharge";
+                else desc = "Extended Vacation";
+            }
+
+            const val = (cLen - cPto) * DAILY_VALUE_USD;
+            tVal += val;
+
+            selected.push({
+                id: Math.random().toString(36).substr(2, 9),
+                startDate: fastDateStr(bStart.getUTCFullYear(), bStart.getUTCMonth(), bStart.getUTCDate()),
+                endDate: fastDateStr(bEnd.getUTCFullYear(), bEnd.getUTCMonth(), bEnd.getUTCDate()),
+                totalDaysOff: cLen,
+                ptoDaysUsed: cPto,
+                buddyPtoDaysUsed: prefs.hasBuddy ? cBuddy : undefined,
+                publicHolidaysUsed: holidaysUsed,
+                description: desc,
+                efficiencyScore: cEff,
+                monetaryValue: val
+            });
         }
+        return { blocks: selected, totalDays: tDays, totalValue: tVal };
+    };
 
-        let desc = "Vacation";
-        const mainHoliday = holidaysUsed.length > 0 ? holidaysUsed[0].name.split(' (')[0].split(':')[0] : null;
+    // --- STRATEGY TOURNAMENT ---
+    // 1. Balanced (Default Score)
+    const indicesBalanced = candidates.getSortedIndices(); // Uses internal score
 
-        if (mainHoliday) {
-            if (cEfficiency >= 3.5 && cLen >= 9) desc = `${mainHoliday} Mega Bridge`;
-            else if (cEfficiency >= 2.5) desc = `${mainHoliday} Super Bridge`;
-            else desc = `${mainHoliday} Break`;
-        } else {
-            if (cLen <= 4) desc = "Long Weekend";
-            else if (cLen <= 6) desc = "Mini-Getaway";
-            else if (cLen <= 9) desc = "Week-Long Recharge";
-            else desc = "Extended Vacation";
-        }
+    // 2. Long Haul (Prioritize Duration, then Score)
+    const indicesDuration = new Int32Array(candidates.count);
+    for (let i = 0; i < candidates.count; i++) indicesDuration[i] = i;
+    indicesDuration.sort((a, b) => {
+        // Bias heavily towards length, but use score as tiebreaker
+        const lenDiff = candidates.len[b] - candidates.len[a];
+        if (lenDiff !== 0) return lenDiff;
+        return candidates.score[b] - candidates.score[a];
+    });
 
-        selectedBlocks.push({
-            id: Math.random().toString(36).substr(2, 9),
-            startDate: fastDateStr(bStart.getUTCFullYear(), bStart.getUTCMonth(), bStart.getUTCDate()),
-            endDate: fastDateStr(bEnd.getUTCFullYear(), bEnd.getUTCMonth(), bEnd.getUTCDate()),
-            totalDaysOff: cLen,
-            ptoDaysUsed: cPtoCost,
-            buddyPtoDaysUsed: prefs.hasBuddy ? cBuddyCost : undefined,
-            publicHolidaysUsed: holidaysUsed,
-            description: desc,
-            efficiencyScore: cEfficiency,
-            monetaryValue: (cLen - cPtoCost) * DAILY_VALUE_USD
-        });
+    // 3. Efficiency Max (Prioritize ROI)
+    const indicesEfficiency = new Int32Array(candidates.count);
+    for (let i = 0; i < candidates.count; i++) indicesEfficiency[i] = i;
+    indicesEfficiency.sort((a, b) => candidates.efficiency[b] - candidates.efficiency[a]);
 
-        blockCount++;
+    // Run simulations
+    const planBalanced = generatePlanFromOrder(indicesBalanced);
+    const planDuration = generatePlanFromOrder(indicesDuration);
+    const planEfficiency = generatePlanFromOrder(indicesEfficiency);
+
+    // Pick Winner (Prioritize Total Days Off, then Value)
+    let winner = planBalanced;
+    let strategyName = "Balanced";
+
+    // Duration strategy wins if it finds more days or equal days with less fragmentation
+    if (planDuration.totalDays > winner.totalDays) {
+        winner = planDuration;
+        strategyName = "Duration-Max";
     }
 
+    // Efficiency strategy wins if it finds significantly more days (rare) or same days with less PTO (higher value)
+    if (planEfficiency.totalDays > winner.totalDays) {
+        winner = planEfficiency;
+        strategyName = "Efficiency-Max";
+    }
+
+    const selectedBlocks = winner.blocks;
     selectedBlocks.sort((a, b) => a.startDate.localeCompare(b.startDate));
 
-    const totalDaysOff = selectedBlocks.reduce((sum, b) => sum + b.totalDaysOff, 0);
-    const usedPto = prefs.ptoDays - remainingPto;
-    const usedBuddyPto = prefs.hasBuddy ? (prefs.buddyPtoDays! - remainingBuddyPto) : undefined;
+    const totalDaysOff = winner.totalDays;
+    const usedPto = selectedBlocks.reduce((sum, b) => sum + b.ptoDaysUsed, 0);
+    const usedBuddyPto = prefs.hasBuddy ? selectedBlocks.reduce((sum, b) => sum + (b.buddyPtoDaysUsed || 0), 0) : undefined;
     const freeDays = totalDaysOff - usedPto;
 
     let planName = `Optimal ${prefs.strategy} Plan`;
-    if (selectedBlocks.length > 8) {
-        planName = `The "Max Freedom" ${prefs.strategy} Plan`;
-    } else if (selectedBlocks.length > 0 && freeDays > usedPto * 2) {
-        planName = "High-Efficiency Vacation Strategy";
-    } else if (prefs.hasBuddy) {
-        planName = "The Ultimate Couples' Calendar";
-    } else if (prefs.strategy === OptimizationStrategy.LONG_WEEKENDS) {
-        planName = `${selectedBlocks.length}-Trip Recharge Plan`;
-    }
+    if (strategyName === "Duration-Max") planName = `The "Grand Tour" ${prefs.strategy} Plan`;
+    if (selectedBlocks.length > 8 && strategyName === "Balanced") planName = `The "Max Freedom" ${prefs.strategy} Plan`;
+    else if (freeDays > usedPto * 2.5) planName = "High-Efficiency Hacker Strategy";
+    else if (prefs.hasBuddy) planName = "The Ultimate Couples' Calendar";
 
     const result = {
         planName,
@@ -588,7 +620,7 @@ const generateVacationPlan = async (prefs: UserPreferences): Promise<Optimizatio
         totalFreeDays: freeDays,
         totalValueRecovered: freeDays * DAILY_VALUE_USD,
         vacationBlocks: selectedBlocks,
-        summary: `Found ${selectedBlocks.length} optimized blocks.`
+        summary: `Found ${selectedBlocks.length} optimized blocks using ${strategyName} logic.`
     };
 
     planCache.set(cacheKey, result);

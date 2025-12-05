@@ -4,6 +4,24 @@
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+-- Users Table (for NextAuth)
+CREATE TABLE IF NOT EXISTS users (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  email TEXT UNIQUE NOT NULL,
+  name TEXT,
+  password_hash TEXT,
+  provider TEXT DEFAULT 'credentials',
+  provider_id TEXT,
+  email_verified BOOLEAN DEFAULT false,
+  image TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Indexes for users
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_provider ON users(provider, provider_id);
+
 -- Plan Generations Table
 CREATE TABLE IF NOT EXISTS plan_generations (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -13,13 +31,13 @@ CREATE TABLE IF NOT EXISTS plan_generations (
   monetary_value DECIMAL(10, 2) NOT NULL,
   region TEXT NOT NULL,
   strategy TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  
-  -- Indexes for performance
-  INDEX idx_plan_generations_created_at ON plan_generations(created_at DESC),
-  INDEX idx_plan_generations_user_id ON plan_generations(user_id),
-  INDEX idx_plan_generations_region ON plan_generations(region)
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Indexes for plan_generations
+CREATE INDEX IF NOT EXISTS idx_plan_generations_created_at ON plan_generations(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_plan_generations_user_id ON plan_generations(user_id);
+CREATE INDEX IF NOT EXISTS idx_plan_generations_region ON plan_generations(region);
 
 -- Payments Table
 CREATE TABLE IF NOT EXISTS payments (
@@ -33,15 +51,15 @@ CREATE TABLE IF NOT EXISTS payments (
   user_metadata JSONB,
   status TEXT DEFAULT 'completed' CHECK (status IN ('completed', 'failed', 'refunded', 'pending')),
   error_message TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  
-  -- Indexes
-  INDEX idx_payments_created_at ON payments(created_at DESC),
-  INDEX idx_payments_user_id ON payments(user_id),
-  INDEX idx_payments_stripe_id ON payments(stripe_payment_id),
-  INDEX idx_payments_status ON payments(status),
-  INDEX idx_payments_email ON payments(stripe_customer_email)
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Indexes for payments
+CREATE INDEX IF NOT EXISTS idx_payments_created_at ON payments(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_payments_user_id ON payments(user_id);
+CREATE INDEX IF NOT EXISTS idx_payments_stripe_id ON payments(stripe_payment_id);
+CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);
+CREATE INDEX IF NOT EXISTS idx_payments_email ON payments(stripe_customer_email);
 
 -- Sessions Table (for analytics)
 CREATE TABLE IF NOT EXISTS sessions (
@@ -49,12 +67,12 @@ CREATE TABLE IF NOT EXISTS sessions (
   user_id TEXT,
   user_agent TEXT,
   referrer TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  
-  -- Indexes
-  INDEX idx_sessions_created_at ON sessions(created_at DESC),
-  INDEX idx_sessions_user_id ON sessions(user_id)
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Indexes for sessions
+CREATE INDEX IF NOT EXISTS idx_sessions_created_at ON sessions(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE plan_generations ENABLE ROW LEVEL SECURITY;
@@ -62,12 +80,15 @@ ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sessions ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies (Allow all operations for now - adjust based on your auth strategy)
+DROP POLICY IF EXISTS "Allow all operations on plan_generations" ON plan_generations;
 CREATE POLICY "Allow all operations on plan_generations" ON plan_generations
   FOR ALL USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Allow all operations on payments" ON payments;
 CREATE POLICY "Allow all operations on payments" ON payments
   FOR ALL USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Allow all operations on sessions" ON sessions;
 CREATE POLICY "Allow all operations on sessions" ON sessions
   FOR ALL USING (true) WITH CHECK (true);
 
@@ -94,6 +115,7 @@ SELECT
   AVG(amount) as avg_payment,
   currency
 FROM payments
+WHERE status = 'completed'
 GROUP BY DATE_TRUNC('day', created_at), currency
 ORDER BY date DESC;
 

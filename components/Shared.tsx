@@ -3,32 +3,31 @@ import React, { useState, useEffect, useRef } from 'react';
 export const StepHeader = React.memo(({ stepNumber, totalSteps, title, subtitle }: { stepNumber: number, totalSteps: number, title: React.ReactNode, subtitle: string }) => (
     <div className="space-y-3 md:space-y-4 mb-6 md:mb-10 animate-fade-up px-1">
         <div className="flex items-center gap-3">
-            <span className="w-8 h-[1px] bg-lime-accent"></span>
-            <span className="text-lime-accent font-mono text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase">Step {stepNumber} of {totalSteps}</span>
+            <span className="w-8 h-[1px] bg-rose-accent"></span>
+            <span className="text-rose-accent font-mono text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase">Step {stepNumber} of {totalSteps}</span>
         </div>
         <div className="flex items-center gap-3">
-            <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
+            <div className="flex-1 h-2 rounded-full bg-rose-100 overflow-hidden">
                 <div
-                    className="h-full bg-gradient-to-r from-lime-accent to-emerald-400 transition-all duration-500"
+                    className="h-full bg-gradient-to-r from-rose-accent to-peach-accent transition-all duration-500"
                     style={{ width: `${Math.min((stepNumber / totalSteps) * 100, 100)}%` }}
                 />
             </div>
-            <span className="text-xs font-bold text-white/70 min-w-[46px] text-right">{Math.round((stepNumber / totalSteps) * 100)}%</span>
+            <span className="text-xs font-bold text-rose-300 min-w-[46px] text-right">{Math.round((stepNumber / totalSteps) * 100)}%</span>
         </div>
         <div className="space-y-1">
-            <h2 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold text-white tracking-tight leading-[1.1]">
+            <h2 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold text-gray-800 tracking-tight leading-[1.1]">
                 {title}
             </h2>
-            <p className="text-sm md:text-lg text-slate-400 max-w-xl leading-relaxed">{subtitle}</p>
+            <p className="text-sm md:text-lg text-gray-500 max-w-xl leading-relaxed">{subtitle}</p>
         </div>
     </div>
 ));
 
 export const NavButtons = React.memo(({ onNext, onBack, nextDisabled, nextLabel = "Continue", isLoading = false }: { onNext: () => void, onBack?: () => void, nextDisabled?: boolean, nextLabel?: string | null, isLoading?: boolean }) => (
-    // FIX APPLIED HERE: Changed z-50 to z-[100] to fix mobile click issue
-    <div className="fixed bottom-0 left-0 right-0 z-[100] p-4 pb-8 bg-[#0F1014]/85 backdrop-blur-lg border-t border-white/10 md:sticky md:bottom-6 md:left-12 md:right-12 md:p-0 md:bg-transparent md:border-none flex flex-row justify-between items-center gap-4 animate-fade-up transition-all duration-300 safe-pb">
+    <div className="fixed bottom-0 left-0 right-0 z-[100] p-4 pb-8 bg-white/85 backdrop-blur-lg border-t border-rose-100 md:sticky md:bottom-6 md:left-12 md:right-12 md:p-0 md:bg-transparent md:border-none flex flex-row justify-between items-center gap-4 animate-fade-up transition-all duration-300 safe-pb">
         {onBack ? (
-            <button onClick={onBack} disabled={isLoading} className="text-slate-400 hover:text-white px-4 py-3 md:py-2 font-bold transition-colors flex items-center gap-2 text-xs uppercase tracking-widest group rounded-lg bg-white/5 hover:bg-white/10 md:bg-transparent disabled:opacity-50 active:scale-95 min-h-[52px]">
+            <button onClick={onBack} disabled={isLoading} className="text-gray-500 hover:text-rose-accent px-4 py-3 md:py-2 font-bold transition-colors flex items-center gap-2 text-xs uppercase tracking-widest group rounded-lg bg-white hover:bg-rose-50 md:bg-transparent disabled:opacity-50 active:scale-95 min-h-[52px] shadow-sm md:shadow-none border border-rose-100 md:border-none">
                 <span className="group-hover:-translate-x-1 transition-transform">←</span>
                 <span className="inline">Back</span>
             </button>
@@ -37,7 +36,7 @@ export const NavButtons = React.memo(({ onNext, onBack, nextDisabled, nextLabel 
         <button
             onClick={onNext}
             disabled={nextDisabled || isLoading}
-            className="flex-1 md:flex-none md:w-auto relative group overflow-hidden px-6 md:px-10 py-4 rounded-xl bg-lime-accent text-dark-900 font-bold font-display text-lg tracking-wide hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(132,204,22,0.2)] hover:shadow-[0_0_30px_rgba(132,204,22,0.4)] active:scale-95 border border-lime-accent/50 min-h-[56px]"
+            className="flex-1 md:flex-none md:w-auto relative group overflow-hidden px-6 md:px-10 py-4 rounded-xl bg-gradient-to-r from-rose-accent to-peach-accent text-white font-bold font-display text-lg tracking-wide hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed shadow-[0_4px_20px_rgba(244,63,94,0.3)] hover:shadow-[0_6px_30px_rgba(244,63,94,0.4)] active:scale-95 border border-white/20 min-h-[56px]"
         >
             {isLoading && (
                 <div
@@ -58,11 +57,11 @@ export const NavButtons = React.memo(({ onNext, onBack, nextDisabled, nextLabel 
             <span className="relative z-10 flex items-center justify-center gap-3">
                 {isLoading ? (
                     <>
-                        <svg className="animate-spin h-5 w-5 text-dark-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        <span>Optimizing Plan...</span>
+                        <span>Optimizing...</span>
                     </>
                 ) : (
                     <>
@@ -81,7 +80,7 @@ interface SelectionCardProps {
     title: string;
     desc: string;
     tag?: string;
-    accentColor?: 'lime' | 'violet';
+    accentColor?: 'lime' | 'violet'; // Keeping prop names for compatibility but mapping to rose/lavender
     tooltipText?: string;
     children?: React.ReactNode;
 }
@@ -96,11 +95,21 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
     tooltipText,
     children
 }) => {
-    const isLime = accentColor === 'lime';
-    const activeBorder = isLime ? 'border-lime-accent' : 'border-brand-violet';
-    const activeBg = 'glass-panel'; // Use global glass class
-    const activeText = isLime ? 'text-lime-accent' : 'text-brand-violet';
-    const shadow = isLime ? 'shadow-[0_0_30px_rgba(190,242,100,0.15)]' : 'shadow-[0_0_30px_rgba(124,58,237,0.15)]';
+    // Mapping old props to new colors
+    // lime -> rose
+    // violet -> lavender
+    const isRose = accentColor === 'lime';
+    const isLavender = accentColor === 'violet';
+
+    const activeBorder = isRose ? 'border-rose-accent' : 'border-lavender-accent';
+    const activeBg = 'bg-white shadow-xl';
+    const activeText = isRose ? 'text-rose-accent' : 'text-lavender-accent';
+    const tagBg = isRose ? 'bg-rose-100 text-rose-600' : 'bg-lavender-100 text-lavender-600';
+
+    // Softer shadows
+    const shadow = selected
+        ? (isRose ? 'shadow-[0_10px_40px_-10px_rgba(244,63,94,0.3)]' : 'shadow-[0_10px_40px_-10px_rgba(167,139,250,0.3)]')
+        : 'hover:shadow-lg';
 
     const [showTooltip, setShowTooltip] = useState(false);
 
@@ -108,15 +117,15 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
         <button
             onClick={onClick}
             className={`group relative p-6 rounded-3xl border text-left transition-all duration-300 hover:scale-[1.01] active:scale-95 w-full min-h-[88px] ${selected
-                    ? `${activeBg} ${activeBorder} ${shadow}`
-                    : 'bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-white/20'
+                ? `${activeBg} ${activeBorder} ${shadow} ring-1 ring-inset ${isRose ? 'ring-rose-100' : 'ring-lavender-100'}`
+                : 'bg-white/40 border-white/60 text-gray-600 hover:bg-white/80 hover:border-rose-200'
                 }`}
         >
             {children}
             <div className="relative z-10">
                 <div className="flex justify-between items-start mb-2">
                     {tag && (
-                        <span className={`text-[10px] md:text-xs font-bold px-2 py-1 rounded uppercase tracking-wider ${selected ? `bg-${isLime ? 'lime-accent' : 'brand-violet'} text-dark-900` : 'bg-white/10 text-slate-400'}`}>
+                        <span className={`text-[10px] md:text-xs font-bold px-2 py-1 rounded uppercase tracking-wider ${selected ? tagBg : 'bg-gray-100 text-gray-500'}`}>
                             {tag}
                         </span>
                     )}
@@ -129,24 +138,24 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
                                 onMouseEnter={() => setShowTooltip(true)}
                                 onMouseLeave={() => setShowTooltip(false)}
                             >
-                                <div className={`w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-bold cursor-help transition-colors ${selected ? `${activeText} ${isLime ? 'border-lime-accent/50' : 'border-brand-violet/50'}` : 'text-slate-500 border-slate-600 hover:text-white hover:border-white'}`}>
+                                <div className={`w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-bold cursor-help transition-colors ${selected ? `${activeText} border-current` : 'text-gray-400 border-gray-300 hover:text-rose-400 hover:border-rose-400'}`}>
                                     ?
                                 </div>
                                 {showTooltip && (
-                                    <div className="absolute bottom-full right-0 mb-3 w-56 bg-dark-900/95 backdrop-blur-md border border-white/20 p-4 rounded-xl shadow-2xl z-50 text-left animate-fade-up pointer-events-none">
-                                        <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                                    <div className="absolute bottom-full right-0 mb-3 w-56 bg-white border border-rose-100 p-4 rounded-xl shadow-xl z-50 text-left animate-fade-up pointer-events-none">
+                                        <p className="text-xs text-gray-600 leading-relaxed font-medium">
                                             {tooltipText}
                                         </p>
-                                        <div className="absolute -bottom-1 right-2 w-2 h-2 bg-dark-900 border-r border-b border-white/20 transform rotate-45"></div>
+                                        <div className="absolute -bottom-1 right-2 w-2 h-2 bg-white border-r border-b border-rose-100 transform rotate-45"></div>
                                     </div>
                                 )}
                             </div>
                         )}
-                        {selected && <span className={`${activeText} text-xl`}>●</span>}
+                        {selected && <span className={`${activeText} text-xl animate-pulse`}>●</span>}
                     </div>
                 </div>
-                <h3 className="text-xl md:text-2xl font-display font-bold text-white mb-1">{title}</h3>
-                <p className="text-xs md:text-sm text-slate-400 leading-relaxed">{desc}</p>
+                <h3 className={`text-xl md:text-2xl font-display font-bold mb-1 ${selected ? 'text-gray-900' : 'text-gray-700'}`}>{title}</h3>
+                <p className={`text-xs md:text-sm leading-relaxed ${selected ? 'text-gray-600' : 'text-gray-500'}`}>{desc}</p>
             </div>
         </button>
     );
@@ -195,7 +204,7 @@ export const DebouncedInput = ({
             value={localValue}
             onChange={(e) => setLocalValue(e.target.value)}
             placeholder={placeholder}
-            className={`w-full bg-white/5 border border-white/10 rounded-2xl py-3 px-4 text-base font-bold text-white outline-none placeholder-slate-600 transition-all shadow-inner focus:bg-black/40 ${isLime ? 'focus:border-lime-accent' : 'focus:border-brand-violet'} ${className}`}
+            className={`w-full bg-white border border-rose-100 rounded-2xl py-3 px-4 text-base font-bold text-gray-800 outline-none placeholder-gray-400 transition-all shadow-sm focus:shadow-md focus:bg-white ${isLime ? 'focus:border-rose-accent' : 'focus:border-lavender-accent'} ${className}`}
         />
     );
 }

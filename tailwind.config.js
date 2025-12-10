@@ -9,27 +9,40 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Inter', 'sans-serif'],
-                display: ['Plus Jakarta Sans', 'sans-serif'],
+                sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                display: ['"Playfair Display"', 'serif'],
             },
             colors: {
-                lime: { accent: '#bef264' },
-                brand: { violet: '#7c3aed' },
-                dark: { 900: '#020617', 800: '#0f172a' }
+                'rose-accent': '#E11D48',
+                'rose-50': '#FFF1F2',
+                'rose-100': '#FFE4E6',
+                'rose-200': '#FECDD3',
+                'lavender-accent': '#8B5CF6',
+                'lavender-50': '#F5F3FF',
+                'lavender-100': '#EDE9FE',
+                'peach-accent': '#F97316',
+                'light-100': '#FDFCF8', // Warm Cream
+                'light-200': '#F7F5F0',
+                'light-300': '#EBE5DA',
+                'dark-text': '#4A3B3B', // Soft Brown-Black
             },
             animation: {
-                'shimmer': 'shimmer 2s linear infinite',
+                'shimmer': 'shimmer 2.5s linear infinite',
                 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                 'float': 'float 6s ease-in-out infinite',
+                'fade-up': 'fadeUp 0.8s ease-out forwards',
             },
             keyframes: {
                 shimmer: {
-                    '0%': { backgroundPosition: '200% 0' },
-                    '100%': { backgroundPosition: '-200% 0' }
+                    '100%': { transform: 'translateX(100%)' },
                 },
                 float: {
                     '0%, 100%': { transform: 'translateY(0)' },
-                    '50%': { transform: 'translateY(-10px)' }
+                    '50%': { transform: 'translateY(-10px)' },
+                },
+                fadeUp: {
+                    '0%': { opacity: '0', transform: 'translateY(20px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
                 }
             }
         }

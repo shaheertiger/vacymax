@@ -270,6 +270,51 @@ export const HOLIDAY_DB: Record<string, CountryData> = {
       "wa": "Western Australia", "western australia": "Western Australia", "perth": "Western Australia",
       "sa": "South Australia", "south australia": "South Australia", "adelaide": "South Australia"
     }
+  },
+
+  "Europe": {
+    federal: {
+      "2025": [
+        "2025-01-01:New Year's Day",
+        "2025-04-18:Good Friday",
+        "2025-04-21:Easter Monday",
+        "2025-05-01:Labour Day",
+        "2025-05-29:Ascension Day",
+        "2025-06-09:Whit Monday",
+        "2025-08-15:Assumption Day",
+        "2025-11-01:All Saints' Day",
+        "2025-12-25:Christmas Day",
+        "2025-12-26:Boxing Day / St. Stephen's"
+      ],
+      "2026": [
+        "2026-01-01:New Year's Day",
+        "2026-04-03:Good Friday",
+        "2026-04-06:Easter Monday",
+        "2026-05-01:Labour Day",
+        "2026-05-14:Ascension Day",
+        "2026-05-25:Whit Monday",
+        "2026-08-15:Assumption Day",
+        "2026-11-01:All Saints' Day",
+        "2026-12-25:Christmas Day",
+        "2026-12-26:Boxing Day / St. Stephen's"
+      ],
+      "2027": [
+        "2027-01-01:New Year's Day",
+        "2027-03-26:Good Friday",
+        "2027-03-29:Easter Monday",
+        "2027-05-01:Labour Day",
+        "2027-05-06:Ascension Day",
+        "2027-05-17:Whit Monday",
+        "2027-08-15:Assumption Day",
+        "2027-11-01:All Saints' Day",
+        "2027-12-25:Christmas Day",
+        "2027-12-26:Boxing Day / St. Stephen's"
+      ]
+    },
+    regions: {},
+    regionAliases: {
+      "eu": "Europe", "europe": "Europe", "european union": "Europe"
+    }
   }
 };
 
@@ -279,11 +324,11 @@ export const HOLIDAY_DB: Record<string, CountryData> = {
  * e.g., const data = await import(`./holidays/${countryCode}.json`);
  */
 export const fetchCountryData = async (country: string): Promise<CountryData | null> => {
-    // Simulate network latency or file read time
-    // await new Promise(resolve => setTimeout(resolve, 50));
-    
-    if (HOLIDAY_DB[country]) {
-        return HOLIDAY_DB[country];
-    }
-    return null;
+  // Simulate network latency or file read time
+  // await new Promise(resolve => setTimeout(resolve, 50));
+
+  if (HOLIDAY_DB[country]) {
+    return HOLIDAY_DB[country];
+  }
+  return null;
 }

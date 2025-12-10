@@ -73,7 +73,7 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
                         <div className="flex -space-x-4">
                             {[1, 2, 3, 4].map(i => (
                                 <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-rose-100 flex items-center justify-center text-xs shadow-sm overflow-hidden ring-2 ring-rose-50">
-                                    <img src={`https://api.dicebear.com/9.x/micah/svg?seed=${i + 40}&backgroundColor=ffe4e6`} className="w-full h-full object-cover" alt="avatar" />
+                                    <img src={`https://api.dicebear.com/9.x/micah/svg?seed=${i + 40}&backgroundColor=ffe4e6`} className="w-full h-full object-cover" alt={`VacyMax user ${i} avatar`} loading="lazy" />
                                 </div>
                             ))}
                         </div>

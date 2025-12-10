@@ -1,0 +1,26 @@
+{
+  "name": "VacyMax - Vacation Day Optimizer",
+  "short_name": "VacyMax",
+  "description": "Maximize your vacation days with smart PTO optimization. Get up to 3x more days off by planning around public holidays.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#fb7185",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["travel", "productivity", "lifestyle"],
+  "screenshots": [],
+  "prefer_related_applications": false
+}

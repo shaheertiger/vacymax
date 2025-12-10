@@ -13,7 +13,10 @@
 import fs from 'fs';
 import path from 'path';
 
-const APP_URL = 'https://vacymax.com'; // Replace with your actual domain
+// Use environment variable or fallback to production domain
+const APP_URL = process.env.VITE_APP_URL || process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : 'https://vacymax.com';
 const OUTPUT_PATH = path.join(process.cwd(), 'dist', 'sitemap.xml');
 
 // Supported countries for vacation planning

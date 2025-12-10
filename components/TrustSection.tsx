@@ -147,7 +147,7 @@ export const TrustSection: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-rose-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="relative z-10">
                   <div className="flex items-center gap-4 mb-6">
-                    <img src={post.avatar} alt={post.handle} className="w-12 h-12 rounded-full border-2 border-rose-100" />
+                    <img src={post.avatar} alt={`${post.role} profile picture`} className="w-12 h-12 rounded-full border-2 border-rose-100" loading="lazy" />
                     <div>
                       <div className="flex items-center gap-2 text-gray-800 font-bold">
                         <span>{post.handle}</span>

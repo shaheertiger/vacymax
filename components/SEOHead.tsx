@@ -133,28 +133,143 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
 
   // --- STRUCTURED DATA (JSON-LD) for Rich Search Results ---
   const getStructuredData = () => {
-    const baseData = {
+    // Organization schema (always present)
+    const organizationData = {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: APP_NAME,
+      url: APP_URL,
+      logo: `${APP_URL}/favicon.svg`,
+      description: 'Smart vacation planning tool that helps you maximize your time off by optimizing PTO usage around public holidays.',
+      sameAs: [
+        'https://twitter.com/vacymax',
+        'https://www.facebook.com/vacymax',
+        'https://www.instagram.com/vacymax'
+      ],
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'customer support',
+        email: 'support@vacymax.com'
+      }
+    };
+
+    // WebApplication schema
+    const webAppData = {
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       name: APP_NAME,
       url: APP_URL,
       description: getDescription(),
       applicationCategory: 'TravelApplication',
+      operatingSystem: 'Any',
       offers: {
         '@type': 'Offer',
-        price: '4.99',
+        price: '0',
         priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock'
       },
       aggregateRating: {
         '@type': 'AggregateRating',
         ratingValue: '4.8',
         ratingCount: '1247',
+        bestRating: '5',
+        worstRating: '1'
       },
     };
 
+    // Breadcrumb schema
+    const breadcrumbData = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [] as any[]
+    };
+
+    // Build breadcrumb list based on view
+    breadcrumbData.itemListElement.push({
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: APP_URL
+    });
+
+    if (view === 'wizard' && country) {
+      breadcrumbData.itemListElement.push({
+        '@type': 'ListItem',
+        position: 2,
+        name: `Plan Vacation in ${country}`,
+        item: `${APP_URL}/vacation-planner/${country.toLowerCase().replace(/\s/g, '-')}`
+      });
+    }
+
     if (view === 'results' && result && country) {
-      return {
-        ...baseData,
+      breadcrumbData.itemListElement.push(
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: `${country} Vacation Planner`,
+          item: `${APP_URL}/vacation-planner/${country.toLowerCase().replace(/\s/g, '-')}`
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: `Results for ${result.targetYear}`,
+          item: getCanonicalUrl()
+        }
+      );
+    }
+
+    // FAQ schema
+    const faqData = {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'How does VacyMax help me maximize my vacation days?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'VacyMax analyzes public holidays in your country and finds the optimal dates to use your PTO days. By strategically placing PTO days adjacent to weekends and holidays, you can get up to 3x more consecutive days off than using PTO randomly.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'Is my calendar data stored on VacyMax servers?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'No. VacyMax uses a local-first architecture. All calculations happen in your browser, and your data never leaves your device. We do not store any of your calendar information on our servers.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'How many countries does VacyMax support?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'VacyMax currently supports 50+ countries worldwide, including the United States, Canada, United Kingdom, Australia, and most European and Asian countries. Each country\'s public holidays are regularly updated.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'Can I export my vacation plan to my calendar?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes! Once your vacation plan is generated, you can export it to Google Calendar, Apple Calendar (iCal), or Outlook with a single click. This makes it easy to block off your vacation dates immediately.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'Is VacyMax free to use?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes, VacyMax is completely free to use. You can generate unlimited vacation plans and export them to your calendar at no cost.'
+          }
+        }
+      ]
+    };
+
+    // Article schema for results page
+    if (view === 'results' && result && country) {
+      const articleData = {
+        '@context': 'https://schema.org',
         '@type': 'Article',
         headline: getTitle(),
         description: getDescription(),
@@ -167,15 +282,19 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
           name: APP_NAME,
           logo: {
             '@type': 'ImageObject',
-            url: `${APP_URL}/logo.png`,
+            url: `${APP_URL}/favicon.svg`,
           },
         },
         datePublished: new Date().toISOString(),
+        dateModified: new Date().toISOString(),
         mainEntityOfPage: getCanonicalUrl(),
+        image: ogImage
       };
+
+      return [organizationData, webAppData, breadcrumbData, articleData, faqData];
     }
 
-    return baseData;
+    return [organizationData, webAppData, breadcrumbData, faqData];
   };
 
   const title = getTitle();
@@ -228,16 +347,21 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       <meta name="apple-mobile-web-app-title" content={APP_NAME} />
 
       {/* --- THEME COLOR --- */}
-      <meta name="theme-color" content="#84cc16" /> {/* Lime accent color */}
+      <meta name="theme-color" content="#fb7185" /> {/* Rose accent color */}
 
       {/* --- STRUCTURED DATA (JSON-LD) --- */}
-      <script type="application/ld+json">
-        {JSON.stringify(getStructuredData())}
-      </script>
+      {getStructuredData().map((data, index) => (
+        <script key={index} type="application/ld+json">
+          {JSON.stringify(data)}
+        </script>
+      ))}
 
-      {/* --- ALTERNATE LANGUAGES (if you support i18n) --- */}
-      {/* <link rel="alternate" hreflang="en" href={`${APP_URL}/en`} /> */}
-      {/* <link rel="alternate" hreflang="es" href={`${APP_URL}/es`} /> */}
+      {/* --- ALTERNATE LANGUAGES & HREFLANG --- */}
+      <link rel="alternate" hreflang="en" href={canonical} />
+      <link rel="alternate" hreflang="x-default" href={APP_URL} />
+      {/* Add more language variants when internationalization is implemented */}
+      {/* <link rel="alternate" hreflang="es" href={`${canonical}?lang=es`} /> */}
+      {/* <link rel="alternate" hreflang="fr" href={`${canonical}?lang=fr`} /> */}
     </Helmet>
   );
 };

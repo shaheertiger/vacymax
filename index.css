@@ -84,19 +84,29 @@ input[type=range] {
 
 input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  height: 24px;
-  width: 24px;
+  height: 32px;
+  width: 32px;
   border-radius: 50%;
   background: #E11D48;
   cursor: pointer;
-  margin-top: -10px;
+  margin-top: -14px;
   box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
   transition: transform 0.2s;
-  border: 2px solid white;
+  border: 3px solid white;
 }
 
-input[type=range]::-webkit-slider-thumb:hover {
-  transform: scale(1.1);
+@media (min-width: 768px) {
+  input[type=range]::-webkit-slider-thumb {
+    height: 24px;
+    width: 24px;
+    margin-top: -10px;
+    border: 2px solid white;
+  }
+}
+
+input[type=range]::-webkit-slider-thumb:hover,
+input[type=range]::-webkit-slider-thumb:active {
+  transform: scale(1.15);
 }
 
 input[type=range]::-webkit-slider-runnable-track {
@@ -112,7 +122,23 @@ input[type=range]::-webkit-slider-runnable-track {
 }
 
 .safe-pb {
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: max(env(safe-area-inset-bottom), 24px);
+}
+
+/* Mobile Touch Feedback */
+@media (hover: none) {
+
+  button:active,
+  [role="button"]:active {
+    transform: scale(0.97);
+    opacity: 0.9;
+  }
+}
+
+/* Mobile Touch Target Minimum */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
 }
 
 /* Remove scrollbar but allow scroll */

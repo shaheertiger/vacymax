@@ -25,9 +25,9 @@ export const StepHeader = React.memo(({ stepNumber, totalSteps, title, subtitle 
 ));
 
 export const NavButtons = React.memo(({ onNext, onBack, nextDisabled, nextLabel = "Continue", isLoading = false }: { onNext: () => void, onBack?: () => void, nextDisabled?: boolean, nextLabel?: string | null, isLoading?: boolean }) => (
-    <div className="fixed bottom-0 left-0 right-0 z-[100] p-4 pb-8 bg-white/85 backdrop-blur-lg border-t border-rose-100 md:sticky md:bottom-6 md:left-12 md:right-12 md:p-0 md:bg-transparent md:border-none flex flex-row justify-between items-center gap-4 animate-fade-up transition-all duration-300 safe-pb">
+    <div className="fixed bottom-0 left-0 right-0 z-[100] p-4 pb-6 bg-white/95 backdrop-blur-xl border-t-2 border-rose-100 md:sticky md:bottom-6 md:left-12 md:right-12 md:p-0 md:bg-transparent md:border-none flex flex-row justify-between items-center gap-3 md:gap-4 animate-fade-up transition-all duration-300 safe-pb shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:shadow-none">
         {onBack ? (
-            <button onClick={onBack} disabled={isLoading} className="text-gray-500 hover:text-rose-accent px-4 py-3 md:py-2 font-bold transition-colors flex items-center gap-2 text-xs uppercase tracking-widest group rounded-lg bg-white hover:bg-rose-50 md:bg-transparent disabled:opacity-50 active:scale-95 min-h-[52px] shadow-sm md:shadow-none border border-rose-100 md:border-none">
+            <button onClick={onBack} disabled={isLoading} className="text-gray-500 hover:text-rose-accent px-5 py-3.5 md:px-4 md:py-2 font-bold transition-colors flex items-center gap-2 text-sm md:text-xs uppercase tracking-widest group rounded-xl md:rounded-lg bg-white hover:bg-rose-50 md:bg-transparent disabled:opacity-50 active:scale-95 min-h-[52px] shadow-md md:shadow-none border border-rose-200 md:border-rose-100 md:border-none">
                 <span className="group-hover:-translate-x-1 transition-transform">←</span>
                 <span className="inline">Back</span>
             </button>

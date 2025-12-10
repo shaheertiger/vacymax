@@ -106,12 +106,12 @@ const LocationSelector = React.memo(({
                 )}
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+            <div className="grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-3 mb-6">
                 {COUNTRIES.map((c) => (
                     <button
                         key={c.name}
                         onClick={() => onCountryChange(c.name)}
-                        className={`relative group flex flex-col items-center justify-center p-3 rounded-2xl border transition-all duration-300 ${countryValue === c.name
+                        className={`relative group flex flex-col items-center justify-center p-3 md:p-3 min-h-[72px] rounded-2xl border transition-all duration-300 active:scale-95 ${countryValue === c.name
                             ? `bg-white ${borderClass} ${shadowClass} shadow-lg scale-[1.02] ring-1 ring-inset ${isRose ? 'ring-rose-50' : 'ring-lavender-50'}`
                             : 'bg-white/40 border-white/60 hover:bg-white/80 hover:border-rose-200'
                             }`}
@@ -221,16 +221,16 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
             </div>
 
             <div className="flex flex-col justify-start w-full mt-2 md:mt-4 pb-4 pr-1 flex-1">
-                {/* Buddy Toggle */}
-                <div className="flex items-center gap-3 mb-8 bg-white/60 w-max px-4 py-2 rounded-full border border-rose-100 hover:border-rose-200 transition-colors shadow-sm">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Planning with a partner?</span>
+                {/* Buddy Toggle - Larger touch target */}
+                <div className="flex items-center gap-3 mb-8 bg-white/60 w-max px-4 py-3 md:py-2 rounded-full border border-rose-100 hover:border-rose-200 transition-colors shadow-sm">
+                    <span className="text-xs md:text-[10px] font-bold uppercase tracking-wider text-gray-500">Planning with a partner?</span>
                     <button
                         onClick={handleToggleClick}
-                        className={`group relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-accent focus-visible:ring-offset-2 ${prefs.hasBuddy ? 'bg-rose-accent' : 'bg-gray-300'}`}
+                        className={`group relative inline-flex h-7 w-12 md:h-5 md:w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-accent focus-visible:ring-offset-2 ${prefs.hasBuddy ? 'bg-rose-accent' : 'bg-gray-300'}`}
                     >
-                        <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${prefs.hasBuddy ? 'translate-x-4' : 'translate-x-0'}`} />
+                        <span className={`pointer-events-none inline-block h-5 w-5 md:h-4 md:w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${prefs.hasBuddy ? 'translate-x-5 md:translate-x-4' : 'translate-x-0'}`} />
                     </button>
-                    {prefs.hasBuddy && <span className="text-xs animate-fade-in pl-1">👯‍♀️</span>}
+                    {prefs.hasBuddy && <span className="text-sm md:text-xs animate-fade-in pl-1">👯‍♀️</span>}
                 </div>
 
                 <div className={`grid gap-8 ${prefs.hasBuddy ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 max-w-2xl'}`}>
@@ -242,13 +242,13 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
                                 {prefs.hasBuddy && <span className="bg-rose-accent text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-widest">You</span>}
                                 <label className="text-xs font-bold text-rose-300 uppercase tracking-widest">Your Days</label>
                             </div>
-                            {/* Quick Select Chips */}
-                            <div className="flex gap-2">
+                            {/* Quick Select Chips - larger on mobile */}
+                            <div className="flex gap-1.5 md:gap-2">
                                 {PRESETS.map(preset => (
                                     <button
                                         key={preset}
                                         onClick={() => handlePresetClick(preset.toString())}
-                                        className={`text-[10px] font-bold px-2 py-1 rounded-lg border transition-all ${userDays === preset ? 'bg-rose-100 text-rose-600 border-rose-200' : 'bg-white text-gray-400 border-gray-100 hover:border-rose-100'}`}
+                                        className={`text-xs md:text-[10px] font-bold px-3 md:px-2 py-2 md:py-1 min-w-[44px] min-h-[36px] md:min-h-0 md:min-w-0 rounded-xl md:rounded-lg border transition-all active:scale-95 ${userDays === preset ? 'bg-rose-100 text-rose-600 border-rose-200' : 'bg-white text-gray-400 border-gray-100 hover:border-rose-100'}`}
                                     >
                                         {preset}
                                     </button>

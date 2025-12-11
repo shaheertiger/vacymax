@@ -106,10 +106,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 console.warn('API endpoint not available, using fallback payment link');
             }
 
-            // Fallback: Use Stripe Payment Link (for local development)
-            // In production with proper env vars, the API call above will succeed
-            const paymentLink = 'https://buy.stripe.com/test_14k7sN7KU0Qb5yQ000';
-            window.location.href = `${paymentLink}?prefilled_email=${encodeURIComponent(email)}`;
+            // Fallback: Use Stripe Payment Link (for local development or direct link override)
+            const paymentLink = 'https://buy.stripe.com/14A7sN7KUbup5yQf4Y6Zy00';
+            window.open(`${paymentLink}?prefilled_email=${encodeURIComponent(email)}`, '_blank');
+            setPaymentStep('confirming');
 
         } catch (err) {
             const errorMessage = err instanceof Error

@@ -171,12 +171,21 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
 
     const handlePtoChange = (valStr: string) => {
         setLocalPto(valStr);
-        updatePrefs('ptoDays', normalizePtoValue(valStr));
+        const val = normalizePtoValue(valStr);
+        updatePrefs('ptoDays', val);
+
+        // Haptic tick every 5 days for tactile feel
+        if (val > 0 && val % 5 === 0) {
+            trigger('light');
+        }
     };
 
     const handleBuddyPtoChange = (valStr: string) => {
         setLocalBuddyPto(valStr);
-        updatePrefs('buddyPtoDays', normalizePtoValue(valStr));
+        const val = normalizePtoValue(valStr);
+        updatePrefs('buddyPtoDays', val);
+
+        if (val > 0 && val % 5 === 0) trigger('light');
     };
 
     const handlePresetClick = (val: string) => {
@@ -210,7 +219,7 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
     };
 
     return (
-        <div className="flex flex-col h-full relative pb-32">
+        <div className="flex flex-col h-full relative pb-32 animate-in fade-in slide-in-from-right-8 duration-500 will-change-transform">
             <div className="pt-2">
                 <StepHeader
                     stepNumber={1}
@@ -265,7 +274,7 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
                                 max={60}
                                 value={localPto}
                                 onChange={(e) => handlePtoChange(e.target.value)}
-                                className="bg-transparent text-7xl font-display font-bold text-gray-800 focus:outline-none placeholder-gray-200 tracking-tight w-full"
+                                className="bg-transparent text-5xl md:text-7xl font-display font-bold text-gray-800 focus:outline-none placeholder-gray-200 tracking-tight w-full"
                                 placeholder="0"
                             />
                             <span className="text-xl font-bold text-gray-300 absolute right-0 bottom-4 uppercase tracking-widest pointer-events-none">Days</span>
@@ -307,7 +316,7 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
                                     max={60}
                                     value={localBuddyPto}
                                     onChange={(e) => handleBuddyPtoChange(e.target.value)}
-                                    className="bg-transparent text-7xl font-display font-bold text-gray-800 focus:outline-none placeholder-gray-200 tracking-tight w-full"
+                                    className="bg-transparent text-5xl md:text-7xl font-display font-bold text-gray-800 focus:outline-none placeholder-gray-200 tracking-tight w-full"
                                     placeholder="0"
                                     style={{ color: '#4B5563' }} // Force dark text
                                 />
@@ -359,7 +368,7 @@ export const Step2Timeframe: React.FC<StepProps> = React.memo(({ prefs, updatePr
     };
 
     return (
-        <div className="flex flex-col h-full justify-between pb-32 md:pb-24 relative">
+        <div className="flex flex-col h-full justify-between pb-32 md:pb-24 relative animate-in fade-in slide-in-from-right-8 duration-500 will-change-transform">
             <StepHeader
                 stepNumber={2}
                 totalSteps={TOTAL_STEPS}
@@ -392,7 +401,7 @@ export const Step3Strategy: React.FC<StepProps> = React.memo(({ prefs, updatePre
     };
 
     return (
-        <div className="flex flex-col h-full justify-between pb-32 md:pb-24 relative">
+        <div className="flex flex-col h-full justify-between pb-32 md:pb-24 relative animate-in fade-in slide-in-from-right-8 duration-500 will-change-transform">
             <StepHeader
                 stepNumber={3}
                 totalSteps={TOTAL_STEPS}
@@ -446,7 +455,7 @@ export const Step4Location: React.FC<StepProps> = React.memo(({ prefs, updatePre
     };
 
     return (
-        <div className="flex flex-col h-full justify-between pb-32 md:pb-24 relative">
+        <div className="flex flex-col h-full justify-between pb-32 md:pb-24 relative animate-in fade-in slide-in-from-right-8 duration-500 will-change-transform">
             <StepHeader
                 stepNumber={4}
                 totalSteps={TOTAL_STEPS}

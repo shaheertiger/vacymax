@@ -46,17 +46,17 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
                 >
                     <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full border border-rose-200 bg-rose-50 text-rose-accent text-xs font-bold tracking-widest uppercase shadow-sm">
                         <span className="w-2 h-2 rounded-full bg-rose-accent animate-pulse"></span>
-                        The Planner for the It-Girl
+                        The Journey to Freedom 🕊️
                     </div>
 
                     <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-bold tracking-tight text-dark-text leading-[1.1] mb-6">
-                        Manifest Your<br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-accent to-peach-accent italic">Dream Year.</span>
+                        Don't just plan.<br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-accent to-peach-accent italic">Design Your Era.</span>
                     </h1>
 
                     <p className="text-lg md:text-xl text-gray-600 max-w-xl leading-relaxed mb-10 border-l-4 border-rose-200 pl-6">
-                        You work hard, but you should rest harder. <strong className="text-rose-accent">Design a life you don't need a vacation from.</strong><br />
-                        Our intelligent planner turns <span className="text-rose-accent font-bold">10 days</span> of PTO into <span className="text-rose-accent font-bold">24 days</span> of pure bliss. 🥂
+                        You're the "planner friend" for everyone else. <strong className="text-rose-accent">This is for YOU.</strong><br />
+                        We turn your ordinary calendar into a <span className="text-rose-accent font-bold">Strategy of Leisure</span>. Turn 10 PTO days into 24 days of "me time". 🥂
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center gap-6">
@@ -178,6 +178,9 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
                     </div>
                 </motion.div>
             </div>
+
+            {/* Visual Journey Connector */}
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-px h-24 bg-gradient-to-b from-transparent to-rose-200 hidden md:block"></div>
         </div>
     );
 };
@@ -283,60 +286,40 @@ export const BurnCalculator = () => {
 export const SolutionGrid = () => {
     return (
         <div className="w-full bg-light-100 py-32 px-6 relative">
+            {/* Connector from above */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-24 bg-gradient-to-b from-rose-200 to-transparent hidden md:block"></div>
+
             <div className="max-w-7xl mx-auto relative z-10">
                 <div className="mb-20 text-center">
-                    <h2 className="text-4xl md:text-6xl font-display font-bold text-gray-900 mb-6">Main Character<br /><span className="text-rose-400 italic">Energy.</span></h2>
+                    <h2 className="text-4xl md:text-6xl font-display font-bold text-gray-900 mb-6">The VacyMax<br /><span className="text-rose-400 italic">Journey.</span></h2>
                     <p className="text-gray-500 text-xl max-w-2xl mx-auto font-light">
-                        We hacked the calendar so you can live your best life. Consider this your cheat code for happiness.
+                        We don't just find dates. We architect your year of rest.
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* 1. Feature: Multiplier (Large Left) */}
-                    <div className="md:col-span-2 bg-white hover:bg-rose-50/50 border border-rose-100 hover:border-rose-200 transition-all duration-500 rounded-3xl p-12 flex flex-col justify-between group relative overflow-hidden min-h-[400px] shadow-sm hover:shadow-xl">
-                        <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 duration-700">
-                            <div className="text-9xl grayscale opacity-30">🗓️</div>
-                        </div>
-
-                        <div className="relative z-10">
-                            <div className="w-16 h-16 bg-rose-100 rounded-2xl flex items-center justify-center text-4xl mb-8 border border-rose-200">🧘‍♀️</div>
-                            <h3 className="text-3xl font-display font-bold text-gray-900 mb-4">The "Bridge Day" Method</h3>
-                            <p className="text-gray-500 text-lg leading-relaxed max-w-md">
-                                We find those sneaky little days between weekends and holidays. Take 1 day off, get 4 days of freedom. It's basically magic.
-                            </p>
-                        </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {/* Step 1 */}
+                    <div className="bg-white border border-rose-100 rounded-3xl p-8 relative overflow-hidden group hover:shadow-lg transition-all">
+                        <div className="absolute top-0 right-0 p-4 opacity-10 text-6xl font-display font-bold text-rose-300">01</div>
+                        <div className="w-14 h-14 bg-rose-50 rounded-2xl flex items-center justify-center text-2xl mb-6">🗓️</div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3">We Audit Your Year</h3>
+                        <p className="text-gray-500 leading-relaxed">We scan every federal holiday and weekend to find the "Hidden Anchors" in your schedule.</p>
                     </div>
 
-                    {/* 2. Feature: Weekend Protection (Right Stack Top) */}
-                    <div className="md:col-span-1 bg-white hover:bg-rose-50/50 border border-rose-100 hover:border-rose-200 transition-all rounded-3xl p-8 flex flex-col justify-center gap-6 group shadow-sm hover:shadow-lg">
-                        <div className="w-12 h-12 bg-rose-100 rounded-xl flex items-center justify-center text-2xl">💅</div>
-                        <div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">Weekend Protector</h3>
-                            <p className="text-gray-500 text-sm leading-relaxed">
-                                Never waste a PTO day on a Saturday. We defend your weekends like a best friend.
-                            </p>
-                        </div>
+                    {/* Step 2 */}
+                    <div className="bg-white border border-rose-100 rounded-3xl p-8 relative overflow-hidden group hover:shadow-lg transition-all md:-translate-y-4">
+                        <div className="absolute top-0 right-0 p-4 opacity-10 text-6xl font-display font-bold text-rose-300">02</div>
+                        <div className="w-14 h-14 bg-rose-50 rounded-2xl flex items-center justify-center text-2xl mb-6">🧠</div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3">We Find the Bridges</h3>
+                        <p className="text-gray-500 leading-relaxed">Our engine identifies the "Bridge Days"—single PTO days that seamlessly connect holidays to weekends.</p>
                     </div>
 
-                    {/* 3. Feature: Export (Right Stack Bottom) */}
-                    <div className="md:col-span-1 bg-white hover:bg-rose-50/50 border border-rose-100 hover:border-rose-200 transition-all rounded-3xl p-8 flex flex-col justify-center gap-6 group shadow-sm hover:shadow-lg">
-                        <div className="w-12 h-12 bg-rose-100 rounded-xl flex items-center justify-center text-2xl">📅</div>
-                        <div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">Instant Sync</h3>
-                            <p className="text-gray-500 text-sm leading-relaxed">
-                                One-click export to your Google or Apple Calendar. So you can block that time off ASAP.
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* 4. Use it or Lose it (Bottom Wide) */}
-                    <div className="md:col-span-2 bg-gradient-to-r from-rose-50 to-peach-50 border border-rose-100 transition-all rounded-3xl p-12 flex items-center gap-8 group relative overflow-hidden shadow-sm">
-                        <div className="relative z-10">
-                            <h3 className="text-2xl font-bold text-gray-900 mb-3">Rollover Rescue Mission 🚑</h3>
-                            <p className="text-gray-600 leading-relaxed max-w-md">
-                                About to lose your days? We'll prioritize the "use-it-or-lose-it" days first so you don't leave any relaxation on the table.
-                            </p>
-                        </div>
+                    {/* Step 3 */}
+                    <div className="bg-white border border-rose-100 rounded-3xl p-8 relative overflow-hidden group hover:shadow-lg transition-all">
+                        <div className="absolute top-0 right-0 p-4 opacity-10 text-6xl font-display font-bold text-rose-300">03</div>
+                        <div className="w-14 h-14 bg-rose-50 rounded-2xl flex items-center justify-center text-2xl mb-6">✈️</div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3">You Escape</h3>
+                        <p className="text-gray-500 leading-relaxed">Turn 10 days into 24. Export to your calendar and book the flight. You're free.</p>
                     </div>
                 </div>
             </div>

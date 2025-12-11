@@ -17,6 +17,7 @@ body {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   scroll-behavior: smooth;
+  overscroll-behavior-y: none;
 }
 
 body {
@@ -364,4 +365,53 @@ input[type=range]::-webkit-slider-runnable-track {
 
 .animate-progress-fill {
   animation: progressFill 1s ease-out forwards;
+}
+
+/* Mobile UX Animations (Shims) */
+@keyframes slideInRightSmall {
+  from {
+    transform: translateX(2rem);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.slide-in-from-right-8 {
+  animation: slideInRightSmall 0.5s ease-out forwards;
+}
+
+@keyframes slideInUpMain {
+  from {
+    transform: translateY(30%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.slide-in-from-bottom {
+  animation: slideInUpMain 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes zoomInSm {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.zoom-in-95 {
+  animation: zoomInSm 0.4s ease-out forwards;
 }

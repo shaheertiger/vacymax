@@ -75,7 +75,7 @@ export const CelebrationOverlay: React.FC<CelebrationOverlayProps> = ({
 
     return (
         <>
-            <Confetti active={show} />
+            {/* <Confetti active={show} /> */}
             <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-rose-500/20 backdrop-blur-sm animate-fade-in">
                 <div className="text-center space-y-4 animate-scale-in px-6">
                     <div className="text-7xl mb-4 animate-bounce">✨</div>

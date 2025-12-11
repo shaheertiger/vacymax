@@ -85,7 +85,7 @@ const SolverTerminal = ({ timeframe }: { timeframe: TimeframeType }) => {
   }, []);
 
   return (
-    <div className="w-full h-full min-h-[400px] flex flex-col items-center justify-center p-6 bg-white/50 backdrop-blur-sm rounded-3xl">
+    <div className="w-full h-full min-h-[400px] flex flex-col items-center justify-center p-6 bg-white/50 backdrop-blur-sm rounded-3xl zoom-in-95">
       <div className="text-center mb-8 animate-pulse">
         <span className="text-6xl">✨</span>
       </div>
@@ -118,6 +118,7 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLocked, setIsLocked] = useState(true);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Behavioral UX states
   const [showCelebration, setShowCelebration] = useState(false);
@@ -141,7 +142,19 @@ const App: React.FC = () => {
     return rect.top > -120 && rect.top < viewportHeight * 0.6;
   }, []);
 
+  // Close mobile menu when view changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [view, step]);
 
+  // Lock body scroll when menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [isMobileMenuOpen]);
 
   // Scroll only when starting the wizard from hero/How it Works
   const scrollToWizard = useCallback(() => {
@@ -319,7 +332,7 @@ const App: React.FC = () => {
         <div className="flex items-center gap-2 md:gap-6">
           <button
             onClick={() => setView('how-it-works')}
-            className="text-xs md:text-sm font-medium text-slate-500 hover:text-rose-accent transition-colors hidden md:block" // Hidden on mobile for space
+            className="text-xs md:text-sm font-medium text-slate-500 hover:text-rose-accent transition-colors hidden md:block"
           >
             How it Works
           </button>
@@ -330,24 +343,72 @@ const App: React.FC = () => {
             Strategy Demos
           </button>
 
-          {/* New Reset Button */}
+          {/* Create User/Restart logic links for Desktop */}
           {step > 0 && (
             <button
               onClick={handleReset}
-              className="text-xs md:text-sm font-medium text-slate-500 hover:text-rose-accent transition-colors"
+              className="text-xs md:text-sm font-medium text-slate-500 hover:text-rose-accent transition-colors hidden md:block"
             >
               Restart
             </button>
           )}
 
+          {/* Mobile Hamburger */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden p-2 text-gray-600 hover:text-rose-accent transition-colors relative z-50 rounded-lg active:bg-rose-50"
+            aria-label="Toggle Menu"
+          >
+            {isMobileMenuOpen ? (
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </button>
+
           <button
             onClick={scrollToWizard}
-            className="px-6 py-2.5 text-xs md:text-sm font-bold bg-gradient-to-r from-rose-accent to-peach-accent hover:shadow-lg hover:shadow-rose-accent/30 text-white rounded-full transition-all active:scale-95 transform hover:-translate-y-0.5"
+            className="px-4 py-2 md:px-6 md:py-2.5 text-xs md:text-sm font-bold bg-gradient-to-r from-rose-accent to-peach-accent hover:shadow-lg hover:shadow-rose-accent/30 text-white rounded-full transition-all active:scale-95 transform hover:-translate-y-0.5"
           >
-            {step > 0 && view === 'landing' ? 'Resume Plan ✨' : 'Start Planning 💖'}
+            {step > 0 && view === 'landing' ? 'Resume ✨' : 'Plan 💖'}
           </button>
         </div>
       </nav>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-[59] bg-white/95 backdrop-blur-xl pt-24 px-6 md:hidden flex flex-col gap-6 animate-fade-in text-center">
+          <button
+            onClick={() => { setView('how-it-works'); setIsMobileMenuOpen(false); }}
+            className="text-2xl font-display font-bold text-gray-800 hover:text-rose-accent transition-colors py-2 border-b border-gray-100"
+          >
+            How it Works
+          </button>
+          <button
+            onClick={() => { setView('strategy-demos'); setIsMobileMenuOpen(false); }}
+            className="text-2xl font-display font-bold text-gray-800 hover:text-rose-accent transition-colors py-2 border-b border-gray-100"
+          >
+            Strategy Demos
+          </button>
+          {step > 0 && (
+            <button
+              onClick={() => { handleReset(); setIsMobileMenuOpen(false); }}
+              className="text-2xl font-display font-bold text-rose-500 hover:text-rose-600 transition-colors py-2 border-b border-gray-100"
+            >
+              Restart Plan
+            </button>
+          )}
+          <div className="mt-auto pb-12 flex justify-center gap-6 text-2xl text-rose-300">
+            <span>✨</span>
+            <span>💖</span>
+            <span>🌸</span>
+          </div>
+        </div>
+      )}
 
       {view === 'how-it-works' && (
         <Suspense fallback={<LoadingFallback />}>
@@ -545,7 +606,7 @@ const App: React.FC = () => {
       )}
 
       {view === 'results' && result && (
-        <main className="flex-grow pt-24 md:pt-32 px-4 md:px-6 relative z-[60] bg-gradient-to-br from-light-100 via-light-200 to-light-300">
+        <main className="flex-grow pt-24 md:pt-32 px-4 md:px-6 relative z-[60] bg-gradient-to-br from-light-100 via-light-200 to-light-300 slide-in-from-bottom">
           {showSuccessMessage && (
             <div className="max-w-6xl mx-auto mb-6 animate-fade-up">
               <div className="bg-gradient-to-r from-rose-50 to-lavender-50 border-2 border-rose-accent/30 p-5 rounded-3xl flex items-center gap-4 shadow-lg">

@@ -141,43 +141,46 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div className="relative z-[100]" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div className="fixed inset-0 z-[100]" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             {/* Backdrop */}
             <div
-                className="fixed inset-0 bg-rose-900/40 backdrop-blur-md transition-opacity"
+                className="fixed inset-0 bg-rose-900/40 backdrop-blur-md"
                 onClick={onClose}
-            ></div>
+            />
 
-            {/* Scroll Container */}
-            <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-                <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+            {/* Scroll Container - Full screen with safe padding */}
+            <div className="fixed inset-0 overflow-y-auto overscroll-contain">
+                <div className="flex min-h-full items-center justify-center p-4 safe-pb">
                     <div
-                        className="relative transform overflow-hidden w-full max-w-md bg-white border border-rose-100 rounded-3xl shadow-2xl animate-fade-up my-8"
+                        className="relative w-full max-w-md bg-white border border-rose-100 rounded-2xl md:rounded-3xl shadow-2xl animate-fade-up"
                         onClick={(e) => e.stopPropagation()}
                     >
+                        {/* Close Button */}
+                        <button
+                            onClick={onClose}
+                            className="absolute top-3 right-3 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-rose-100 text-gray-400 hover:text-rose-500 transition-colors"
+                            aria-label="Close modal"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
 
                         {/* Header */}
-                        <div className="bg-gradient-to-r from-rose-50 to-white p-6 border-b border-rose-100 flex justify-between items-center relative overflow-hidden text-left">
-                            <div className="absolute top-0 left-0 w-full h-1 bg-rose-200 animate-pulse"></div>
-
-                            {/* Social Proof Ticker */}
-                            <div className="absolute top-2 right-4 text-[9px] text-rose-400 font-mono opacity-80">
-                                Top rated by 10,000+ travelers
-                            </div>
+                        <div className="bg-gradient-to-r from-rose-50 to-white p-4 md:p-6 border-b border-rose-100 flex justify-between items-center relative overflow-hidden text-left rounded-t-2xl md:rounded-t-3xl">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rose-accent to-peach-accent"></div>
 
                             <div>
-                                <h3 className="text-xl font-display font-bold text-gray-800 mt-1">Unlock Your Wellness</h3>
-                                <p className="text-xs text-gray-500 mt-1">One-time payment. Lifetime calm.</p>
+                                <h3 className="text-lg md:text-xl font-display font-bold text-gray-800 mt-1">Unlock Your Plan</h3>
+                                <p className="text-[10px] md:text-xs text-gray-500 mt-0.5">One-time payment. Lifetime access.</p>
                             </div>
                             <div className="text-right z-10">
-                                <div className="text-2xl font-bold text-gray-800">{price.symbol}{price.amount.toFixed(2)}</div>
-                                <div className="text-[10px] text-gray-400 uppercase tracking-wider">{price.currency}</div>
+                                <div className="text-xl md:text-2xl font-bold text-gray-800">{price.symbol}{price.amount.toFixed(2)}</div>
+                                <div className="text-[9px] md:text-[10px] text-gray-400 uppercase tracking-wider">{price.currency}</div>
                             </div>
                         </div>
 
                         {/* Body */}
                         {paymentStep === 'initial' ? (
-                            <form onSubmit={handleCheckout} className="p-6 space-y-6 text-left">
+                            <form onSubmit={handleCheckout} className="p-4 md:p-6 space-y-4 md:space-y-5 text-left">
 
                                 {/* ROI Badge */}
                                 <div className="bg-rose-50 border border-rose-100 rounded-lg p-3 flex items-center gap-3 shadow-inner">
@@ -264,29 +267,29 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                             </form>
                         ) : (
                             // CONFIRMATION STATE
-                            <div className="p-8 text-center animate-fade-up">
-                                <div className="w-16 h-16 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center mx-auto mb-6">
-                                    <svg className="w-8 h-8 text-rose-400 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <div className="p-5 md:p-8 text-center animate-fade-up">
+                                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center mx-auto mb-4 md:mb-6">
+                                    <svg className="w-6 h-6 md:w-8 md:h-8 text-rose-400 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                 </div>
 
-                                <h3 className="text-2xl font-display font-bold text-gray-800 mb-2">Checkout open in new tab</h3>
-                                <p className="text-gray-500 text-sm mb-8 leading-relaxed max-w-xs mx-auto">
-                                    We've opened Stripe in a new window. Please complete your payment there and then click the button below to access your plan.
+                                <h3 className="text-xl md:text-2xl font-display font-bold text-gray-800 mb-2">Checkout opened</h3>
+                                <p className="text-gray-500 text-xs md:text-sm mb-6 md:mb-8 leading-relaxed max-w-xs mx-auto">
+                                    Complete your payment in the new tab, then click below.
                                 </p>
 
                                 <div className="space-y-3">
                                     <button
                                         onClick={handleVerify}
                                         disabled={loading}
-                                        className="w-full py-4 bg-gradient-to-r from-rose-accent to-peach-accent text-white font-bold text-lg rounded-xl hover:scale-[1.02] transition-all shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                        className="w-full py-3.5 md:py-4 bg-gradient-to-r from-rose-accent to-peach-accent text-white font-bold text-base md:text-lg rounded-xl hover:scale-[1.02] transition-all shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                     >
                                         {loading ? (
                                             <>
                                                 <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                                <span>Verifying payment...</span>
+                                                <span>Verifying...</span>
                                             </>
                                         ) : (
-                                            <span>I Have Completed Payment</span>
+                                            <span>I've Completed Payment</span>
                                         )}
                                     </button>
 

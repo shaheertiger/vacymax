@@ -291,7 +291,7 @@ export const SolutionGrid = () => {
 
             <div className="max-w-7xl mx-auto relative z-10">
                 <div className="mb-20 text-center">
-                    <h2 className="text-4xl md:text-6xl font-display font-bold text-gray-900 mb-6">The VacyMax<br /><span className="text-rose-400 italic">Journey.</span></h2>
+                    <h2 className="text-4xl md:text-6xl font-display font-bold text-gray-900 mb-6">The DoubleMyHolidays<br /><span className="text-rose-400 italic">Journey.</span></h2>
                     <p className="text-gray-500 text-xl max-w-2xl mx-auto font-light">
                         We don't just find dates. We architect your year of rest.
                     </p>

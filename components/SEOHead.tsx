@@ -9,9 +9,9 @@ interface SEOHeadProps {
   country?: string;
 }
 
-const APP_NAME = 'VacyMax';
-const APP_URL = 'https://vacymax.com'; // Replace with your actual domain
-const TWITTER_HANDLE = '@vacymax'; // Replace with your Twitter handle
+const APP_NAME = 'DoubleMyHolidays';
+const APP_URL = 'https://doublemyholidays.com'; // Replace with your actual domain
+const TWITTER_HANDLE = '@doublemyholidays'; // Replace with your Twitter handle
 
 /**
  * SEOHead Component - Dynamic Meta Tags for Maximum Organic Reach
@@ -142,14 +142,14 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       logo: `${APP_URL}/favicon.svg`,
       description: 'Smart vacation planning tool that helps you maximize your time off by optimizing PTO usage around public holidays.',
       sameAs: [
-        'https://twitter.com/vacymax',
-        'https://www.facebook.com/vacymax',
-        'https://www.instagram.com/vacymax'
+        'https://twitter.com/doublemyholidays',
+        'https://www.facebook.com/doublemyholidays',
+        'https://www.instagram.com/doublemyholidays'
       ],
       contactPoint: {
         '@type': 'ContactPoint',
         contactType: 'customer support',
-        email: 'support@vacymax.com'
+        email: 'support@doublemyholidays.com'
       }
     };
 

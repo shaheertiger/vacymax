@@ -87,7 +87,7 @@ export const AboutPage = ({ onBack }: { onBack: () => void }) => (
 
         <h3 className="mt-12 mb-6">Our Mission</h3>
         <p>
-            VacyMax is more than a calendar tool. It is a commitment to <strong>Lifestyle Design</strong>. We use smart algorithms to identify the "hidden pockets" of time in your schedule—the bridges, the long weekends, the optimal dates—so you can reclaim your freedom without asking for more days off.
+            DoubleMyHolidays is more than a calendar tool. It is a commitment to <strong>Lifestyle Design</strong>. We use smart algorithms to identify the "hidden pockets" of time in your schedule—the bridges, the long weekends, the optimal dates—so you can reclaim your freedom without asking for more days off.
         </p>
 
         <div className="grid md:grid-cols-3 gap-8 my-16 not-prose">
@@ -159,7 +159,7 @@ export const PrivacyPage = ({ onBack }: { onBack: () => void }) => (
 
         <h3>Data Collection</h3>
         <p>
-            VacyMax operates primarily as a client-side application. The optimization magic happens right in your secure browser memory.
+            DoubleMyHolidays operates primarily as a client-side application. The optimization magic happens right in your secure browser memory.
         </p>
         <ul>
             <li>We do not store your name, email, or salary on our servers.</li>
@@ -177,11 +177,11 @@ export const PrivacyPage = ({ onBack }: { onBack: () => void }) => (
 export const TermsPage = ({ onBack }: { onBack: () => void }) => (
     <ContentPageLayout title="Terms of Service" lastUpdated="January 2025" onBack={onBack}>
         <p>
-            By using VacyMax, you agree to the following simple terms.
+            By using DoubleMyHolidays, you agree to the following simple terms.
         </p>
         <h3>1. Planning Tool Only</h3>
         <p>
-            VacyMax is a planning aid. While we strive for 100% accuracy with public holiday dates, we recommend verifying specific dates with your employer before booking non-refundable travel. We are not liable for any costs associated with booked trips or denied leave requests.
+            DoubleMyHolidays is a planning aid. While we strive for 100% accuracy with public holiday dates, we recommend verifying specific dates with your employer before booking non-refundable travel. We are not liable for any costs associated with booked trips or denied leave requests.
         </p>
         <h3>2. Fair Use</h3>
         <p>

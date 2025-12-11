@@ -1,6 +1,6 @@
 {
-  "name": "VacyMax - Vacation Day Optimizer",
-  "short_name": "VacyMax",
+  "name": "DoubleMyHolidays - Vacation Day Optimizer",
+  "short_name": "DoubleMyHolidays",
   "description": "Maximize your vacation days with smart PTO optimization. Get up to 3x more days off by planning around public holidays.",
   "start_url": "/",
   "display": "standalone",
@@ -20,7 +20,11 @@
       "type": "image/png"
     }
   ],
-  "categories": ["travel", "productivity", "lifestyle"],
+  "categories": [
+    "travel",
+    "productivity",
+    "lifestyle"
+  ],
   "screenshots": [],
   "prefer_related_applications": false
 }

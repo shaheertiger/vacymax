@@ -300,11 +300,11 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-[100dvh] flex flex-col text-dark-text pb-12 overflow-x-hidden bg-light-100 relative">
-      {/* Desktop-only magic effects */}
-      <div className="hidden md:block">
+      {/* Desktop-only magic effects - Disabled per user feedback */}
+      {/* <div className="hidden md:block">
         <MagicOrb />
         <FloatingAffirmation />
-      </div>
+      </div> */}
       <SEOHead view={view} prefs={prefs} result={result || undefined} country={prefs.country} />
 
       {/* Navigation */}

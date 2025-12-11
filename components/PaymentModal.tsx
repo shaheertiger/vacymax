@@ -149,8 +149,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             />
 
             {/* Scroll Container - Full screen with safe padding */}
-            <div className="fixed inset-0 overflow-y-auto overscroll-contain pt-safe">
-                <div className="flex min-h-full items-center justify-center p-4 py-8 md:py-4">
+            <div className="fixed inset-0 overflow-y-auto overscroll-contain pt-safe z-[110]">
+                <div className="flex min-h-full items-start justify-center p-4 pt-24 md:items-center md:pt-4">
                     <div
                         className="relative w-full max-w-md bg-white border border-rose-100 rounded-2xl md:rounded-3xl shadow-2xl animate-fade-up"
                         onClick={(e) => e.stopPropagation()}

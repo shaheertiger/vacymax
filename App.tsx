@@ -313,7 +313,7 @@ const App: React.FC = () => {
           <div className="w-8 h-8 bg-gradient-to-br from-rose-accent to-peach-accent rounded-xl flex items-center justify-center shadow-lg transform group-hover:rotate-12 transition-transform">
             <span className="text-white text-lg">🌸</span>
           </div>
-          <span className="font-display font-bold text-lg md:text-xl bg-gradient-to-r from-rose-accent to-peach-accent bg-clip-text text-transparent">VacationMax</span>
+          <span className="font-display font-bold text-lg md:text-xl bg-gradient-to-r from-rose-accent to-peach-accent bg-clip-text text-transparent">DoubleMyHolidays</span>
         </div>
 
         <div className="flex items-center gap-2 md:gap-6">

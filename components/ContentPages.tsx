@@ -111,39 +111,84 @@ export const AboutPage = ({ onBack }: { onBack: () => void }) => (
 );
 
 export const AlgorithmPage = ({ onBack }: { onBack: () => void }) => (
-    <ContentPageLayout title="How It Works" subtitle="The Magic Behind the Math" onBack={onBack}>
-        <p className="lead text-xl text-gray-600">
-            How do we turn 10 days of PTO into 24 days of freedom?
+    <ContentPageLayout title="How It Works" subtitle="Your Secret Weapon for Doubling Time Off" onBack={onBack}>
+        <p className="lead text-2xl text-gray-700 font-display italic mb-12">
+            Here's exactly how we turn <span className="text-rose-500 font-bold not-italic">10 days of PTO</span> into <span className="text-emerald-500 font-bold not-italic">24+ days of freedom</span>. No magic required—just smart strategy.
+        </p>
+
+        <div className="not-prose bg-rose-50 border border-rose-100 rounded-2xl p-6 mb-12">
+            <h4 className="font-display font-bold text-gray-800 text-lg mb-2">💡 The Big Idea</h4>
+            <p className="text-gray-600 text-sm leading-relaxed">
+                Most people waste PTO by taking random days off. We find the <strong className="text-rose-500">"Bridge Days"</strong>—strategic single days that connect weekends to public holidays, instantly creating long vacation blocks.
+            </p>
+        </div>
+
+        <h3 className="flex items-center gap-3">
+            <span className="bg-gradient-to-br from-rose-500 to-peach-500 text-white w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-sm">1</span>
+            We Scan Your Calendar Year
+        </h3>
+        <p>
+            Our algorithm analyzes <strong>every weekend and public holiday</strong> in your country for the entire year. We identify natural "anchor points"—holidays that fall close to weekends but aren't quite touching them.
+        </p>
+        <p className="text-sm text-gray-500 italic">
+            Example: If a public holiday falls on Thursday, we spot the opportunity—take Friday off and boom, you've got a 4-day weekend.
         </p>
 
         <h3 className="flex items-center gap-3">
-            <span className="bg-rose-100 text-rose-600 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</span>
-            Smart Analysis
+            <span className="bg-gradient-to-br from-rose-500 to-peach-500 text-white w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-sm">2</span>
+            We Find Your Bridge Days
         </h3>
         <p>
-            We look at the year as a whole, mapping out every weekend and public holiday in your region. Think of it as finding the "anchors" in your calendar.
+            We identify those <strong className="text-rose-500">single working days</strong> stuck between holidays and weekends. These are your "Bridge Days"—the highest-value PTO days you can take.
+        </p>
+        <div className="not-prose grid md:grid-cols-2 gap-4 my-6">
+            <div className="bg-white p-4 rounded-xl border border-gray-200">
+                <div className="text-xs text-gray-400 uppercase tracking-wider mb-2">Without Strategy</div>
+                <div className="text-2xl font-bold text-gray-400">1 PTO Day = 1 Day Off</div>
+            </div>
+            <div className="bg-gradient-to-br from-rose-50 to-peach-50 p-4 rounded-xl border border-rose-200">
+                <div className="text-xs text-rose-500 uppercase tracking-wider mb-2">With Bridge Days</div>
+                <div className="text-2xl font-bold text-rose-500">1 PTO Day = 4-5 Days Off ✨</div>
+            </div>
+        </div>
+
+        <h3 className="flex items-center gap-3">
+            <span className="bg-gradient-to-br from-rose-500 to-peach-500 text-white w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-sm">3</span>
+            We Calculate Your ROI
+        </h3>
+        <p>
+            Not all vacation days are equal. We score every possible trip using our <strong>Efficiency Formula</strong>:
+        </p>
+        <div className="not-prose bg-gray-50 p-6 rounded-xl border border-gray-200 my-6 font-mono text-center">
+            <div className="text-sm text-gray-500 mb-2">Efficiency Score =</div>
+            <div className="text-xl font-bold text-gray-800">
+                Total Days Off ÷ PTO Days Used
+            </div>
+        </div>
+        <p>
+            <strong className="text-rose-500">We only recommend trips with a 2x ROI or better.</strong> That means for every PTO day you spend, you get at least 2 full days of freedom.
         </p>
 
         <h3 className="flex items-center gap-3">
-            <span className="bg-rose-100 text-rose-600 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">2</span>
-            Bridge Strategy
+            <span className="bg-gradient-to-br from-rose-500 to-peach-500 text-white w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-sm">4</span>
+            You Choose Your Vibe
         </h3>
         <p>
-            We identify the "bridge days"—single working days that are stuck between a holiday and a weekend. By taking just that one day off, you effectively unlock a 4 or 5-day mini-vacation.
+            Want one epic 2-week trip or sprinkled long weekends all year? We customize the plan based on your energy style:
         </p>
+        <ul className="space-y-2">
+            <li><strong>🥂 Socialite:</strong> Frequent mini-breaks for maximum events</li>
+            <li><strong>✈️ Jetsetter:</strong> Long blocks for international travel</li>
+            <li><strong>🧘‍♀️ Wellness:</strong> Consistent rest intervals all year</li>
+            <li><strong>✨ CEO Schedule:</strong> Balanced mix for ultimate flexibility</li>
+        </ul>
 
-        <h3 className="flex items-center gap-3">
-            <span className="bg-rose-100 text-rose-600 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">3</span>
-            Efficiency Scoring
-        </h3>
-        <p>
-            Not all vacation days are created equal. We calculate an "Efficiency Score" for every possible trip.
-            <br />
-            <code>Score = (Total Days Off) / (PTO Days Used)</code>
-        </p>
-        <p>
-            We only recommend trips that give you at least double the value (2x ROI) for your time.
-        </p>
+        <div className="not-prose bg-gradient-to-br from-rose-50 to-transparent border-l-4 border-rose-400 p-6 rounded-r-xl my-12">
+            <h4 className="font-display font-bold text-gray-800 text-xl mb-2">The Result?</h4>
+            <p className="text-gray-600 leading-relaxed">
+                A personalized vacation calendar that <strong className="text-rose-500">doubles your time off</strong> without asking your boss for extra days. It's not about working the system—it's about working <em>smarter</em>.
+            </p>
+        </div>
     </ContentPageLayout>
 );
 

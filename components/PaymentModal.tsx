@@ -159,7 +159,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                         </button>
 
                         {/* Header */}
-                        <div className="bg-gradient-to-r from-rose-50 to-white p-4 md:p-6 border-b border-rose-100 flex justify-between items-center relative overflow-hidden text-left rounded-t-2xl md:rounded-t-3xl">
+                        <div className="bg-gradient-to-r from-rose-50 to-white p-4 md:p-6 pr-14 border-b border-rose-100 flex justify-between items-center relative overflow-hidden text-left rounded-t-2xl md:rounded-t-3xl">
                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rose-accent to-peach-accent"></div>
 
                             <div>

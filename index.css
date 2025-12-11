@@ -369,6 +369,22 @@ input[type=range]::-webkit-slider-runnable-track {
   animation: slideInRightSmall 0.5s ease-out forwards;
 }
 
+@keyframes slideInLeftSmall {
+  from {
+    transform: translateX(-2rem);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.slide-in-from-left-8 {
+  animation: slideInLeftSmall 0.5s ease-out forwards;
+}
+
 @keyframes slideInUpMain {
   from {
     transform: translateY(30%);

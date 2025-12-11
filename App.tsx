@@ -85,7 +85,7 @@ const SolverTerminal = ({ timeframe }: { timeframe: TimeframeType }) => {
   }, []);
 
   return (
-    <div className="w-full h-full min-h-[400px] flex flex-col items-center justify-center p-6 bg-white/50 backdrop-blur-sm rounded-3xl zoom-in-95">
+    <div className="w-full h-full min-h-[50vh] md:min-h-[400px] flex flex-col items-center justify-center p-6 bg-white/50 backdrop-blur-sm rounded-3xl zoom-in-95">
       <div className="text-center mb-8 animate-pulse">
         <span className="text-6xl">✨</span>
       </div>
@@ -123,6 +123,7 @@ const App: React.FC = () => {
   // Behavioral UX states
   const [showCelebration, setShowCelebration] = useState(false);
   const [showMilestone, setShowMilestone] = useState(false);
+  const [direction, setDirection] = useState<'next' | 'back'>('next');
 
   const wizardRef = useRef<HTMLDivElement>(null);
 
@@ -177,6 +178,7 @@ const App: React.FC = () => {
 
   const handleNext = useCallback(() => {
     const nextStep = step + 1;
+    setDirection('next');
     setStep(nextStep);
 
     // Show milestone celebration for steps 1-4
@@ -187,18 +189,28 @@ const App: React.FC = () => {
 
     // Auto-scroll on mobile (with header offset)
     if (window.innerWidth < 768) {
-      if (!isWizardTopInView()) {
-        // Offset by 100px to account for fixed header and some padding
-        const offsetPosition = (wizardRef.current?.offsetTop || 0) - 100;
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: 'smooth'
-        });
-      }
+      setTimeout(() => {
+        if (!isWizardTopInView()) {
+          const element = wizardRef.current || document.getElementById('wizard-section');
+          if (element) {
+            const headerOffset = 80;
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: "smooth"
+            });
+          }
+        }
+      }, 100);
     }
   }, [isWizardTopInView, step]);
 
-  const handleBack = useCallback(() => setStep((prev) => prev - 1), []);
+  const handleBack = useCallback(() => {
+    setDirection('back');
+    setStep((prev) => prev - 1);
+  }, []);
 
   // Mobile Swipe Handlers
   const swipeHandlers = useSwipe({
@@ -371,10 +383,21 @@ const App: React.FC = () => {
           </button>
 
           <button
-            onClick={scrollToWizard}
+            onClick={() => {
+              if (view !== 'landing') {
+                setView('landing');
+                setStep(1);
+                setTimeout(() => {
+                  const el = document.getElementById('wizard-section');
+                  el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+              } else {
+                scrollToWizard();
+              }
+            }}
             className="px-4 py-2 md:px-6 md:py-2.5 text-xs md:text-sm font-bold bg-gradient-to-r from-rose-accent to-peach-accent hover:shadow-lg hover:shadow-rose-accent/30 text-white rounded-full transition-all active:scale-95 transform hover:-translate-y-0.5"
           >
-            {step > 0 && view === 'landing' ? 'Resume ✨' : 'Plan 💖'}
+            {step > 0 ? 'Resume ✨' : 'Plan 💖'}
           </button>
         </div>
       </nav>
@@ -486,10 +509,10 @@ const App: React.FC = () => {
                   </div>
                 )}
 
-                {step === 1 && <Step1PTO prefs={prefs} updatePrefs={updatePrefs} onNext={handleNext} />}
-                {step === 2 && <Step2Timeframe prefs={prefs} updatePrefs={updatePrefs} onNext={handleNext} onBack={handleBack} />}
-                {step === 3 && <Step3Strategy prefs={prefs} updatePrefs={updatePrefs} onNext={handleNext} onBack={handleBack} />}
-                {step === 4 && <Step4Location prefs={prefs} updatePrefs={updatePrefs} onNext={handleGenerate} onBack={handleBack} />}
+                {step === 1 && <Step1PTO prefs={prefs} updatePrefs={updatePrefs} onNext={handleNext} direction={direction} />}
+                {step === 2 && <Step2Timeframe prefs={prefs} updatePrefs={updatePrefs} onNext={handleNext} onBack={handleBack} direction={direction} />}
+                {step === 3 && <Step3Strategy prefs={prefs} updatePrefs={updatePrefs} onNext={handleNext} onBack={handleBack} direction={direction} />}
+                {step === 4 && <Step4Location prefs={prefs} updatePrefs={updatePrefs} onNext={handleGenerate} onBack={handleBack} direction={direction} />}
                 {step === 5 && <SolverTerminal timeframe={prefs.timeframe} />}
               </div>
             </div>

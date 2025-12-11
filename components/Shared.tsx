@@ -116,7 +116,7 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
     return (
         <button
             onClick={onClick}
-            className={`group relative p-6 rounded-3xl border text-left transition-all duration-300 hover:scale-[1.01] active:scale-95 w-full min-h-[88px] ${selected
+            className={`group relative p-6 rounded-3xl border text-left transition-all duration-300 hover:scale-[1.01] active:scale-90 active:bg-rose-50 w-full min-h-[88px] ${selected
                 ? `${activeBg} ${activeBorder} ${shadow} ring-1 ring-inset ${isRose ? 'ring-rose-100' : 'ring-lavender-100'}`
                 : 'bg-white/40 border-white/60 text-gray-600 hover:bg-white/80 hover:border-rose-200'
                 }`}

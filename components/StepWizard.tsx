@@ -60,6 +60,7 @@ interface StepProps {
     ) => void;
     onNext: () => void;
     onBack?: () => void;
+    direction?: 'next' | 'back';
 }
 
 const LocationSelector = React.memo(({
@@ -153,7 +154,7 @@ const normalizePtoValue = (rawValue: string) => {
 
 const PRESETS = [10, 15, 20, 25];
 
-export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, onNext }) => {
+export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, onNext, direction = 'next' }) => {
     const { trigger } = useHaptics();
     const userDays = prefs.ptoDays;
     const buddyDays = prefs.buddyPtoDays || 0;
@@ -219,7 +220,7 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
     };
 
     return (
-        <div className="flex flex-col h-full relative pb-32 animate-in fade-in slide-in-from-right-8 duration-500 will-change-transform">
+        <div className={`flex flex-col h-full relative pb-32 animate-in fade-in ${direction === 'back' ? 'slide-in-from-left-8' : 'slide-in-from-right-8'} duration-500 will-change-transform`}>
             <div className="pt-2">
                 <StepHeader
                     stepNumber={1}
@@ -351,7 +352,7 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
                             <p className="text-[10px] text-rose-400 uppercase tracking-wider">Total Time Off</p>
                         </div>
                     </div>
-                </div>
+                </div >
             </div >
 
             <NavButtons onNext={handleNextClick} nextDisabled={!canProceed} nextLabel="Confirm Balance" />
@@ -360,7 +361,7 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
 });
 
 // --- STEP 2 ---
-export const Step2Timeframe: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, onNext, onBack }) => {
+export const Step2Timeframe: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, onNext, onBack, direction = 'next' }) => {
     const options = [
         { value: TimeframeType.CALENDAR_2026, label: '2026', desc: 'Plan your next year early', tag: 'Recommended' },
         { value: TimeframeType.CALENDAR_2025, label: '2025', desc: 'Remaining holidays this year', tag: 'Closing Soon' },
@@ -372,7 +373,7 @@ export const Step2Timeframe: React.FC<StepProps> = React.memo(({ prefs, updatePr
     };
 
     return (
-        <div className="flex flex-col h-full justify-between pb-32 md:pb-24 relative animate-in fade-in slide-in-from-right-8 duration-500 will-change-transform">
+        <div className={`flex flex-col h-full justify-between pb-32 md:pb-24 relative animate-in fade-in ${direction === 'back' ? 'slide-in-from-left-8' : 'slide-in-from-right-8'} duration-500 will-change-transform`}>
             <StepHeader
                 stepNumber={2}
                 totalSteps={TOTAL_STEPS}
@@ -398,14 +399,14 @@ export const Step2Timeframe: React.FC<StepProps> = React.memo(({ prefs, updatePr
     );
 });
 
-export const Step3Strategy: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, onNext, onBack }) => {
+export const Step3Strategy: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, onNext, onBack, direction = 'next' }) => {
 
     const handleSelection = (id: string) => {
         updatePrefs('strategy', id as any);
     };
 
     return (
-        <div className="flex flex-col h-full justify-between pb-32 md:pb-24 relative animate-in fade-in slide-in-from-right-8 duration-500 will-change-transform">
+        <div className={`flex flex-col h-full justify-between pb-32 md:pb-24 relative animate-in fade-in ${direction === 'back' ? 'slide-in-from-left-8' : 'slide-in-from-right-8'} duration-500 will-change-transform`}>
             <StepHeader
                 stepNumber={3}
                 totalSteps={TOTAL_STEPS}
@@ -436,7 +437,7 @@ export const Step3Strategy: React.FC<StepProps> = React.memo(({ prefs, updatePre
     );
 });
 
-export const Step4Location: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, onNext, onBack }) => {
+export const Step4Location: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, onNext, onBack, direction = 'next' }) => {
 
     const nextDisabled = !prefs.country || (prefs.hasBuddy && !prefs.buddyCountry);
     const [generating, setGenerating] = useState(false);
@@ -459,7 +460,7 @@ export const Step4Location: React.FC<StepProps> = React.memo(({ prefs, updatePre
     };
 
     return (
-        <div className="flex flex-col h-full justify-between pb-32 md:pb-24 relative animate-in fade-in slide-in-from-right-8 duration-500 will-change-transform">
+        <div className={`flex flex-col h-full justify-between pb-32 md:pb-24 relative animate-in fade-in ${direction === 'back' ? 'slide-in-from-left-8' : 'slide-in-from-right-8'} duration-500 will-change-transform`}>
             <StepHeader
                 stepNumber={4}
                 totalSteps={TOTAL_STEPS}

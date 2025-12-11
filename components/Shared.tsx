@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 export const StepHeader = React.memo(({ stepNumber, totalSteps, title, subtitle }: { stepNumber: number, totalSteps: number, title: React.ReactNode, subtitle: string }) => (
-    <div className="space-y-3 md:space-y-4 mb-6 md:mb-10 animate-fade-up px-1">
+    <div className="space-y-2 md:space-y-4 mb-4 md:mb-10 animate-fade-up px-1">
         <div className="flex items-center gap-3">
             <span className="w-8 h-[1px] bg-rose-accent"></span>
             <span className="text-rose-accent text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase">Step {stepNumber} of {totalSteps}</span>
@@ -25,7 +25,7 @@ export const StepHeader = React.memo(({ stepNumber, totalSteps, title, subtitle 
 ));
 
 export const NavButtons = React.memo(({ onNext, onBack, nextDisabled, nextLabel = "Continue", isLoading = false }: { onNext: () => void, onBack?: () => void, nextDisabled?: boolean, nextLabel?: string | null, isLoading?: boolean }) => (
-    <div className="fixed bottom-0 left-0 right-0 z-[100] p-4 pb-6 bg-white/95 backdrop-blur-xl border-t-2 border-rose-100 md:sticky md:bottom-6 md:left-12 md:right-12 md:p-0 md:bg-transparent md:border-none flex flex-row justify-between items-center gap-3 md:gap-4 animate-fade-up transition-all duration-300 safe-pb shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:shadow-none">
+    <div className="fixed bottom-0 left-0 right-0 z-[100] p-3 pb-5 bg-white/95 backdrop-blur-xl border-t-2 border-rose-100 md:sticky md:bottom-6 md:left-12 md:right-12 md:p-0 md:bg-transparent md:border-none flex flex-row justify-between items-center gap-3 md:gap-4 animate-fade-up transition-all duration-300 safe-pb shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:shadow-none">
         {onBack ? (
             <button onClick={onBack} disabled={isLoading} className="text-gray-500 hover:text-rose-accent px-5 py-3.5 md:px-4 md:py-2 font-bold transition-colors flex items-center gap-2 text-sm md:text-xs uppercase tracking-widest group rounded-xl md:rounded-lg bg-white hover:bg-rose-50 md:bg-transparent disabled:opacity-50 active:scale-95 min-h-[52px] shadow-md md:shadow-none border border-rose-200 md:border-rose-100 md:border-none">
                 <span className="group-hover:-translate-x-1 transition-transform">←</span>
@@ -116,7 +116,7 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
     return (
         <button
             onClick={onClick}
-            className={`group relative p-6 rounded-3xl border text-left transition-all duration-300 hover:scale-[1.01] active:scale-90 active:bg-rose-50 w-full min-h-[88px] ${selected
+            className={`group relative p-4 md:p-6 rounded-3xl border text-left transition-all duration-300 hover:scale-[1.01] active:scale-90 active:bg-rose-50 w-full min-h-[72px] md:min-h-[88px] ${selected
                 ? `${activeBg} ${activeBorder} ${shadow} ring-1 ring-inset ${isRose ? 'ring-rose-100' : 'ring-lavender-100'}`
                 : 'bg-white/40 border-white/60 text-gray-600 hover:bg-white/80 hover:border-rose-200'
                 }`}

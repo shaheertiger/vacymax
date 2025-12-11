@@ -90,7 +90,7 @@ const LocationSelector = React.memo(({
     const shadowClass = isRose ? 'shadow-rose-accent/10' : 'shadow-lavender-accent/10';
 
     return (
-        <div className={`${isBuddy ? 'bg-lavender-50/50 border border-lavender-100' : 'bg-white/60 border border-rose-100'} rounded-3xl p-6 transition-all duration-500 shadow-sm hover:shadow-md backdrop-blur-sm`}>
+        <div className={`${isBuddy ? 'bg-lavender-50/50 border border-lavender-100' : 'bg-white/60 border border-rose-100'} rounded-3xl p-4 md:p-6 transition-all duration-500 shadow-sm hover:shadow-md backdrop-blur-sm`}>
             <div className="flex items-center justify-between mb-6">
                 <div className={`flex items-center gap-2 text-xs font-bold ${activeText} uppercase tracking-widest pl-1`}>
                     <div className={`w-1.5 h-1.5 rounded-full ${activeBg}`}></div>
@@ -232,7 +232,7 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
 
             <div className="flex flex-col justify-start w-full mt-2 md:mt-4 pb-4 pr-1 flex-1">
                 {/* Buddy Toggle - Larger touch target */}
-                <div className="flex items-center gap-3 mb-8 bg-white/60 w-max px-4 py-3 md:py-2 rounded-full border border-rose-100 hover:border-rose-200 transition-colors shadow-sm">
+                <div className="flex items-center gap-3 mb-4 md:mb-8 bg-white/60 w-max px-4 py-2 md:py-2 rounded-full border border-rose-100 hover:border-rose-200 transition-colors shadow-sm">
                     <span className="text-xs md:text-[10px] font-bold uppercase tracking-wider text-gray-500">Planning with a partner?</span>
                     <button
                         onClick={handleToggleClick}
@@ -243,7 +243,7 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
                     {prefs.hasBuddy && <span className="text-sm md:text-xs animate-fade-in pl-1">👯‍♀️</span>}
                 </div>
 
-                <div className={`grid gap-8 ${prefs.hasBuddy ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 max-w-2xl'}`}>
+                <div className={`grid gap-4 md:gap-8 ${prefs.hasBuddy ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 max-w-2xl'}`}>
 
                     {/* User Input Card */}
                     <div className="relative group w-full bg-gradient-to-br from-white to-rose-50/30 rounded-3xl p-6 border border-rose-100 transition-all duration-300 hover:shadow-md">
@@ -464,7 +464,7 @@ export const Step4Location: React.FC<StepProps> = React.memo(({ prefs, updatePre
                 subtitle="We need this to load your local holidays."
             />
 
-            <div className="space-y-8 max-w-4xl mb-8 relative pr-1 pb-4">
+            <div className="space-y-4 md:space-y-8 max-w-4xl mb-8 relative pr-1 pb-4">
                 {/* Connecting Line if buddy exists */}
                 {prefs.hasBuddy && (
                     <div className="absolute left-6 top-10 bottom-10 w-0.5 border-l-2 border-dashed border-rose-200/50 z-0 hidden md:block"></div>

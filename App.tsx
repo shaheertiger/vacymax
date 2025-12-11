@@ -256,13 +256,14 @@ const App: React.FC = () => {
     }).catch(err => console.error('Failed to track session:', err));
   }, []);
 
-  // Handle payment success from Stripe redirect
+  // Handle payment success from Stripe redirect (Payment Link or Checkout Session)
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');
     const sessionId = urlParams.get('session_id');
 
-    if (paymentStatus === 'success' && sessionId) {
+    // Accept payment=success OR session_id (Payment Links may only send session_id)
+    if (paymentStatus === 'success' || sessionId) {
       // Payment successful - unlock the plan
       setIsLocked(false);
       setShowSuccessMessage(true);

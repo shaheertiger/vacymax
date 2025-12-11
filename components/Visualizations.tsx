@@ -5,13 +5,33 @@ import { formatDate, parseDateUTC } from '../services/utils';
 
 export const HolidayTooltip: React.FC<{ holiday: HolidayInfo }> = ({ holiday }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [clickedOpen, setClickedOpen] = useState(false);
     const desc = getHolidayDescription(holiday.name);
+
+    const handleClick = () => {
+        if (isOpen && clickedOpen) {
+            setIsOpen(false);
+            setClickedOpen(false);
+        } else {
+            setIsOpen(true);
+            setClickedOpen(true);
+        }
+    };
+
+    const handleMouseEnter = () => {
+        if (!clickedOpen) setIsOpen(true);
+    };
+
+    const handleMouseLeave = () => {
+        if (!clickedOpen) setIsOpen(false);
+    };
+
     return (
         <div
             className={`group relative inline-block transition-all ${isOpen ? 'z-[200]' : 'z-10'}`}
-            onMouseEnter={() => setIsOpen(true)}
-            onMouseLeave={() => setIsOpen(false)}
-            onClick={() => setIsOpen(!isOpen)}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onClick={handleClick}
         >
             <span className="cursor-help text-[10px] font-bold bg-lavender-50 text-lavender-accent border border-lavender-100 px-2 py-1 rounded uppercase tracking-wider hover:bg-lavender-100 transition-colors shadow-sm">
                 {holiday.name}
@@ -102,12 +122,35 @@ type DayStatusMap = Map<string, DayStatus>; // Key: YYYY-MM-DD
 
 export const MonthGrid: React.FC<{ year: number, month: number, statusMap: DayStatusMap, holidaysList: { day: number, name: string }[], hideDates?: boolean }> = React.memo(({ year, month, statusMap, holidaysList, hideDates }) => {
     const [activeDay, setActiveDay] = useState<number | null>(null);
+    const [clickedDay, setClickedDay] = useState<number | null>(null);
 
     const date = new Date(Date.UTC(year, month, 1));
     const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
     const startDay = date.getUTCDay(); // 0 = Sun
     const monthName = date.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' });
     const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
+    const handleDayClick = (day: number) => {
+        if (activeDay === day && clickedDay === day) {
+            setActiveDay(null);
+            setClickedDay(null);
+        } else {
+            setActiveDay(day);
+            setClickedDay(day);
+        }
+    };
+
+    const handleDayMouseEnter = (day: number) => {
+        if (clickedDay === null) {
+            setActiveDay(day);
+        }
+    };
+
+    const handleDayMouseLeave = () => {
+        if (clickedDay === null) {
+            setActiveDay(null);
+        }
+    };
 
     return (
         <div className="space-y-2 w-[160px] flex-shrink-0 select-none snap-start relative z-10 flex flex-col">
@@ -138,9 +181,9 @@ export const MonthGrid: React.FC<{ year: number, month: number, statusMap: DaySt
                     return (
                         <div
                             key={day}
-                            onMouseEnter={() => setActiveDay(day)}
-                            onMouseLeave={() => setActiveDay(null)}
-                            onClick={() => setActiveDay(activeDay === day ? null : day)}
+                            onMouseEnter={() => handleDayMouseEnter(day)}
+                            onMouseLeave={handleDayMouseLeave}
+                            onClick={() => handleDayClick(day)}
                             className={`w-4 h-4 rounded-full ${bgClass} group relative cursor-default transition-all duration-300 ${isHovered ? 'z-[200] scale-125' : 'hover:z-[100] active:z-[100]'}`}
                         >
                             {/* Start Marker */}

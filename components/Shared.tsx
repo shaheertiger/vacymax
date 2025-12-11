@@ -112,6 +112,33 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
         : 'hover:shadow-lg';
 
     const [showTooltip, setShowTooltip] = useState(false);
+    const [tooltipClickedOpen, setTooltipClickedOpen] = useState(false);
+
+    const handleTooltipClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (showTooltip && tooltipClickedOpen) {
+            // Close if clicking again after click-open
+            setShowTooltip(false);
+            setTooltipClickedOpen(false);
+        } else {
+            // Open via click
+            setShowTooltip(true);
+            setTooltipClickedOpen(true);
+        }
+    };
+
+    const handleTooltipMouseEnter = () => {
+        if (!tooltipClickedOpen) {
+            setShowTooltip(true);
+        }
+    };
+
+    const handleTooltipMouseLeave = () => {
+        // Only close on mouse leave if not opened via click
+        if (!tooltipClickedOpen) {
+            setShowTooltip(false);
+        }
+    };
 
     return (
         <button
@@ -139,9 +166,9 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
                         {tooltipText && (
                             <div
                                 className="relative group/info"
-                                onClick={(e) => { e.stopPropagation(); setShowTooltip(!showTooltip); }}
-                                onMouseEnter={() => setShowTooltip(true)}
-                                onMouseLeave={() => setShowTooltip(false)}
+                                onClick={handleTooltipClick}
+                                onMouseEnter={handleTooltipMouseEnter}
+                                onMouseLeave={handleTooltipMouseLeave}
                             >
                                 <div className={`w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-bold cursor-help transition-colors ${selected ? `${activeText} border-current` : 'text-gray-400 border-gray-300 hover:text-rose-400 hover:border-rose-400'}`}>
                                     ?

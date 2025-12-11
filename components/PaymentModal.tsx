@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { UserPreferences } from '../types';
 import { supabaseHelpers } from '../services/supabase';
 
@@ -45,102 +46,93 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const modalRef = useRef<HTMLDivElement>(null);
+    const closeButtonRef = useRef<HTMLButtonElement>(null);
 
     const price = getRegionalPrice(userCountry);
 
+    // Handle Escape key and body scroll lock
     useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = 'hidden';
-        } else {
+        if (!isOpen) return;
+
+        document.body.style.overflow = 'hidden';
+
+        // Focus the close button when modal opens for accessibility
+        closeButtonRef.current?.focus();
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                onClose();
+            }
+            // Focus trap: keep focus within modal
+            if (e.key === 'Tab' && modalRef.current) {
+                const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
+                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                );
+                const firstElement = focusableElements[0];
+                const lastElement = focusableElements[focusableElements.length - 1];
+
+                if (e.shiftKey && document.activeElement === firstElement) {
+                    e.preventDefault();
+                    lastElement?.focus();
+                } else if (!e.shiftKey && document.activeElement === lastElement) {
+                    e.preventDefault();
+                    firstElement?.focus();
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
             document.body.style.overflow = 'unset';
-        }
-        return () => { document.body.style.overflow = 'unset'; };
-    }, [isOpen]);
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isOpen, onClose]);
 
 
 
     const [paymentStep, setPaymentStep] = useState<'initial' | 'confirming'>('initial');
 
 
-    const handleCheckout = async (e: React.FormEvent) => {
+    const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/5kQ3cx8OYbup3qIg926Zy03';
+
+    const handleCheckout = (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
-        setLoading(true);
 
-        try {
-            if (!email) {
-                throw new Error('Please add an email so we can send your receipt.');
-            }
-
-            // Try to call serverless function to create Stripe Checkout Session
-            try {
-                const response = await fetch('/api/create-checkout-session', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        email,
-                        amount: price.amount,
-                        currency: price.currency,
-                        planStats,
-                        userPrefs: prefs,
-                    }),
-                });
-
-                if (response.ok) {
-                    const { url, sessionId } = await response.json();
-
-                    // Store session ID for verification
-                    if (sessionId) {
-                        sessionStorage.setItem('stripe_session_id', sessionId);
-                    }
-
-                    // Redirect to Stripe Checkout
-                    if (url) {
-                        window.location.href = url;
-                        return;
-                    }
-                }
-            } catch (apiError) {
-                console.warn('API endpoint not available, using fallback payment link');
-            }
-
-            // Fallback: Use Stripe Payment Link (for local development or direct link override)
-            const paymentLink = 'https://buy.stripe.com/9B6bJ33uE2XT1iAbSM6Zy02';
-            window.open(`${paymentLink}?prefilled_email=${encodeURIComponent(email)}`, '_blank');
-            setPaymentStep('confirming');
-
-        } catch (err) {
-            const errorMessage = err instanceof Error
-                ? err.message
-                : 'Unable to start checkout. Please try again.';
-            setError(errorMessage);
-            setLoading(false);
+        if (!email) {
+            setError('Please add an email so we can send your receipt.');
+            return;
         }
+
+        // Open Stripe Payment Link with prefilled email
+        const paymentUrl = `${STRIPE_PAYMENT_LINK}?prefilled_email=${encodeURIComponent(email)}`;
+        window.open(paymentUrl, '_blank');
+        setPaymentStep('confirming');
     };
 
-    const handleVerify = () => {
+    const handleVerify = useCallback(() => {
         setLoading(true);
-        // Simulate verification delay
+
+        // Log payment confirmation (webhook will handle actual verification)
+        supabaseHelpers.logPayment({
+            stripePaymentId: `payment_link_${Date.now()}`,
+            amount: price.amount,
+            currency: price.currency,
+            planStats: planStats || { totalDays: 0, efficiency: 0, ptoUsed: 0 },
+        }).catch(err => console.error('Failed to log payment:', err));
+
+        // Brief delay for UX, then unlock
         setTimeout(() => {
             setLoading(false);
-
-            // Track payment in Supabase
-            supabaseHelpers.logPayment({
-                stripePaymentId: `manual_${Date.now()}`, // In production, use actual Stripe payment ID
-                amount: price.amount,
-                currency: price.currency,
-                planStats: planStats || { totalDays: 0, efficiency: 0, ptoUsed: 0 },
-            }).catch(err => console.error('Failed to log payment:', err));
-
             onSuccess();
-        }, 2000);
-    };
+        }, 1000);
+    }, [onSuccess, price.amount, price.currency, planStats]);
 
     if (!isOpen) return null;
 
-    return (
+    // Use portal to render modal at document body level to escape stacking contexts
+    return createPortal(
         <div className="fixed inset-0 h-[100dvh] z-[100]" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             {/* Backdrop */}
             <div
@@ -152,11 +144,13 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             <div className="fixed inset-0 h-[100dvh] overflow-y-auto overscroll-contain pt-safe z-[110]">
                 <div className="flex min-h-full items-start justify-center p-4 pt-12 md:items-center md:pt-4">
                     <div
+                        ref={modalRef}
                         className="relative w-full max-w-md bg-white border border-rose-100 rounded-2xl md:rounded-3xl shadow-2xl animate-fade-up"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Close Button */}
                         <button
+                            ref={closeButtonRef}
                             onClick={onClose}
                             className="absolute top-3 right-3 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-rose-100 text-gray-400 hover:text-rose-500 transition-colors"
                             aria-label="Close modal"
@@ -244,20 +238,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
                                 <button
                                     type="submit"
-                                    disabled={loading}
-                                    className="w-full py-4 bg-gradient-to-r from-rose-accent to-peach-accent text-white font-bold text-lg rounded-xl hover:scale-[1.02] transition-all shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group hover:shadow-rose-200"
+                                    className="w-full py-4 bg-gradient-to-r from-rose-accent to-peach-accent text-white font-bold text-lg rounded-xl hover:scale-[1.02] transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 group hover:shadow-rose-200"
                                 >
-                                    {loading ? (
-                                        <>
-                                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                            <span>Opening secure checkout...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <span>Go to Stripe Checkout ({price.symbol}{price.amount.toFixed(2)})</span>
-                                            <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
-                                        </>
-                                    )}
+                                    <span>Pay with Stripe ({price.symbol}{price.amount.toFixed(2)})</span>
+                                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
                                 </button>
 
                                 <div className="flex items-center justify-center gap-2 opacity-60">
@@ -305,6 +289,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };

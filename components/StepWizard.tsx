@@ -439,12 +439,20 @@ export const Step4Location: React.FC<StepProps> = React.memo(({ prefs, updatePre
     const [generating, setGenerating] = useState(false);
     const [loadingText, setLoadingText] = useState("Generate Plan");
 
+    // Reset generating state when component mounts (user navigated back)
+    useEffect(() => {
+        setGenerating(false);
+        setLoadingText("Generate Plan");
+    }, []);
+
     const handleCopyMine = () => {
         updatePrefs('buddyCountry', prefs.country);
         updatePrefs('buddyRegion', prefs.region);
     };
 
     const handleGenerateClick = () => {
+        if (generating || nextDisabled) return; // Prevent multiple clicks
+
         setGenerating(true);
         setLoadingText("✨ Manifesting...");
         setTimeout(() => setLoadingText("Analysing 14,000+ combos..."), 400);
@@ -506,10 +514,10 @@ export const Step4Location: React.FC<StepProps> = React.memo(({ prefs, updatePre
 
             <NavButtons
                 onNext={handleGenerateClick}
-                onBack={onBack}
-                nextDisabled={nextDisabled}
+                onBack={generating ? undefined : onBack}
+                nextDisabled={nextDisabled || generating}
                 nextLabel={generating ? loadingText : "Reveal My Dream Schedule"}
-                isLoading={false} // We handle text manually for effect
+                isLoading={generating}
             />
         </div>
     );

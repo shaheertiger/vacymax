@@ -91,6 +91,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
     const { displayedPtoUsed, displayedFreeDays, multiplier, isInfiniteEfficiency, planStats } = stats;
 
     const handleUnlockClick = useCallback(() => setShowPaymentModal(true), []);
+    const handleClosePaymentModal = useCallback(() => setShowPaymentModal(false), []);
     const handlePaymentSuccess = useCallback(() => {
         setShowPaymentModal(false);
         onUnlock();
@@ -111,7 +112,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
 
             <PaymentModal
                 isOpen={showPaymentModal}
-                onClose={() => setShowPaymentModal(false)}
+                onClose={handleClosePaymentModal}
                 onSuccess={handlePaymentSuccess}
                 savedValue={hiddenValue}
                 userCountry={userCountry}
@@ -163,8 +164,8 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
                             </h2>
 
                             <div className="text-gray-500 text-sm md:text-base min-h-[48px]">
-                                {viewMode === 'joint' ? (
-                                    <>Joint wellness plan using <strong className="text-gray-700">{result.totalPtoUsed}</strong> of your days and <strong className="text-gray-700">{result.totalPtoUsedBuddy}</strong> partner days.</>
+                                {viewMode === 'joint' && hasBuddy ? (
+                                    <>Joint wellness plan using <strong className="text-gray-700">{result.totalPtoUsed}</strong> of your days and <strong className="text-gray-700">{result.totalPtoUsedBuddy ?? 0}</strong> partner days.</>
                                 ) : (
                                     <>Viewing your personal refresh time: <strong className="text-gray-700">{result.totalPtoUsed} PTO days</strong> used.</>
                                 )}
@@ -248,7 +249,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
                                             </span>
                                         )}
                                         {/* View Mode Logic for Tags */}
-                                        {viewMode === 'joint' && block.buddyPtoDaysUsed === 0 && block.ptoDaysUsed === 0 && (
+                                        {viewMode === 'joint' && hasBuddy && (block.buddyPtoDaysUsed ?? 0) === 0 && block.ptoDaysUsed === 0 && (
                                             <span className="text-[10px] font-bold bg-lavender-50 text-lavender-accent border border-lavender-100 px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
                                                 ♥ Free for Both
                                             </span>
@@ -271,7 +272,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
                                         <div className="font-bold text-gray-700 text-sm">
                                             You: <span className={block.ptoDaysUsed === 0 ? "text-rose-accent" : ""}>{block.ptoDaysUsed}d</span>
                                             {viewMode === 'joint' && hasBuddy && (
-                                                <span className="ml-2 text-gray-400">| Partner: <span className={block.buddyPtoDaysUsed === 0 ? "text-lavender-accent" : ""}>{block.buddyPtoDaysUsed}d</span></span>
+                                                <span className="ml-2 text-gray-400">| Partner: <span className={(block.buddyPtoDaysUsed ?? 0) === 0 ? "text-lavender-accent" : ""}>{block.buddyPtoDaysUsed ?? 0}d</span></span>
                                             )}
                                         </div>
                                     </div>

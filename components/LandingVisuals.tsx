@@ -51,7 +51,7 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
 
                     <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-bold tracking-tight text-dark-text leading-[1.1] mb-4 md:mb-6">
                         We Double Your<br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-accent to-peach-accent italic">Vacation Days.</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-accent to-peach-accent italic">Holidays.</span>
                     </h1>
 
                     <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-xl leading-relaxed mb-8 md:mb-10 border-l-4 border-rose-200 pl-4 md:pl-6">
@@ -332,9 +332,9 @@ export const BattleTestedMarquee = () => {
     const testimonials = [
         "Turned 12 PTO days into 35 days of travel! ✈️",
         "Finally booked that girl's trip to Tulum! 🌴",
-        "My boss asked how I have so much vacation time lol 🤫",
+        "My boss asked how I have so much holiday time lol 🤫",
         "Self-care isn't selfish, it's scheduled. 💅",
-        "Entering my villain era (vacation mode). 😈",
+        "Entering my villain era (holiday mode). 😈",
         "Booked my honeymoon for 2026 already! 💍",
         "The best money I spent on myself this year. 💆‍♀️",
     ];

@@ -7,7 +7,7 @@
 
 ## 1. Introduction
 
-Welcome to **DoubleMyHolidays** ("we," "our," or "us"). We respect your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our vacation optimization service available at [your-domain.com] (the "Service").
+Welcome to **DoubleMyHolidays** ("we," "our," or "us"). We respect your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our holiday optimization service available at [your-domain.com] (the "Service").
 
 This policy complies with the **General Data Protection Regulation (GDPR)**, the **California Consumer Privacy Act (CCPA)**, and other applicable data protection laws.
 
@@ -24,14 +24,14 @@ When you use DoubleMyHolidays, we collect the following information:
 - **Email Address**: Collected during payment checkout to send purchase receipts and communicate about your account
 - **Payment Information**: Processed securely through Stripe (see Section 5.3)
 - **Country and Region**: Used to determine applicable public holidays and regional pricing
-- **Vacation Preferences**: Including PTO days available, preferred vacation strategies, and timeframes
+- **Holiday Preferences**: Including PTO days available, preferred holiday strategies, and timeframes
 
 ### 2.2 Sensitive Financial Data (NOT STORED)
 
 **IMPORTANT**: Your **salary information** is processed **entirely client-side** in your browser and is **NEVER transmitted to our servers, stored in our database, or accessible to DoubleMyHolidays**. 
 
 This data is used solely for:
-- Calculating the monetary value of optimized vacation time
+- Calculating the monetary value of optimized holiday time
 - Displaying personalized recommendations
 
 **Once you close your browser or refresh the page, this information is permanently deleted.**
@@ -61,8 +61,8 @@ We do not collect:
 We use your information for the following purposes:
 
 ### 3.1 Service Delivery
-- Generate personalized vacation optimization plans
-- Calculate vacation efficiency and monetary value
+- Generate personalized holiday optimization plans
+- Calculate holiday efficiency and monetary value
 - Provide country-specific holiday calendars
 
 ### 3.2 Payment Processing
@@ -198,7 +198,7 @@ We retain your data only as long as necessary:
 | Data Type | Retention Period | Reason |
 |-----------|------------------|--------|
 | **Email & Transaction Data** | 7 years | Tax and accounting requirements |
-| **Vacation Plans** | Not stored | Generated client-side only |
+| **Holiday Plans** | Not stored | Generated client-side only |
 | **Salary Information** | 0 days | Never stored (client-side only) |
 | **Analytics Data** | 90 days | Product improvement |
 | **Support Tickets** | 3 years | Customer service records |
@@ -383,7 +383,7 @@ Website: https://ico.org.uk
 
 We do **NOT** use automated decision-making or profiling that produces legal effects or significantly affects you.
 
-The vacation optimization algorithm is a **tool** that provides recommendations, but all final decisions are made by you.
+The holiday optimization algorithm is a **tool** that provides recommendations, but all final decisions are made by you.
 
 ---
 

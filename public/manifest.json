@@ -1,7 +1,7 @@
 {
   "name": "DoubleMyHolidays - Vacation Day Optimizer",
   "short_name": "DoubleMyHolidays",
-  "description": "Maximize your vacation days with smart PTO optimization. Get up to 3x more days off by planning around public holidays.",
+  "description": "Maximize your holidays with smart PTO optimization. Get up to 3x more days off by planning around public holidays.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

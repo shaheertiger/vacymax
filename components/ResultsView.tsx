@@ -322,7 +322,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
                             </h3>
 
                             <p className="text-gray-500 mb-8 leading-relaxed text-sm md:text-base">
-                                See exactly when to book to get <strong className="text-rose-500">{hiddenCount} more vacations</strong> worth <strong>{formatCurrency(hiddenValue)}</strong>.
+                                See exactly when to book to get <strong className="text-rose-500">{hiddenCount} more holidays</strong> worth <strong>{formatCurrency(hiddenValue)}</strong>.
                             </p>
 
                             <button className="w-full py-4 bg-gradient-to-r from-rose-accent to-peach-accent text-white font-bold text-lg rounded-xl hover:scale-[1.02] transition-transform shadow-lg active:scale-95 flex items-center justify-center gap-2 group-hover:shadow-[0_10px_25px_rgba(244,63,94,0.4)]">

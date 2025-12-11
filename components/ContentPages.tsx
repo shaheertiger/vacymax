@@ -119,7 +119,7 @@ export const AlgorithmPage = ({ onBack }: { onBack: () => void }) => (
         <div className="not-prose bg-rose-50 border border-rose-100 rounded-2xl p-6 mb-12">
             <h4 className="font-display font-bold text-gray-800 text-lg mb-2">💡 The Big Idea</h4>
             <p className="text-gray-600 text-sm leading-relaxed">
-                Most people waste PTO by taking random days off. We find the <strong className="text-rose-500">"Bridge Days"</strong>—strategic single days that connect weekends to public holidays, instantly creating long vacation blocks.
+                Most people waste PTO by taking random days off. We find the <strong className="text-rose-500">"Bridge Days"</strong>—strategic single days that connect weekends to public holidays, instantly creating long holiday blocks.
             </p>
         </div>
 
@@ -157,7 +157,7 @@ export const AlgorithmPage = ({ onBack }: { onBack: () => void }) => (
             We Calculate Your ROI
         </h3>
         <p>
-            Not all vacation days are equal. We score every possible trip using our <strong>Efficiency Formula</strong>:
+            Not all holidays are equal. We score every possible trip using our <strong>Efficiency Formula</strong>:
         </p>
         <div className="not-prose bg-gray-50 p-6 rounded-xl border border-gray-200 my-6 font-mono text-center">
             <div className="text-sm text-gray-500 mb-2">Efficiency Score =</div>
@@ -186,7 +186,7 @@ export const AlgorithmPage = ({ onBack }: { onBack: () => void }) => (
         <div className="not-prose bg-gradient-to-br from-rose-50 to-transparent border-l-4 border-rose-400 p-6 rounded-r-xl my-12">
             <h4 className="font-display font-bold text-gray-800 text-xl mb-2">The Result?</h4>
             <p className="text-gray-600 leading-relaxed">
-                A personalized vacation calendar that <strong className="text-rose-500">doubles your time off</strong> without asking your boss for extra days. It's not about working the system—it's about working <em>smarter</em>.
+                A personalized holiday calendar that <strong className="text-rose-500">doubles your time off</strong> without asking your boss for extra days. It's not about working the system—it's about working <em>smarter</em>.
             </p>
         </div>
     </ContentPageLayout>
@@ -208,7 +208,7 @@ export const PrivacyPage = ({ onBack }: { onBack: () => void }) => (
         </p>
         <ul>
             <li>We do not store your name, email, or salary on our servers.</li>
-            <li>We do not track your specific vacation plans.</li>
+            <li>We do not track your specific holiday plans.</li>
             <li>We do not sell your data to travel agencies.</li>
         </ul>
 

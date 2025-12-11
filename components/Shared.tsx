@@ -147,7 +147,7 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
                                     ?
                                 </div>
                                 {showTooltip && (
-                                    <div className="absolute bottom-full right-0 mb-3 w-56 bg-white border border-rose-100 p-4 rounded-xl shadow-xl z-50 text-left animate-fade-up pointer-events-none">
+                                    <div className="absolute bottom-full right-0 mb-3 w-[200px] md:w-56 bg-white border border-rose-100 p-4 rounded-xl shadow-xl z-50 text-left animate-fade-up pointer-events-none">
                                         <p className="text-xs text-gray-600 leading-relaxed font-medium">
                                             {tooltipText}
                                         </p>

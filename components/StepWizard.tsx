@@ -293,7 +293,9 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
                             max="40"
                             value={userDays}
                             onChange={(e) => handlePtoChange(e.target.value)}
-                            className="w-full h-2 bg-rose-100 rounded-lg appearance-none cursor-pointer accent-rose-accent hover:accent-rose-500"
+                            onTouchStart={(e) => e.stopPropagation()}
+                            onTouchMove={(e) => e.stopPropagation()}
+                            className="w-full h-2 bg-rose-100 rounded-lg appearance-none cursor-pointer accent-rose-accent hover:accent-rose-500 touch-pan-x"
                         />
                     </div>
 
@@ -329,7 +331,9 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
                                 max="40"
                                 value={buddyDays}
                                 onChange={(e) => handleBuddyPtoChange(e.target.value)}
-                                className="w-full h-2 bg-lavender-100 rounded-lg appearance-none cursor-pointer accent-lavender-accent hover:accent-lavender-500"
+                                onTouchStart={(e) => e.stopPropagation()}
+                                onTouchMove={(e) => e.stopPropagation()}
+                                className="w-full h-2 bg-lavender-100 rounded-lg appearance-none cursor-pointer accent-lavender-accent hover:accent-lavender-500 touch-pan-x"
                             />
                         </div>
                     )}

@@ -495,113 +495,7 @@ const App: React.FC = () => {
             </div>
           </div>
 
-          <footer className="w-full bg-gradient-to-br from-rose-50 to-lavender-50 border-t border-rose-accent/20 pt-16 pb-12 relative z-[60] overflow-hidden text-sm leading-relaxed selection:bg-rose-accent selection:text-white">
-            {/* Soft decorative overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-rose-100/20 to-lavender-100/20 pointer-events-none"></div>
 
-            {/* Scrolling Marquee */}
-            <div className="absolute top-0 left-0 right-0 h-10 bg-gradient-to-r from-rose-100/50 to-lavender-100/50 border-b border-rose-accent/20 flex items-center overflow-hidden">
-              <div className="animate-[marquee_25s_linear_infinite] whitespace-nowrap text-xs text-rose-accent/70 font-medium tracking-wide px-4 flex gap-8">
-                <span>✨ Your time is precious</span>
-                <span>💖 Plan smarter, not harder</span>
-                <span>🌸 Maximize your wellbeing</span>
-                <span>✨ Create perfect moments</span>
-                <span>💫 Balance work and life</span>
-                <span>✨ Your time is precious</span>
-                <span>💖 Plan smarter, not harder</span>
-                <span>🌸 Maximize your wellbeing</span>
-                <span>✨ Create perfect moments</span>
-                <span>💫 Balance work and life</span>
-              </div>
-            </div>
-
-            <div className="max-w-7xl mx-auto px-6 relative z-20 pt-12 pb-8">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-8 md:mb-16">
-
-                {/* Left: Brand Identity */}
-                <div className="lg:col-span-6 flex flex-col justify-between">
-                  <div>
-                    <div className="inline-block border border-rose-accent/30 text-rose-accent bg-rose-50 px-3 py-1 rounded-full text-[10px] mb-6 font-bold tracking-widest shadow-sm">
-                      THE #1 PLANNER FOR HER 🌸
-                    </div>
-                    <h2 className="text-4xl md:text-5xl font-display font-bold text-gray-800 mb-6 tracking-tight">
-                      Rest is <span className="bg-gradient-to-r from-rose-accent to-lavender-accent bg-clip-text text-transparent italic">productive.</span>
-                    </h2>
-                    <div className="max-w-md border-l-4 border-rose-200 pl-6 py-2">
-                      <p className="text-gray-600 mb-4 font-sans text-lg italic">
-                        "Because you can't pour from an empty cup. Let's fill yours up." 🥂
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right: Links */}
-                <div className="lg:col-span-6 grid grid-cols-1 gap-6">
-
-                  {/* Glass Card */}
-                  <div className="bg-white/40 backdrop-blur-md border border-white/60 p-8 rounded-3xl shadow-lg relative overflow-hidden group hover:bg-white/60 transition-all duration-500">
-                    <div className="absolute -right-10 -top-10 w-32 h-32 bg-rose-100 rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
-
-                    <h4 className="text-gray-800 font-bold mb-6 flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-rose-accent"></span>
-                      Explore More
-                    </h4>
-                    <ul className="space-y-4">
-                      <li>
-                        <button onClick={(e) => handleFooterLink(e, 'about')} className="flex items-center gap-3 w-full text-left group/link p-2 -mx-2 hover:bg-white/50 rounded-xl transition-all">
-                          <span className="w-8 h-8 rounded-full bg-rose-50 text-rose-accent flex items-center justify-center text-xs group-hover/link:bg-rose-accent group-hover/link:text-white transition-all">01</span>
-                          <span className="text-gray-600 font-medium group-hover/link:text-rose-accent transition-colors">Our Manifesto</span>
-                          <span className="ml-auto text-rose-200 group-hover/link:text-rose-accent">→</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button onClick={(e) => handleFooterLink(e, 'strategy-demos')} className="flex items-center gap-3 w-full text-left group/link p-2 -mx-2 hover:bg-white/50 rounded-xl transition-all">
-                          <span className="w-8 h-8 rounded-full bg-lavender-50 text-lavender-accent flex items-center justify-center text-xs group-hover/link:bg-lavender-accent group-hover/link:text-white transition-all">02</span>
-                          <span className="text-gray-600 font-medium group-hover/link:text-lavender-accent transition-colors">Strategy Demos</span>
-                          <span className="ml-auto text-lavender-200 group-hover/link:text-lavender-accent">→</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button onClick={(e) => handleFooterLink(e, 'privacy')} className="flex items-center gap-3 w-full text-left group/link p-2 -mx-2 hover:bg-white/50 rounded-xl transition-all">
-                          <span className="w-8 h-8 rounded-full bg-rose-50 text-rose-accent flex items-center justify-center text-xs group-hover/link:bg-rose-accent group-hover/link:text-white transition-all">03</span>
-                          <span className="text-gray-600 font-medium group-hover/link:text-rose-accent transition-colors">Your Privacy</span>
-                          <span className="ml-auto text-rose-200 group-hover/link:text-rose-accent">→</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button onClick={(e) => handleFooterLink(e, 'terms')} className="flex items-center gap-3 w-full text-left group/link p-2 -mx-2 hover:bg-white/50 rounded-xl transition-all">
-                          <span className="w-8 h-8 rounded-full bg-rose-50 text-rose-accent flex items-center justify-center text-xs group-hover/link:bg-rose-accent group-hover/link:text-white transition-all">04</span>
-                          <span className="text-gray-600 font-medium group-hover/link:text-rose-accent transition-colors">Terms of Service</span>
-                          <span className="ml-auto text-rose-200 group-hover/link:text-rose-accent">→</span>
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-
-                </div>
-              </div>
-
-              {/* Footer Status Bar */}
-              <div className="border-t border-rose-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium text-gray-500">
-                <div className="flex flex-wrap gap-8">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span>System Online</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span>✨ Made with love for your downtime</span>
-                  </div>
-                </div>
-                <div className="text-center md:text-right">
-                  <div className="flex items-center justify-center md:justify-end gap-2">
-                    <span>VacationMax © 2025</span>
-                    <span className="text-rose-300">|</span>
-                    <span className="text-rose-accent">Authorized Personnel Only 💖</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </footer>
         </>
       )}
 
@@ -634,6 +528,115 @@ const App: React.FC = () => {
           </Suspense>
         </main>
       )}
+
+      {/* GLOBAL FOOTER */}
+      <footer className="w-full bg-gradient-to-br from-rose-50 to-lavender-50 border-t border-rose-accent/20 pt-16 pb-12 relative z-[60] overflow-hidden text-sm leading-relaxed selection:bg-rose-accent selection:text-white">
+        {/* Soft decorative overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-rose-100/20 to-lavender-100/20 pointer-events-none"></div>
+
+        {/* Scrolling Marquee */}
+        <div className="absolute top-0 left-0 right-0 h-10 bg-gradient-to-r from-rose-100/50 to-lavender-100/50 border-b border-rose-accent/20 flex items-center overflow-hidden">
+          <div className="animate-[marquee_25s_linear_infinite] whitespace-nowrap text-xs text-rose-accent/70 font-medium tracking-wide px-4 flex gap-8">
+            <span>✨ Your time is precious</span>
+            <span>💖 Plan smarter, not harder</span>
+            <span>🌸 Maximize your wellbeing</span>
+            <span>✨ Create perfect moments</span>
+            <span>💫 Balance work and life</span>
+            <span>✨ Your time is precious</span>
+            <span>💖 Plan smarter, not harder</span>
+            <span>🌸 Maximize your wellbeing</span>
+            <span>✨ Create perfect moments</span>
+            <span>💫 Balance work and life</span>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-6 relative z-20 pt-12 pb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-8 md:mb-16">
+
+            {/* Left: Brand Identity */}
+            <div className="lg:col-span-6 flex flex-col justify-between">
+              <div>
+                <div className="inline-block border border-rose-accent/30 text-rose-accent bg-rose-50 px-3 py-1 rounded-full text-[10px] mb-6 font-bold tracking-widest shadow-sm">
+                  THE #1 PLANNER FOR HER 🌸
+                </div>
+                <h2 className="text-4xl md:text-5xl font-display font-bold text-gray-800 mb-6 tracking-tight">
+                  Rest is <span className="bg-gradient-to-r from-rose-accent to-lavender-accent bg-clip-text text-transparent italic">productive.</span>
+                </h2>
+                <div className="max-w-md border-l-4 border-rose-200 pl-6 py-2">
+                  <p className="text-gray-600 mb-4 font-sans text-lg italic">
+                    "Because you can't pour from an empty cup. Let's fill yours up." 🥂
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Links */}
+            <div className="lg:col-span-6 grid grid-cols-1 gap-6">
+
+              {/* Glass Card */}
+              <div className="bg-white/40 backdrop-blur-md border border-white/60 p-8 rounded-3xl shadow-lg relative overflow-hidden group hover:bg-white/60 transition-all duration-500">
+                <div className="absolute -right-10 -top-10 w-32 h-32 bg-rose-100 rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
+
+                <h4 className="text-gray-800 font-bold mb-6 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-rose-accent"></span>
+                  Explore More
+                </h4>
+                <ul className="space-y-4">
+                  <li>
+                    <button onClick={(e) => handleFooterLink(e, 'about')} className="flex items-center gap-3 w-full text-left group/link p-2 -mx-2 hover:bg-white/50 rounded-xl transition-all">
+                      <span className="w-8 h-8 rounded-full bg-rose-50 text-rose-accent flex items-center justify-center text-xs group-hover/link:bg-rose-accent group-hover/link:text-white transition-all">01</span>
+                      <span className="text-gray-600 font-medium group-hover/link:text-rose-accent transition-colors">Our Manifesto</span>
+                      <span className="ml-auto text-rose-200 group-hover/link:text-rose-accent">→</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button onClick={(e) => handleFooterLink(e, 'strategy-demos')} className="flex items-center gap-3 w-full text-left group/link p-2 -mx-2 hover:bg-white/50 rounded-xl transition-all">
+                      <span className="w-8 h-8 rounded-full bg-lavender-50 text-lavender-accent flex items-center justify-center text-xs group-hover/link:bg-lavender-accent group-hover/link:text-white transition-all">02</span>
+                      <span className="text-gray-600 font-medium group-hover/link:text-lavender-accent transition-colors">Strategy Demos</span>
+                      <span className="ml-auto text-lavender-200 group-hover/link:text-lavender-accent">→</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button onClick={(e) => handleFooterLink(e, 'privacy')} className="flex items-center gap-3 w-full text-left group/link p-2 -mx-2 hover:bg-white/50 rounded-xl transition-all">
+                      <span className="w-8 h-8 rounded-full bg-rose-50 text-rose-accent flex items-center justify-center text-xs group-hover/link:bg-rose-accent group-hover/link:text-white transition-all">03</span>
+                      <span className="text-gray-600 font-medium group-hover/link:text-rose-accent transition-colors">Your Privacy</span>
+                      <span className="ml-auto text-rose-200 group-hover/link:text-rose-accent">→</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button onClick={(e) => handleFooterLink(e, 'terms')} className="flex items-center gap-3 w-full text-left group/link p-2 -mx-2 hover:bg-white/50 rounded-xl transition-all">
+                      <span className="w-8 h-8 rounded-full bg-rose-50 text-rose-accent flex items-center justify-center text-xs group-hover/link:bg-rose-accent group-hover/link:text-white transition-all">04</span>
+                      <span className="text-gray-600 font-medium group-hover/link:text-rose-accent transition-colors">Terms of Service</span>
+                      <span className="ml-auto text-rose-200 group-hover/link:text-rose-accent">→</span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
+
+          {/* Footer Status Bar */}
+          <div className="border-t border-rose-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium text-gray-500">
+            <div className="flex flex-wrap gap-8">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>System Online</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span>✨ Made with love for your downtime</span>
+              </div>
+            </div>
+            <div className="text-center md:text-right">
+              <div className="flex items-center justify-center md:justify-end gap-2">
+                <span>VacationMax © 2025</span>
+                <span className="text-rose-300">|</span>
+                <span className="text-rose-accent">Authorized Personnel Only 💖</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

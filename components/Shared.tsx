@@ -147,11 +147,11 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
                                     ?
                                 </div>
                                 {showTooltip && (
-                                    <div className="absolute bottom-full right-0 mb-3 w-[200px] md:w-56 bg-white border border-rose-100 p-4 rounded-xl shadow-xl z-50 text-left animate-fade-up pointer-events-none">
+                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 md:left-auto md:right-0 md:translate-x-0 mb-3 w-[240px] md:w-56 bg-white border border-rose-100 p-4 rounded-xl shadow-xl z-50 text-left animate-fade-up pointer-events-none">
                                         <p className="text-xs text-gray-600 leading-relaxed font-medium">
                                             {tooltipText}
                                         </p>
-                                        <div className="absolute -bottom-1 right-2 w-2 h-2 bg-white border-r border-b border-rose-100 transform rotate-45"></div>
+                                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 md:left-auto md:right-2 md:translate-x-0 w-2 h-2 bg-white border-r border-b border-rose-100 transform rotate-45"></div>
                                     </div>
                                 )}
                             </div>

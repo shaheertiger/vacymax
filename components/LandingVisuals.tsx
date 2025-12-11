@@ -49,20 +49,20 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
                         The Journey to Freedom 🕊️
                     </div>
 
-                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-bold tracking-tight text-dark-text leading-[1.1] mb-6">
+                    <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-bold tracking-tight text-dark-text leading-[1.1] mb-4 md:mb-6">
                         We Double Your<br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-accent to-peach-accent italic">Vacation Days.</span>
                     </h1>
 
-                    <p className="text-lg md:text-xl text-gray-600 max-w-xl leading-relaxed mb-10 border-l-4 border-rose-200 pl-6">
-                        Stop wasting your paid time off. <strong className="text-rose-accent">Our algorithm finds the "Bridge Days"</strong> that connect public holidays to weekends.<br />
+                    <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-xl leading-relaxed mb-8 md:mb-10 border-l-4 border-rose-200 pl-4 md:pl-6">
+                        Stop wasting your paid time off. <strong className="text-rose-accent">Our algorithm finds the "Bridge Days"</strong> that connect public holidays to weekends.<br className="hidden sm:block" />
                         Turn <span className="font-bold underline decoration-rose-300 decoration-2">10 days of PTO</span> into <span className="font-bold underline decoration-emerald-300 decoration-2">24+ days of freedom</span>. Instantly. 🥂
                     </p>
 
-                    <div className="flex flex-col sm:flex-row items-center gap-6">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6">
                         <button
                             onClick={onCta}
-                            className="w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-rose-accent to-peach-accent hover:shadow-lg hover:shadow-rose-accent/40 text-white font-bold text-lg rounded-full hover:scale-[1.02] transition-all flex items-center justify-center gap-3 group"
+                            className="w-full sm:w-auto px-8 sm:px-10 py-4 sm:py-5 bg-gradient-to-r from-rose-accent to-peach-accent hover:shadow-lg hover:shadow-rose-accent/40 text-white font-bold text-base sm:text-lg rounded-full hover:scale-[1.02] transition-all flex items-center justify-center gap-3 group active:scale-95 min-h-[56px]"
                         >
                             Unlock My Freedom
                             <span className="group-hover:translate-x-1 transition-transform">🕊️</span>

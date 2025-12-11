@@ -416,3 +416,91 @@ input[type=range]::-webkit-slider-runnable-track {
 .zoom-in-95 {
   animation: zoomInSm 0.4s ease-out forwards;
 }
+
+/* ========================================
+   MOBILE UX ENHANCEMENTS
+   ======================================== */
+
+/* Improved Touch Feedback */
+@media (hover: none) and (pointer: coarse) {
+
+  /* Larger touch targets for mobile */
+  button,
+  [role="button"],
+  a {
+    min-height: 44px;
+  }
+
+  /* Faster/snappier active states */
+  button:active,
+  [role="button"]:active,
+  a:active {
+    transform: scale(0.96);
+    transition: transform 0.1s ease-out;
+  }
+
+  /* Prevent text selection during swipes */
+  .touch-pan-x,
+  .touch-pan-y {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Fix iOS input zoom */
+input[type="text"],
+input[type="email"],
+input[type="number"],
+input[type="tel"],
+textarea,
+select {
+  font-size: 16px !important;
+}
+
+/* iOS momentum scrolling */
+.scroll-container {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* Prevent pull-to-refresh on wizard steps */
+.no-overscroll {
+  overscroll-behavior-y: none;
+}
+
+/* Smooth press animation for cards */
+.press-scale {
+  transition: transform 0.15s ease-out;
+}
+
+.press-scale:active {
+  transform: scale(0.97);
+}
+
+/* Animate-in utility classes (shim for mobile) */
+.animate-in {
+  animation-name: fadeIn;
+  animation-duration: 0.4s;
+  animation-fill-mode: forwards;
+}
+
+.fade-in {
+  animation-name: fadeIn;
+}
+
+.animate-fade-up {
+  animation: slideInUpMain 0.5s ease-out forwards;
+}

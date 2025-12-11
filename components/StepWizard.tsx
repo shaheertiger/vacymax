@@ -282,7 +282,7 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
 
                             {/* Dynamic Encouragement Chip */}
                             {userDays >= 15 && (
-                                <div className="absolute -top-12 right-0 bg-rose-500 text-white text-[10px] font-bold py-1 px-3 rounded-full animate-bounce shadow-sm whitespace-nowrap">
+                                <div className="absolute -bottom-3 right-0 bg-rose-500 text-white text-[10px] font-bold py-1 px-3 rounded-full animate-bounce shadow-sm whitespace-nowrap pointer-events-none">
                                     Love that for you! 💅
                                 </div>
                             )}

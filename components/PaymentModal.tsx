@@ -21,13 +21,13 @@ export const getRegionalPrice = (countryName: string = '') => {
     const c = countryName.toLowerCase();
 
     if (c.includes('canada')) {
-        return { amount: 6.99, currency: 'CAD', symbol: '$' };
+        return { amount: 2.49, currency: 'CAD', symbol: '$' };
     }
     if (c.includes('united kingdom') || c.includes('uk')) {
-        return { amount: 3.99, currency: 'GBP', symbol: '£' };
+        return { amount: 1.59, currency: 'GBP', symbol: '£' };
     }
     if (c.includes('australia') || c.includes('au')) {
-        return { amount: 7.99, currency: 'AUD', symbol: '$' };
+        return { amount: 2.99, currency: 'AUD', symbol: '$' };
     }
     // Default (US/International)
     return { amount: 1.99, currency: 'USD', symbol: '$' };
@@ -149,8 +149,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             />
 
             {/* Scroll Container - Full screen with safe padding */}
-            <div className="fixed inset-0 overflow-y-auto overscroll-contain">
-                <div className="flex min-h-full items-center justify-center p-4 safe-pb">
+            <div className="fixed inset-0 overflow-y-auto overscroll-contain pt-safe">
+                <div className="flex min-h-full items-center justify-center p-4 py-8 md:py-4">
                     <div
                         className="relative w-full max-w-md bg-white border border-rose-100 rounded-2xl md:rounded-3xl shadow-2xl animate-fade-up"
                         onClick={(e) => e.stopPropagation()}

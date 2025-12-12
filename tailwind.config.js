@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+    darkMode: 'class',
     content: [
         "./index.html",
         "./src/**/*.{js,ts,jsx,tsx}",
@@ -25,6 +26,12 @@ export default {
                 'light-200': '#F7F5F0',
                 'light-300': '#EBE5DA',
                 'dark-text': '#4A3B3B', // Soft Brown-Black
+                // Dark mode colors
+                'dark-100': '#1a1a2e',
+                'dark-200': '#16213e',
+                'dark-300': '#0f0f23',
+                'dark-surface': '#252542',
+                'dark-border': '#3d3d5c',
             },
             animation: {
                 'shimmer': 'shimmer 3s ease-in-out infinite',

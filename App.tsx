@@ -4,6 +4,7 @@ import { Step1PTO, Step2Timeframe, Step3Strategy, Step4Location } from './compon
 import { generateVacationPlan } from './services/vacationService';
 import { SEOHead } from './components/SEOHead';
 import { useSwipe } from './hooks/useMobileUX';
+import { useWizardProgress, useSavedPlans, useDarkMode } from './hooks/useLocalStorage';
 import { PainHero, BurnCalculator, SolutionGrid, BattleTestedMarquee } from './components/LandingVisuals';
 import { TrustSection } from './components/TrustSection';
 import { supabaseHelpers } from './services/supabase';
@@ -119,9 +120,15 @@ const App: React.FC = () => {
   const [isLocked, setIsLocked] = useState(true);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showResumeBanner, setShowResumeBanner] = useState(false);
 
   // Behavioral UX states
   const [direction, setDirection] = useState<'next' | 'back'>('next');
+
+  // localStorage hooks
+  const { saveProgress, loadProgress, clearProgress } = useWizardProgress(initialPrefs);
+  const { savedPlans, savePlan } = useSavedPlans();
+  const { isDark, toggleDarkMode } = useDarkMode();
 
   const wizardRef = useRef<HTMLDivElement>(null);
 
@@ -244,9 +251,11 @@ const App: React.FC = () => {
     setResult(null);
     setIsLocked(true);
     setShowSuccessMessage(false);
+    setShowResumeBanner(false);
     setView('landing');
+    clearProgress();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
+  }, [clearProgress]);
 
   // Track session on app load
   useEffect(() => {
@@ -255,6 +264,41 @@ const App: React.FC = () => {
       referrer: document.referrer,
     }).catch(err => console.error('Failed to track session:', err));
   }, []);
+
+  // Check for saved wizard progress on mount
+  useEffect(() => {
+    const savedProgress = loadProgress();
+    if (savedProgress && savedProgress.step > 0) {
+      setShowResumeBanner(true);
+    }
+  }, [loadProgress]);
+
+  // Auto-save wizard progress when step or prefs change
+  useEffect(() => {
+    if (step > 0 && step < 5 && view === 'landing') {
+      saveProgress(step, prefs);
+    }
+  }, [step, prefs, view, saveProgress]);
+
+  // Resume saved progress
+  const handleResumeProgress = useCallback(() => {
+    const savedProgress = loadProgress();
+    if (savedProgress) {
+      setPrefs(savedProgress.prefs);
+      setStep(savedProgress.step);
+      setShowResumeBanner(false);
+      setTimeout(() => {
+        const element = document.getElementById('wizard-section');
+        element?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }, [loadProgress]);
+
+  // Dismiss resume banner
+  const handleDismissResume = useCallback(() => {
+    setShowResumeBanner(false);
+    clearProgress();
+  }, [clearProgress]);
 
   // Handle payment success from Stripe redirect (Payment Link or Checkout Session)
   useEffect(() => {
@@ -296,13 +340,13 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-[100dvh] flex flex-col text-dark-text pb-12 overflow-x-hidden bg-light-100 relative">
+    <div className="min-h-[100dvh] flex flex-col text-dark-text dark:text-gray-100 pb-12 overflow-x-hidden bg-light-100 dark:bg-dark-100 relative transition-colors duration-300">
       {/* Desktop-only magic effects - Disabled per user feedback */}
 
       <SEOHead view={view} prefs={prefs} result={result || undefined} country={prefs.country} />
 
       {/* Navigation */}
-      <nav className="w-full py-3 md:py-6 px-4 md:px-12 flex justify-between items-center z-[60] fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-rose-100 transition-all duration-300 safe-pt shadow-sm">
+      <nav className="w-full py-3 md:py-6 px-4 md:px-12 flex justify-between items-center z-[60] fixed top-0 left-0 right-0 bg-white/80 dark:bg-dark-100/90 backdrop-blur-md border-b border-rose-100 dark:border-dark-border transition-all duration-300 safe-pt shadow-sm">
         <div className="flex items-center gap-2 cursor-pointer group flex-shrink-0" onClick={handleReset}>
           <div className="w-8 h-8 bg-gradient-to-br from-rose-accent to-peach-accent rounded-xl flex items-center justify-center shadow-lg transform group-hover:rotate-12 transition-transform">
             <span className="text-white text-lg">🌸</span>
@@ -313,22 +357,39 @@ const App: React.FC = () => {
         <div className="flex items-center gap-2 md:gap-6">
           <button
             onClick={() => setView('how-it-works')}
-            className="text-xs md:text-sm font-medium text-slate-500 hover:text-rose-accent transition-colors hidden md:block"
+            className="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-rose-accent transition-colors hidden md:block"
           >
             How it Works
           </button>
           <button
             onClick={() => setView('strategy-demos')}
-            className="text-xs md:text-sm font-medium text-slate-500 hover:text-lavender-accent transition-colors hidden md:block"
+            className="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-lavender-accent transition-colors hidden md:block"
           >
             Vacation Styles
+          </button>
+
+          {/* Dark Mode Toggle */}
+          <button
+            onClick={toggleDarkMode}
+            className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-rose-50 dark:hover:bg-dark-surface transition-colors hidden md:flex items-center justify-center"
+            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {isDark ? (
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            )}
           </button>
 
           {/* Create User/Restart logic links for Desktop */}
           {step > 0 && (
             <button
               onClick={handleReset}
-              className="text-xs md:text-sm font-medium text-slate-500 hover:text-rose-accent transition-colors hidden md:block"
+              className="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-rose-accent transition-colors hidden md:block"
             >
               Restart
             </button>
@@ -373,23 +434,44 @@ const App: React.FC = () => {
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-[59] bg-white/95 backdrop-blur-xl pt-24 px-6 md:hidden flex flex-col gap-6 animate-fade-in text-center">
+        <div className="fixed inset-0 z-[59] bg-white/95 dark:bg-dark-100/95 backdrop-blur-xl pt-24 px-6 md:hidden flex flex-col gap-6 animate-fade-in text-center">
           <button
             onClick={() => { setView('how-it-works'); setIsMobileMenuOpen(false); }}
-            className="text-2xl font-display font-bold text-gray-800 hover:text-rose-accent transition-colors py-2 border-b border-gray-100"
+            className="text-2xl font-display font-bold text-gray-800 dark:text-gray-100 hover:text-rose-accent transition-colors py-2 border-b border-gray-100 dark:border-dark-border"
           >
             How it Works
           </button>
           <button
             onClick={() => { setView('strategy-demos'); setIsMobileMenuOpen(false); }}
-            className="text-2xl font-display font-bold text-gray-800 hover:text-rose-accent transition-colors py-2 border-b border-gray-100"
+            className="text-2xl font-display font-bold text-gray-800 dark:text-gray-100 hover:text-rose-accent transition-colors py-2 border-b border-gray-100 dark:border-dark-border"
           >
             Vacation Styles
+          </button>
+          {/* Dark Mode Toggle - Mobile */}
+          <button
+            onClick={() => { toggleDarkMode(); }}
+            className="text-2xl font-display font-bold text-gray-800 dark:text-gray-100 hover:text-rose-accent transition-colors py-2 border-b border-gray-100 dark:border-dark-border flex items-center justify-center gap-3"
+          >
+            {isDark ? (
+              <>
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                Light Mode
+              </>
+            ) : (
+              <>
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+                Dark Mode
+              </>
+            )}
           </button>
           {step > 0 && (
             <button
               onClick={() => { handleReset(); setIsMobileMenuOpen(false); }}
-              className="text-2xl font-display font-bold text-rose-500 hover:text-rose-600 transition-colors py-2 border-b border-gray-100"
+              className="text-2xl font-display font-bold text-rose-500 hover:text-rose-600 transition-colors py-2 border-b border-gray-100 dark:border-dark-border"
             >
               Restart Plan
             </button>
@@ -433,6 +515,37 @@ const App: React.FC = () => {
         {view === 'region-au' && <RegionPage region="Australia" onBack={() => setView('landing')} />}
       </Suspense>
 
+      {/* Resume Progress Banner */}
+      {showResumeBanner && view === 'landing' && step === 0 && (
+        <div className="fixed top-20 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-auto md:max-w-lg z-[58] animate-fade-up">
+          <div className="bg-gradient-to-r from-lavender-50 to-rose-50 dark:from-dark-surface dark:to-dark-200 border border-lavender-200 dark:border-dark-border rounded-2xl p-4 shadow-lg flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-lavender-100 dark:bg-lavender-accent/20 flex items-center justify-center text-lavender-accent flex-shrink-0">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-gray-800 dark:text-gray-100">Welcome back!</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">Continue where you left off</p>
+            </div>
+            <div className="flex gap-2 flex-shrink-0">
+              <button
+                onClick={handleDismissResume}
+                className="px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+              >
+                Dismiss
+              </button>
+              <button
+                onClick={handleResumeProgress}
+                className="px-4 py-1.5 text-xs font-bold bg-lavender-accent text-white rounded-lg hover:bg-lavender-accent/90 transition-colors"
+              >
+                Resume
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* --- LANDING PAGE --- */}
       {view === 'landing' && (
         <>
@@ -440,6 +553,66 @@ const App: React.FC = () => {
           <BurnCalculator />
           <SolutionGrid />
           <TrustSection />
+
+          {/* Saved Plans Section */}
+          {savedPlans.length > 0 && (
+            <div className="w-full bg-gradient-to-br from-lavender-50 to-rose-50 dark:from-dark-200 dark:to-dark-100 py-16 px-4">
+              <div className="max-w-4xl mx-auto">
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <h2 className="text-2xl md:text-3xl font-display font-bold text-gray-800 dark:text-gray-100">Your Saved Plans</h2>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Pick up where you left off</p>
+                  </div>
+                  <span className="text-xs font-bold text-lavender-accent bg-lavender-100 dark:bg-lavender-accent/20 px-3 py-1 rounded-full">
+                    {savedPlans.length} saved
+                  </span>
+                </div>
+                <div className="grid gap-4">
+                  {savedPlans.slice(0, 3).map((plan) => (
+                    <button
+                      key={plan.id}
+                      onClick={() => {
+                        setPrefs(plan.prefs);
+                        setResult(plan.result);
+                        setView('results');
+                        setIsLocked(false);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      className="w-full bg-white dark:bg-dark-surface border border-lavender-100 dark:border-dark-border rounded-2xl p-5 text-left hover:shadow-lg hover:border-lavender-200 dark:hover:border-lavender-accent/30 transition-all group"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xs font-bold text-lavender-accent bg-lavender-50 dark:bg-lavender-accent/20 px-2 py-0.5 rounded">
+                              {plan.result.planName}
+                            </span>
+                            <span className="text-xs text-gray-400 dark:text-gray-500">
+                              {new Date(plan.savedAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <h3 className="font-bold text-gray-800 dark:text-gray-100 truncate group-hover:text-lavender-accent transition-colors">
+                            {plan.result.totalDaysOff} days off with {plan.result.totalPtoUsed} PTO
+                          </h3>
+                          <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                            {plan.prefs.country}{plan.prefs.region ? `, ${plan.prefs.region}` : ''} • {plan.result.vacationBlocks.length} trips
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-3 ml-4">
+                          <div className="text-right hidden sm:block">
+                            <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider">Value</p>
+                            <p className="font-bold text-rose-accent">${plan.result.totalValueRecovered.toLocaleString()}</p>
+                          </div>
+                          <svg className="w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:text-lavender-accent group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* THE WIZARD */}
           <div id="wizard-section" ref={wizardRef} className="w-full bg-gradient-to-br from-light-100 via-light-200 to-light-300 py-24 px-4 scroll-mt-24 relative z-[55]">
@@ -516,6 +689,7 @@ const App: React.FC = () => {
               onUnlock={handlePaymentSuccess}
               userCountry={prefs.country}
               prefs={prefs}
+              onSavePlan={() => savePlan(prefs, result)}
             />
           </Suspense>
         </main>

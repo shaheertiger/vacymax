@@ -5,6 +5,7 @@ import { generateVacationPlan } from './services/vacationService';
 import { SEOHead } from './components/SEOHead';
 import { useSwipe } from './hooks/useMobileUX';
 import { useWizardProgress, useSavedPlans, useDarkMode } from './hooks/useLocalStorage';
+import { usePWAInstall, useIOSInstallPrompt, useOnlineStatus } from './hooks/usePWA';
 import { PainHero, BurnCalculator, SolutionGrid, BattleTestedMarquee } from './components/LandingVisuals';
 import { TrustSection } from './components/TrustSection';
 import { supabaseHelpers } from './services/supabase';
@@ -129,6 +130,20 @@ const App: React.FC = () => {
   const { saveProgress, loadProgress, clearProgress } = useWizardProgress(initialPrefs);
   const { savedPlans, savePlan } = useSavedPlans();
   const { isDark, toggleDarkMode } = useDarkMode();
+
+  // PWA hooks
+  const { isInstallable, promptInstall } = usePWAInstall();
+  const { showIOSPrompt, dismissIOSPrompt } = useIOSInstallPrompt();
+  const isOnline = useOnlineStatus();
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
+
+  // Show install banner after user has engaged (scrolled or completed step 1)
+  useEffect(() => {
+    if (isInstallable && step >= 1) {
+      const timer = setTimeout(() => setShowInstallBanner(true), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isInstallable, step]);
 
   const wizardRef = useRef<HTMLDivElement>(null);
 
@@ -542,6 +557,88 @@ const App: React.FC = () => {
                 Resume
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* PWA Install Banner */}
+      {showInstallBanner && isInstallable && (
+        <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-80 z-[58] animate-fade-up">
+          <div className="bg-gradient-to-r from-rose-500 to-peach-accent dark:from-rose-600 dark:to-peach-accent rounded-2xl p-4 shadow-xl flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl flex-shrink-0">
+              📱
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-white">Install the App</p>
+              <p className="text-xs text-white/80 truncate">Access your plans anytime, even offline</p>
+            </div>
+            <div className="flex gap-2 flex-shrink-0">
+              <button
+                onClick={() => setShowInstallBanner(false)}
+                className="p-2 text-white/60 hover:text-white transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <button
+                onClick={() => {
+                  promptInstall();
+                  setShowInstallBanner(false);
+                }}
+                className="px-3 py-1.5 text-xs font-bold bg-white text-rose-accent rounded-lg hover:bg-white/90 transition-colors"
+              >
+                Install
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* iOS Install Instructions */}
+      {showIOSPrompt && (
+        <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 z-[58] animate-fade-up">
+          <div className="bg-white dark:bg-dark-surface border border-rose-100 dark:border-dark-border rounded-2xl p-5 shadow-xl">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-rose-50 dark:bg-rose-accent/20 flex items-center justify-center text-2xl flex-shrink-0">
+                📲
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-bold text-gray-800 dark:text-gray-100 mb-1">Add to Home Screen</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                  Tap <span className="inline-flex items-center gap-1 bg-gray-100 dark:bg-dark-200 px-1.5 py-0.5 rounded">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316" />
+                    </svg>
+                    Share
+                  </span> then "Add to Home Screen" for quick access
+                </p>
+                <button
+                  onClick={dismissIOSPrompt}
+                  className="text-xs font-medium text-rose-accent hover:text-rose-600 transition-colors"
+                >
+                  Got it
+                </button>
+              </div>
+              <button
+                onClick={dismissIOSPrompt}
+                className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Offline Banner */}
+      {!isOnline && (
+        <div className="fixed top-20 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-auto z-[58] animate-fade-up">
+          <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-xl px-4 py-2 shadow-lg flex items-center gap-3">
+            <span className="text-amber-500">⚠️</span>
+            <span className="text-sm font-medium text-amber-700 dark:text-amber-300">You're offline - saved plans still available</span>
           </div>
         </div>
       )}

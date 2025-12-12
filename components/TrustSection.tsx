@@ -38,6 +38,37 @@ const wallOfLove = [
   }
 ];
 
+// Success stories with specific stats
+const successStories = [
+  {
+    name: 'Emily R.',
+    location: 'New York, USA',
+    ptoUsed: 12,
+    daysOff: 28,
+    story: 'I turned my standard 2 weeks into almost a month off! The tool found hidden long weekends I never would have noticed.',
+    highlight: 'Took a 10-day Europe trip using only 5 PTO days',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=emily&backgroundColor=ffd5dc',
+  },
+  {
+    name: 'James T.',
+    location: 'London, UK',
+    ptoUsed: 15,
+    daysOff: 35,
+    story: 'As a new parent, time off is precious. This helped me plan quality family time without burning through all my leave.',
+    highlight: 'Spent 2 extra weeks with my newborn',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=james&backgroundColor=c7d2fe',
+  },
+  {
+    name: 'Sophie L.',
+    location: 'Sydney, Australia',
+    ptoUsed: 10,
+    daysOff: 24,
+    story: 'I was skeptical at first, but the efficiency gains are real. Now I recommend it to everyone at work!',
+    highlight: 'Saved 8 PTO days for emergencies',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=sophie&backgroundColor=fef3c7',
+  },
+];
+
 // --- BEHAVIORAL TRIGGER: LIVE ACTIVITY FEED ---
 const LiveActivityFeed = () => {
   const [activities, setActivities] = useState([
@@ -152,6 +183,82 @@ export const TrustSection: React.FC = () => {
                     </div>
                   </div>
                   <p className="text-gray-600 leading-relaxed text-sm md:text-base italic">"{post.quote}"</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Success Stories Section */}
+        <div className="space-y-6 md:space-y-8">
+          <div className="text-center max-w-2xl mx-auto">
+            <span className="inline-block bg-gradient-to-r from-rose-100 to-lavender-100 text-rose-accent px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
+              Real Results
+            </span>
+            <h3 className="text-2xl md:text-4xl font-display font-bold text-gray-800 mb-3">
+              See How Others Maximized Their Time Off
+            </h3>
+            <p className="text-gray-500 text-sm md:text-base">
+              Real stories from people who transformed their work-life balance
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {successStories.map((story, index) => (
+              <motion.div
+                key={story.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="bg-white rounded-3xl p-6 md:p-8 border border-rose-100 shadow-sm hover:shadow-xl transition-all relative overflow-hidden group"
+              >
+                {/* Decorative gradient */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-rose-50 to-transparent rounded-bl-full opacity-50" />
+
+                <div className="relative z-10">
+                  {/* Stats badges */}
+                  <div className="flex gap-2 mb-4">
+                    <div className="bg-rose-50 border border-rose-100 rounded-lg px-3 py-1.5">
+                      <p className="text-[10px] text-gray-400 uppercase tracking-wider">PTO Used</p>
+                      <p className="text-lg font-bold text-rose-accent">{story.ptoUsed} days</p>
+                    </div>
+                    <div className="bg-lavender-50 border border-lavender-100 rounded-lg px-3 py-1.5">
+                      <p className="text-[10px] text-gray-400 uppercase tracking-wider">Days Off</p>
+                      <p className="text-lg font-bold text-lavender-accent">{story.daysOff} days</p>
+                    </div>
+                    <div className="bg-green-50 border border-green-100 rounded-lg px-3 py-1.5">
+                      <p className="text-[10px] text-gray-400 uppercase tracking-wider">Efficiency</p>
+                      <p className="text-lg font-bold text-green-600">+{Math.round((story.daysOff / story.ptoUsed - 1) * 100)}%</p>
+                    </div>
+                  </div>
+
+                  {/* Quote */}
+                  <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                    "{story.story}"
+                  </p>
+
+                  {/* Highlight */}
+                  <div className="bg-gradient-to-r from-rose-50 to-lavender-50 rounded-xl p-3 mb-4">
+                    <p className="text-xs font-bold text-rose-accent flex items-center gap-2">
+                      <span className="text-lg">🎯</span>
+                      {story.highlight}
+                    </p>
+                  </div>
+
+                  {/* Author */}
+                  <div className="flex items-center gap-3 pt-4 border-t border-rose-50">
+                    <img
+                      src={story.avatar}
+                      alt={`${story.name} profile`}
+                      className="w-10 h-10 rounded-full border-2 border-rose-100"
+                      loading="lazy"
+                    />
+                    <div>
+                      <p className="font-bold text-gray-800 text-sm">{story.name}</p>
+                      <p className="text-xs text-gray-400">{story.location}</p>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             ))}

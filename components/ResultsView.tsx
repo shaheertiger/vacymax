@@ -4,6 +4,7 @@ import { PaymentModal, getRegionalPrice } from './PaymentModal';
 import { formatDate, formatCurrency, generateGoogleCalendarLink, downloadICS } from '../services/utils';
 import { HolidayTooltip, EfficiencyGauge, DistributionChart, YearTimeline } from './Visualizations';
 import { CountUpNumber } from './Celebrations';
+import { ShareableGraphic } from './ShareableGraphic';
 
 // Social Share Component
 const SocialShare: React.FC<{ totalDaysOff: number; ptoUsed: number; multiplier: number }> = ({ totalDaysOff, ptoUsed, multiplier }) => {
@@ -116,6 +117,7 @@ interface ResultsViewProps {
 export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnlock, isLocked, userCountry, prefs, onSavePlan }) => {
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
+    const [showShareGraphic, setShowShareGraphic] = useState(false);
 
     // NEW: View Mode Toggle (Joint vs Solo)
     const hasBuddy = result.totalPtoUsedBuddy !== undefined;
@@ -227,6 +229,13 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
                 planStats={planStats}
             />
 
+            {showShareGraphic && (
+                <ShareableGraphic
+                    result={result}
+                    onClose={() => setShowShareGraphic(false)}
+                />
+            )}
+
             {/* Header Cards with Staggered Entrance */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
 
@@ -325,12 +334,21 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
             <div className="space-y-4">
                 <div className="flex items-center justify-between px-2 animate-enter delay-400">
                     <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Your Wellness Schedule</h3>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap justify-end">
                         <SocialShare
                             totalDaysOff={result.totalDaysOff}
                             ptoUsed={result.totalPtoUsed}
                             multiplier={multiplier}
                         />
+                        <button
+                            onClick={() => setShowShareGraphic(true)}
+                            className="flex items-center gap-1.5 text-xs bg-gradient-to-r from-rose-accent to-peach-accent text-white px-3 py-1.5 rounded-lg transition-all hover:shadow-md hover:scale-105 active:scale-95"
+                        >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            Create Graphic
+                        </button>
                         {onSavePlan && (
                             <button
                                 onClick={handleSavePlan}

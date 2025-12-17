@@ -210,11 +210,13 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
     }, [onUnlock]);
 
     const handleSavePlan = useCallback(() => {
-        if (onSavePlan && !isSaved) {
-            onSavePlan();
-            setIsSaved(true);
+        if (!onSavePlan || isSaved || isLocked) {
+            return;
         }
-    }, [onSavePlan, isSaved]);
+
+        onSavePlan();
+        setIsSaved(true);
+    }, [onSavePlan, isSaved, isLocked]);
 
     if (!result.vacationBlocks || result.vacationBlocks.length === 0) {
         return (
@@ -457,10 +459,12 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
                         {onSavePlan && (
                             <button
                                 onClick={handleSavePlan}
-                                disabled={isSaved}
+                                disabled={isSaved || isLocked}
                                 className={`flex items-center gap-1.5 text-xs border px-3 py-1.5 rounded-lg transition-all shadow-sm ${
                                     isSaved
                                         ? 'bg-green-50 border-green-200 text-green-600'
+                                        : isLocked
+                                            ? 'bg-gray-50 border-gray-100 text-gray-400 cursor-not-allowed'
                                         : 'bg-white hover:bg-lavender-50 border-lavender-100 text-lavender-accent hover:scale-105 active:scale-95'
                                 }`}
                             >

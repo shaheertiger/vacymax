@@ -82,12 +82,23 @@ export function useWizardProgress() {
 }
 
 // --- Saved Plans History ---
+export interface SavedPlanMetadata {
+  planName?: string;
+  totalDaysOff?: number;
+  totalPtoUsed?: number;
+  totalValueRecovered?: number;
+  tripCount?: number;
+  summary?: string;
+}
+
 export interface SavedPlan {
   id: string;
   name: string;
   prefs: UserPreferences;
-  result: OptimizationResult;
+  result?: OptimizationResult;
   savedAt: number;
+  isUnlocked: boolean;
+  metadata: SavedPlanMetadata;
 }
 
 const MAX_SAVED_PLANS = 5;
@@ -95,25 +106,43 @@ const MAX_SAVED_PLANS = 5;
 export function useSavedPlans() {
   const [savedPlans, setSavedPlans] = useState<SavedPlan[]>([]);
 
+  const buildMetadata = useCallback((result?: OptimizationResult): SavedPlanMetadata => ({
+    planName: result?.planName,
+    totalDaysOff: result?.totalDaysOff,
+    totalPtoUsed: result?.totalPtoUsed,
+    totalValueRecovered: result?.totalValueRecovered,
+    tripCount: result?.vacationBlocks?.length ?? 0,
+    summary: result?.summary,
+  }), []);
+
   // Load on mount
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.SAVED_PLANS);
       if (saved) {
-        setSavedPlans(JSON.parse(saved));
+        const parsed: SavedPlan[] = JSON.parse(saved);
+        setSavedPlans(parsed.map(plan => ({
+          ...plan,
+          isUnlocked: plan.isUnlocked ?? false,
+          metadata: plan.metadata ?? buildMetadata(plan.result),
+        })));
       }
     } catch (e) {
       console.warn('Failed to load saved plans:', e);
     }
-  }, []);
+  }, [buildMetadata]);
 
-  const savePlan = useCallback((prefs: UserPreferences, result: OptimizationResult, customName?: string) => {
+  const savePlan = useCallback((prefs: UserPreferences, result?: OptimizationResult, options?: { customName?: string; isUnlocked?: boolean; metadata?: SavedPlanMetadata }) => {
+    const metadata = options?.metadata ?? buildMetadata(result);
+    const isUnlocked = options?.isUnlocked ?? false;
     const newPlan: SavedPlan = {
       id: `plan-${Date.now()}`,
-      name: customName || `${result.planName} - ${new Date().toLocaleDateString()}`,
+      name: options?.customName || `${metadata.planName || 'Saved plan'} - ${new Date().toLocaleDateString()}`,
       prefs,
-      result,
+      result: isUnlocked ? result : undefined,
       savedAt: Date.now(),
+      isUnlocked,
+      metadata,
     };
 
     setSavedPlans(prev => {
@@ -127,7 +156,7 @@ export function useSavedPlans() {
     });
 
     return newPlan.id;
-  }, []);
+  }, [buildMetadata]);
 
   const deletePlan = useCallback((planId: string) => {
     setSavedPlans(prev => {

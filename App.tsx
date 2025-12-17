@@ -9,11 +9,104 @@ import { usePWAInstall, useIOSInstallPrompt, useOnlineStatus } from './hooks/use
 import { PainHero, BurnCalculator, SolutionGrid, BattleTestedMarquee } from './components/LandingVisuals';
 import { TrustSection } from './components/TrustSection';
 import { supabaseHelpers } from './services/supabase';
-import { createSmartDefaults } from './utils/smartDefaults';
 // import { CelebrationOverlay, ProgressMilestone } from './components/Celebrations'; // Removed
 // Eagerly load the results view to remove chunk-fetch failures when users finish the wizard.
 import { ResultsView } from './components/ResultsView';
 import { StrategyDemosPage } from './components/StrategyDemos';
+
+// Inline smart defaults helpers (to avoid TDZ errors with enum imports)
+const detectCountryFromLocale = (): string => {
+  if (typeof navigator === 'undefined') return 'United States';
+
+  const language = navigator.language || '';
+
+  // Map common locale codes to country names
+  const localeMap: Record<string, string> = {
+    'en-US': 'United States',
+    'en-GB': 'United Kingdom',
+    'en-CA': 'Canada',
+    'en-AU': 'Australia',
+    'en-NZ': 'Australia',
+    'fr-CA': 'Canada',
+    'de': 'Europe',
+    'fr-FR': 'Europe',
+    'es': 'Europe',
+    'it': 'Europe',
+    'pt': 'Europe',
+    'nl': 'Europe',
+    'pl': 'Europe',
+    'sv': 'Europe',
+    'da': 'Europe',
+    'fi': 'Europe',
+    'no': 'Europe',
+  };
+
+  // Try exact match first
+  if (localeMap[language]) {
+    return localeMap[language];
+  }
+
+  // Try country code only (e.g., 'en-US' -> 'US')
+  const countryCode = language.split('-')[1];
+  if (countryCode) {
+    switch (countryCode.toUpperCase()) {
+      case 'US': return 'United States';
+      case 'GB':
+      case 'UK': return 'United Kingdom';
+      case 'CA': return 'Canada';
+      case 'AU': return 'Australia';
+      default:
+        if (['DE', 'FR', 'ES', 'IT', 'PT', 'NL', 'PL', 'SE', 'DK', 'FI', 'NO', 'BE', 'AT', 'CH', 'IE', 'GR'].includes(countryCode.toUpperCase())) {
+          return 'Europe';
+        }
+    }
+  }
+
+  return 'United States';
+};
+
+const getRecommendedYear = (): TimeframeType => {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+
+  // If we're in 2025 and before April, suggest 2025 still
+  if (currentYear === 2025 && currentMonth < 3) {
+    return TimeframeType.CALENDAR_2025;
+  }
+
+  return TimeframeType.CALENDAR_2026;
+};
+
+const getRecommendedPTODays = (country: string): number => {
+  const ptoByCountry: Record<string, number> = {
+    'United States': 15,
+    'United Kingdom': 20,
+    'Canada': 15,
+    'Australia': 20,
+    'Europe': 25,
+  };
+
+  return ptoByCountry[country] || 15;
+};
+
+const createSmartDefaults = (): UserPreferences => {
+  const detectedCountry = detectCountryFromLocale();
+  const recommendedYear = getRecommendedYear();
+  const recommendedPTO = getRecommendedPTODays(detectedCountry);
+
+  return {
+    ptoDays: recommendedPTO,
+    timeframe: recommendedYear,
+    strategy: OptimizationStrategy.BALANCED,
+    country: detectedCountry,
+    region: '',
+    hasBuddy: false,
+    buddyPtoDays: 0,
+    buddyCountry: '',
+    buddyRegion: '',
+  };
+};
 
 // Lazy load content pages
 const AboutPage = lazy(() => import('./components/ContentPages').then(module => ({ default: module.AboutPage })));

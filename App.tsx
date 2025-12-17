@@ -947,6 +947,32 @@ const App: React.FC = () => {
         </>
       )}
 
+      {/* Mobile quick action bar for thumb-friendly access */}
+      {view !== 'results' && (
+        <div
+          className="fixed md:hidden inset-x-3 bottom-3 z-[95] pointer-events-none"
+          style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 6px)' }}
+        >
+          <div className="bg-white/95 border border-rose-100 shadow-2xl rounded-2xl px-4 py-3 flex items-center gap-3 pointer-events-auto">
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-rose-accent flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-accent animate-pulse"></span>
+                Quick Access
+              </p>
+              <p className="text-sm font-semibold text-gray-800 truncate">
+                {step === 0 ? 'Start planning in under a minute' : step < 3 ? `Continue step ${clampedStep} of 2` : 'Generating your plan...'}
+              </p>
+            </div>
+            <button
+              onClick={handleMobileCta}
+              className="px-4 py-2 bg-gradient-to-r from-rose-accent to-peach-accent text-white font-bold text-sm rounded-xl shadow-lg active:scale-95 transition-all"
+            >
+              {step === 0 ? 'Start' : 'Resume'}
+            </button>
+          </div>
+        </div>
+      )}
+
       {view === 'results' && result && (
         <main className="flex-grow pt-24 md:pt-32 px-4 md:px-6 relative z-40 bg-gradient-to-br from-light-100 via-light-200 to-light-300 slide-in-from-bottom">
           {showSuccessMessage && (

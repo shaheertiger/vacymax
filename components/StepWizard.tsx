@@ -3,7 +3,7 @@ import { UserPreferences, OptimizationStrategy, TimeframeType } from '../types';
 import { StepHeader, NavButtons, SelectionCard, DebouncedInput } from './Shared';
 import { useHaptics } from '../hooks/useMobileUX';
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 2; // Consolidated from 4 to 2 steps
 
 // --- CONSTANTS & STATIC DATA ---
 const DAILY_VALUE_ESTIMATE = 460;
@@ -21,34 +21,34 @@ const STRATEGIES = [
     {
         id: OptimizationStrategy.BALANCED,
         title: 'The "CEO" Schedule ✨',
-        desc: 'Strategic power moves. Maximum ROI.',
+        desc: 'Mix long trips with long weekends. Perfect balance of adventure and recovery.',
+        fullDesc: 'The ultimate power move. We identify the highest-value opportunities to create a schedule that balances restoration with ambition. Ideal for busy leaders.',
         roi: 'Most Popular',
         color: 'from-rose-500/10 to-peach-500/10',
-        tooltip: "The ultimate power move. We identify the highest-value opportunities to create a schedule that balances restoration with ambition."
     },
     {
         id: OptimizationStrategy.LONG_WEEKENDS,
         title: 'The Socialite 🥂',
-        desc: 'Maximizing events & weekend trips.',
+        desc: 'Maximize events and weekend getaways. More frequent, shorter breaks.',
+        fullDesc: "Never miss a moment. We optimize your calendar for frequency, ensuring you're always the one with plans. Great for event lovers and frequent travelers.",
         roi: 'Stress Free',
         color: 'from-lavender-500/10 to-indigo-500/10',
-        tooltip: "Never miss a moment. We optimize your calendar for frequency, ensuring you're always the one with plans."
     },
     {
         id: OptimizationStrategy.EXTENDED,
         title: 'The Jetsetter ✈️',
-        desc: 'Long-haul flights & deep exploration.',
+        desc: 'Prioritize longer trips for international travel and deep resets.',
+        fullDesc: "Pack your bags. We find the longest continuous blocks of time to facilitate international travel and complete disconnection. Perfect for travelers.",
         roi: 'Traveler',
         color: 'from-amber-500/10 to-orange-500/10',
-        tooltip: "Pack your bags. We prioritize finding the longest continuous blocks of time to facilitate international travel and deep resets."
     },
     {
         id: OptimizationStrategy.MINI_BREAKS,
         title: 'The Wellness Era 🧘‍♀️',
-        desc: 'Consistent self-care intervals.',
+        desc: 'Regular mini-breaks for consistent self-care and recharge.',
+        fullDesc: "Sustainable living. We structure your year with rhythm and routine, ensuring you never go too long without a recharge. Best for mental health focus.",
         roi: 'Healthy',
         color: 'from-emerald-500/10 to-teal-500/10',
-        tooltip: "Sustainable living. We structure your year with rhythm and routine, ensuring you never go too long without a recharge."
     },
 ];
 
@@ -158,39 +158,25 @@ const normalizePtoValue = (rawValue: string) => {
 
 const PRESETS = [10, 15, 20, 25];
 
+// New consolidated Step 1: Essentials (Country + PTO + Year)
 export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, onNext, direction = 'next', validationState }) => {
     const { trigger } = useHaptics();
     const userDays = prefs.ptoDays;
-    const buddyDays = prefs.buddyPtoDays || 0;
 
     const [localPto, setLocalPto] = useState<string>(userDays.toString());
-    const [localBuddyPto, setLocalBuddyPto] = useState<string>(buddyDays.toString());
 
     useEffect(() => {
         setLocalPto(userDays.toString());
     }, [userDays]);
-
-    useEffect(() => {
-        if (prefs.hasBuddy) setLocalBuddyPto(buddyDays.toString());
-    }, [buddyDays, prefs.hasBuddy]);
 
     const handlePtoChange = (valStr: string) => {
         setLocalPto(valStr);
         const val = normalizePtoValue(valStr);
         updatePrefs('ptoDays', val);
 
-        // Haptic tick every 5 days for tactile feel
         if (val > 0 && val % 5 === 0) {
             trigger('light');
         }
-    };
-
-    const handleBuddyPtoChange = (valStr: string) => {
-        setLocalBuddyPto(valStr);
-        const val = normalizePtoValue(valStr);
-        updatePrefs('buddyPtoDays', val);
-
-        if (val > 0 && val % 5 === 0) trigger('light');
     };
 
     const handlePresetClick = (val: string) => {
@@ -198,25 +184,31 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
         handlePtoChange(val);
     };
 
-    const handleToggleClick = () => {
-        trigger('medium');
-        updatePrefs('hasBuddy', !prefs.hasBuddy);
+    const handleCountryChange = (country: string) => {
+        trigger('light');
+        updatePrefs('country', country);
+    };
+
+    const handleYearChange = (year: TimeframeType) => {
+        trigger('light');
+        updatePrefs('timeframe', year);
     };
 
     const totals = React.useMemo(() => {
-        const total = userDays + (prefs.hasBuddy ? buddyDays : 0);
-        const safeTotal = Number.isFinite(total) ? total : 0;
+        const safeTotal = Number.isFinite(userDays) ? userDays : 0;
 
         return {
             totalDays: safeTotal,
             valueEstimate: safeTotal * DAILY_VALUE_ESTIMATE,
             potentialDays: Math.round(safeTotal * EFFICIENCY_MULTIPLIER),
         };
-    }, [buddyDays, prefs.hasBuddy, userDays]);
+    }, [userDays]);
 
     const { totalDays, valueEstimate, potentialDays } = totals;
-    const isValid = validationState?.isValid ?? totalDays > 0;
-    const helperText = validationState?.helperText;
+
+    // Validation: need PTO days and country
+    const isValid = totalDays > 0 && Boolean(prefs.country);
+    const helperText = !totalDays ? 'Add at least 1 PTO day' : !prefs.country ? 'Select your country' : '';
 
     const handleNextClick = () => {
         if (!isValid) return;
@@ -224,144 +216,151 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
         onNext();
     };
 
+    const yearOptions = [
+        { value: TimeframeType.CALENDAR_2025, label: '2025', tag: 'Closing' },
+        { value: TimeframeType.CALENDAR_2026, label: '2026', tag: 'Recommended' },
+        { value: TimeframeType.ROLLING_12, label: 'Next 12mo', tag: 'Flexible' },
+    ];
+
     return (
         <div className={`flex flex-col h-full relative pb-32 animate-in fade-in ${direction === 'back' ? 'slide-in-from-left-8' : 'slide-in-from-right-8'} duration-500 will-change-transform`}>
             <div className="pt-2">
                 <StepHeader
                     stepNumber={1}
                     totalSteps={TOTAL_STEPS}
-                    title="Your Freedom Fund 💸"
-                    subtitle="How many days can you invest in yourself this year?"
+                    title="Your Dream Year Starts Here ✨"
+                    subtitle="Tell us the essentials to create your perfect schedule"
                 />
             </div>
 
-            <div className="flex flex-col justify-start w-full mt-2 md:mt-4 pb-4 pr-1 flex-1">
-                {/* Buddy Toggle - Larger touch target */}
-                <div className="flex items-center gap-3 mb-4 md:mb-8 bg-white/60 w-max px-4 py-2 md:py-2 rounded-full border border-rose-100 hover:border-rose-200 transition-colors shadow-sm">
-                    <span className="text-xs md:text-[10px] font-bold uppercase tracking-wider text-gray-500">Planning with a partner?</span>
-                    <button
-                        onClick={handleToggleClick}
-                        className={`group relative inline-flex h-7 w-12 md:h-5 md:w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-accent focus-visible:ring-offset-2 ${prefs.hasBuddy ? 'bg-rose-accent' : 'bg-gray-300'}`}
-                    >
-                        <span className={`pointer-events-none inline-block h-5 w-5 md:h-4 md:w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${prefs.hasBuddy ? 'translate-x-5 md:translate-x-4' : 'translate-x-0'}`} />
-                    </button>
-                    {prefs.hasBuddy && <span className="text-sm md:text-xs animate-fade-in pl-1">👯‍♀️</span>}
+            <div className="flex flex-col justify-start w-full mt-2 md:mt-4 pb-4 pr-1 flex-1 space-y-6">
+
+                {/* Country Selection - Moved to top */}
+                <div className="bg-white/80 rounded-3xl p-4 md:p-6 border border-rose-100 shadow-sm">
+                    <div className="flex items-center gap-2 mb-4">
+                        <div className="w-1.5 h-1.5 rounded-full bg-rose-accent"></div>
+                        <label className="text-xs font-bold text-rose-accent uppercase tracking-widest">Where's Home? 🏡</label>
+                        {prefs.country && (
+                            <span className="ml-auto text-[10px] bg-rose-50 text-rose-600 px-2 py-0.5 rounded-full font-bold">
+                                Auto-detected
+                            </span>
+                        )}
+                    </div>
+                    <div className="grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-3">
+                        {COUNTRIES.map((c) => (
+                            <button
+                                key={c.name}
+                                onClick={() => handleCountryChange(c.name)}
+                                className={`relative group flex flex-col items-center justify-center p-3 min-h-[72px] rounded-2xl border transition-all duration-300 active:scale-95 ${prefs.country === c.name
+                                    ? 'bg-white border-rose-accent shadow-lg scale-[1.02] ring-1 ring-inset ring-rose-50'
+                                    : 'bg-white/40 border-white/60 hover:bg-white/80 hover:border-rose-200'
+                                }`}
+                            >
+                                <span className="text-3xl mb-2 filter drop-shadow-sm group-hover:scale-110 transition-transform duration-300">{c.flag}</span>
+                                <span className={`text-[10px] font-bold text-center ${prefs.country === c.name ? 'text-gray-800' : 'text-gray-400'}`}>{c.code}</span>
+                                {prefs.country === c.name && (
+                                    <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-rose-accent"></div>
+                                )}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
-                <div className={`grid gap-4 md:gap-8 ${prefs.hasBuddy ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 max-w-2xl'}`}>
-
-                    {/* User Input Card */}
-                    <div className="relative group w-full bg-gradient-to-br from-white to-rose-50/30 rounded-3xl p-6 border border-rose-100 transition-all duration-300 hover:shadow-md">
-                        <div className="flex justify-between items-center mb-6">
-                            <div className="flex items-center gap-2">
-                                {prefs.hasBuddy && <span className="bg-rose-accent text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-widest">You</span>}
-                                <label className="text-xs font-bold text-rose-300 uppercase tracking-widest">Your Days</label>
-                            </div>
-                            {/* Quick Select Chips - larger on mobile */}
-                            <div className="flex gap-1.5 md:gap-2">
-                                {PRESETS.map(preset => (
-                                    <button
-                                        key={preset}
-                                        onClick={() => handlePresetClick(preset.toString())}
-                                        className={`text-xs md:text-[10px] font-bold px-3 md:px-2 py-2 md:py-1 min-w-[44px] min-h-[36px] md:min-h-0 md:min-w-0 rounded-xl md:rounded-lg border transition-all active:scale-95 ${userDays === preset ? 'bg-rose-100 text-rose-600 border-rose-200' : 'bg-white text-gray-400 border-gray-100 hover:border-rose-100'}`}
-                                    >
-                                        {preset}
-                                    </button>
-                                ))}
-                            </div>
+                {/* PTO Days Input */}
+                <div className="bg-gradient-to-br from-white to-rose-50/30 rounded-3xl p-4 md:p-6 border border-rose-100 shadow-sm">
+                    <div className="flex justify-between items-center mb-4">
+                        <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-rose-accent"></div>
+                            <label className="text-xs font-bold text-rose-accent uppercase tracking-widest">PTO Days 💸</label>
                         </div>
-
-                        <div className="relative flex items-baseline gap-2 mb-6">
-                            <input
-                                type="number"
-                                inputMode="numeric"
-                                pattern="[0-9]*"
-                                min={0}
-                                max={60}
-                                value={localPto}
-                                onChange={(e) => handlePtoChange(e.target.value)}
-                                className="bg-transparent text-5xl md:text-7xl font-display font-bold text-gray-800 focus:outline-none placeholder-gray-200 tracking-tight w-full"
-                                placeholder="0"
-                            />
-                            <span className="text-xl font-bold text-gray-300 absolute right-0 bottom-4 uppercase tracking-widest pointer-events-none">Days</span>
-
-                            {/* Dynamic Encouragement Chip */}
-                            {userDays >= 15 && (
-                                <div className="absolute -bottom-3 right-0 bg-rose-500 text-white text-[10px] font-bold py-1 px-3 rounded-full animate-bounce shadow-sm whitespace-nowrap pointer-events-none">
-                                    Love that for you! 💅
-                                </div>
-                            )}
+                        <div className="flex gap-1.5 md:gap-2">
+                            {PRESETS.map(preset => (
+                                <button
+                                    key={preset}
+                                    onClick={() => handlePresetClick(preset.toString())}
+                                    className={`text-xs font-bold px-3 py-1.5 min-w-[44px] min-h-[32px] rounded-lg border transition-all active:scale-95 ${userDays === preset ? 'bg-rose-100 text-rose-600 border-rose-200' : 'bg-white text-gray-400 border-gray-100 hover:border-rose-100'}`}
+                                >
+                                    {preset}
+                                </button>
+                            ))}
                         </div>
+                    </div>
 
+                    <div className="relative flex items-baseline gap-2 mb-4">
                         <input
-                            type="range"
-                            min="0"
-                            max="40"
-                            value={userDays}
+                            type="number"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            min={0}
+                            max={60}
+                            value={localPto}
                             onChange={(e) => handlePtoChange(e.target.value)}
-                            className="w-full h-2 bg-rose-100 rounded-lg appearance-none cursor-pointer accent-rose-accent hover:accent-rose-500 touch-pan-x"
+                            className="bg-transparent text-5xl md:text-6xl font-display font-bold text-gray-800 focus:outline-none placeholder-gray-200 tracking-tight w-full"
+                            placeholder="15"
                         />
+                        <span className="text-lg font-bold text-gray-300 absolute right-0 bottom-3 uppercase tracking-widest pointer-events-none">Days</span>
                     </div>
 
-                    {/* Buddy Input Card */}
-                    {prefs.hasBuddy && (
-                        <div className="relative group w-full bg-gradient-to-br from-white to-lavender-50/30 rounded-3xl p-6 border border-lavender-100 transition-all duration-300 animate-fade-up hover:shadow-md">
-                            <div className="flex justify-between items-center mb-6">
-                                <div className="flex items-center gap-2">
-                                    <span className="bg-lavender-accent text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-widest">Partner</span>
-                                    <label className="text-xs font-bold text-lavender-300 uppercase tracking-widest">Days Available</label>
-                                </div>
-                            </div>
-
-                            <div className="relative flex items-baseline gap-2 mb-6">
-                                <input
-                                    type="number"
-                                    inputMode="numeric"
-                                    pattern="[0-9]*"
-                                    min={0}
-                                    max={60}
-                                    value={localBuddyPto}
-                                    onChange={(e) => handleBuddyPtoChange(e.target.value)}
-                                    className="bg-transparent text-5xl md:text-7xl font-display font-bold text-gray-800 focus:outline-none placeholder-gray-200 tracking-tight w-full"
-                                    placeholder="0"
-                                    style={{ color: '#4B5563' }} // Force dark text
-                                />
-                                <span className="text-xl font-bold text-gray-300 absolute right-0 bottom-4 uppercase tracking-widest pointer-events-none">Days</span>
-                            </div>
-
-                            <input
-                                type="range"
-                                min="0"
-                                max="40"
-                                value={buddyDays}
-                                onChange={(e) => handleBuddyPtoChange(e.target.value)}
-                                className="w-full h-2 bg-lavender-100 rounded-lg appearance-none cursor-pointer accent-lavender-accent hover:accent-lavender-500 touch-pan-x"
-                            />
-                        </div>
-                    )}
+                    <input
+                        type="range"
+                        min="0"
+                        max="40"
+                        value={userDays}
+                        onChange={(e) => handlePtoChange(e.target.value)}
+                        className="w-full h-2 bg-rose-100 rounded-lg appearance-none cursor-pointer accent-rose-accent hover:accent-rose-500 touch-pan-x"
+                    />
                 </div>
 
-                <div className={`mt-8 transition-all duration-500 transform ${totalDays > 0 ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
-                    <p className="text-center text-xs text-gray-400 font-bold uppercase tracking-widest mb-4">Your Potential</p>
-                    <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
-                        <div className="bg-white/60 border border-rose-100 rounded-2xl p-4 text-center shadow-sm">
-                            <p className="text-2xl font-display font-bold text-gray-800">~${valueEstimate.toLocaleString()}</p>
-                            <p className="text-[10px] text-gray-400 uppercase tracking-wider">Value Recovered</p>
-                        </div>
+                {/* Year Selection - Compact pills */}
+                <div className="bg-white/80 rounded-3xl p-4 md:p-6 border border-rose-100 shadow-sm">
+                    <div className="flex items-center gap-2 mb-4">
+                        <div className="w-1.5 h-1.5 rounded-full bg-rose-accent"></div>
+                        <label className="text-xs font-bold text-rose-accent uppercase tracking-widest">Timeline 📅</label>
+                        {prefs.timeframe === TimeframeType.CALENDAR_2026 && (
+                            <span className="ml-auto text-[10px] bg-rose-50 text-rose-600 px-2 py-0.5 rounded-full font-bold">
+                                Recommended
+                            </span>
+                        )}
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 md:gap-3">
+                        {yearOptions.map((opt) => (
+                            <button
+                                key={opt.value}
+                                onClick={() => handleYearChange(opt.value)}
+                                className={`relative p-3 md:p-4 rounded-2xl border text-center transition-all duration-300 active:scale-95 min-h-[72px] flex flex-col items-center justify-center ${prefs.timeframe === opt.value
+                                    ? 'bg-white border-rose-accent shadow-lg ring-1 ring-inset ring-rose-50'
+                                    : 'bg-white/40 border-white/60 hover:bg-white/80 hover:border-rose-200'
+                                }`}
+                            >
+                                <span className={`text-xs font-bold mb-1 uppercase ${prefs.timeframe === opt.value ? 'text-rose-600 bg-rose-50' : 'text-gray-400 bg-gray-100'} px-2 py-0.5 rounded`}>
+                                    {opt.tag}
+                                </span>
+                                <span className={`text-lg md:text-xl font-display font-bold ${prefs.timeframe === opt.value ? 'text-gray-800' : 'text-gray-500'}`}>
+                                    {opt.label}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Potential Summary */}
+                {totalDays > 0 && prefs.country && (
+                    <div className="animate-fade-up">
+                        <p className="text-center text-xs text-gray-400 font-bold uppercase tracking-widest mb-3">Your Potential</p>
                         <div className="bg-gradient-to-br from-rose-50 to-peach-50 border border-rose-100 rounded-2xl p-4 text-center shadow-sm">
-                            <p className="text-2xl font-display font-bold text-rose-accent">~{potentialDays} Days</p>
-                            <p className="text-[10px] text-rose-400 uppercase tracking-wider">Total Time Off</p>
+                            <p className="text-3xl font-display font-bold text-rose-accent">~{potentialDays} Days Off</p>
+                            <p className="text-xs text-gray-500 mt-1">with {totalDays} PTO days in {prefs.country}</p>
                         </div>
                     </div>
-                </div >
-            </div >
+                )}
+            </div>
 
             {!isValid && helperText && (
                 <p className="text-xs text-rose-500 font-semibold text-center mb-3">{helperText}</p>
             )}
 
-            <NavButtons onNext={handleNextClick} nextDisabled={!isValid} nextLabel="Confirm Balance" />
-        </div >
+            <NavButtons onNext={handleNextClick} nextDisabled={!isValid} nextLabel="Choose Your Style →" />
+        </div>
     );
 });
 
@@ -433,7 +432,6 @@ export const Step3Strategy: React.FC<StepProps> = React.memo(({ prefs, updatePre
                         desc={strat.desc}
                         tag={strat.roi}
                         accentColor={strat.id === OptimizationStrategy.LONG_WEEKENDS ? 'violet' : 'lime'} // Mapped to Lavender/Rose in component
-                        tooltipText={strat.tooltip}
                     >
                         {/* Decorative gradient overlay */}
                         <div className={`absolute inset-0 bg-gradient-to-br ${strat.color} opacity-0 transition-opacity duration-500 rounded-3xl ${prefs.strategy === strat.id ? 'opacity-100' : 'group-hover:opacity-20'}`}></div>

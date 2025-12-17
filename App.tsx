@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, Suspense, lazy, useCallback } from 'react';
 import { OptimizationStrategy, TimeframeType, UserPreferences, OptimizationResult } from './types';
-import { Step1PTO, Step2Timeframe, Step3Strategy, Step4Location } from './components/StepWizard';
+import { Step1PTO, Step3Strategy } from './components/StepWizard';
 import { generateVacationPlan } from './services/vacationService';
 import { SEOHead } from './components/SEOHead';
 import { useSwipe, useHaptics } from './hooks/useMobileUX';
@@ -9,6 +9,7 @@ import { usePWAInstall, useIOSInstallPrompt, useOnlineStatus } from './hooks/use
 import { PainHero, BurnCalculator, SolutionGrid, BattleTestedMarquee } from './components/LandingVisuals';
 import { TrustSection } from './components/TrustSection';
 import { supabaseHelpers } from './services/supabase';
+import { createSmartDefaults } from './utils/smartDefaults';
 // import { CelebrationOverlay, ProgressMilestone } from './components/Celebrations'; // Removed
 // Eagerly load the results view to remove chunk-fetch failures when users finish the wizard.
 import { ResultsView } from './components/ResultsView';
@@ -44,17 +45,8 @@ const lazyWithRetry = <T extends { default: React.ComponentType<any> }>(importer
 // Lazy load heavy components with retry guard for chunk load failures
 const HowItWorks = lazyWithRetry(() => import('./components/HowItWorks').then((module) => ({ default: module.HowItWorks })));
 
-const initialPrefs: UserPreferences = {
-  ptoDays: 0,
-  timeframe: TimeframeType.CALENDAR_2025,
-  strategy: OptimizationStrategy.BALANCED,
-  country: '',
-  region: '',
-  hasBuddy: false,
-  buddyPtoDays: 0,
-  buddyCountry: '',
-  buddyRegion: '',
-};
+// Create smart defaults with auto-detection
+const initialPrefs: UserPreferences = createSmartDefaults();
 
 type ViewState = 'landing' | 'how-it-works' | 'results' | 'about' | 'algorithm' | 'privacy' | 'terms' | 'region-us' | 'region-uk' | 'region-ca' | 'region-au' | 'strategy-demos';
 
@@ -124,9 +116,9 @@ const App: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showResumeBanner, setShowResumeBanner] = useState(false);
 
-  const stepLabels = ['PTO days', 'Timeframe', 'Style', 'Location'];
-  const clampedStep = Math.min(Math.max(step, 1), 4);
-  const stepProgress = step === 0 ? 0 : (clampedStep / 4) * 100;
+  const stepLabels = ['Essentials', 'Your Style'];
+  const clampedStep = Math.min(Math.max(step, 1), 2);
+  const stepProgress = step === 0 ? 0 : (clampedStep / 2) * 100;
 
   // Behavioral UX states
   const [direction, setDirection] = useState<'next' | 'back'>('next');
@@ -197,27 +189,15 @@ const App: React.FC = () => {
   const validationMap = React.useMemo(
     () => ({
       1: {
-        isValid: totalPto > 0,
-        helperText: totalPto > 0 ? '' : 'Add at least 1 PTO day so we can optimize your calendar.',
+        isValid: totalPto > 0 && Boolean(prefs.country) && Boolean(prefs.timeframe),
+        helperText: totalPto === 0 ? 'Add at least 1 PTO day' : !prefs.country ? 'Select your country' : !prefs.timeframe ? 'Choose a year' : '',
       },
       2: {
-        isValid: Boolean(prefs.timeframe),
-        helperText: prefs.timeframe
-          ? ''
-          : 'Choose a timeframe so we can align your holidays.',
-      },
-      3: {
         isValid: Boolean(prefs.strategy),
-        helperText: prefs.strategy ? '' : 'Pick your energy for the year to continue.',
-      },
-      4: {
-        isValid: Boolean(prefs.country && (!prefs.hasBuddy || prefs.buddyCountry)),
-        helperText: prefs.hasBuddy
-          ? 'Select a country for you and your buddy to generate the plan.'
-          : 'Pick your country so we can fetch the right public holidays.',
+        helperText: prefs.strategy ? '' : 'Pick your travel style to continue.',
       },
     }),
-    [prefs.buddyCountry, prefs.hasBuddy, prefs.strategy, prefs.timeframe, prefs.country, totalPto]
+    [prefs.strategy, prefs.timeframe, prefs.country, totalPto]
   );
 
   const handleNext = useCallback(() => {
@@ -276,7 +256,7 @@ const App: React.FC = () => {
   // Mobile Swipe Handlers
   const swipeHandlers = useSwipe({
     onSwipeRight: () => {
-      if (step > 0 && step < 5) handleBack();
+      if (step > 0 && step < 3) handleBack();
     },
     threshold: 60
   });
@@ -301,26 +281,33 @@ const App: React.FC = () => {
 
     if (prefs.ptoDays <= 0) {
       setError('Add at least 1 PTO day so we can optimize your calendar.');
-      setStep((prev) => Math.max(prev, 1));
+      setStep(1);
       scrollWizardIntoView();
       return false;
     }
 
     if (!prefs.country) {
       setError('Pick your country so we can fetch the right public holidays.');
-      setStep((prev) => Math.max(prev, 4));
+      setStep(1);
+      scrollWizardIntoView();
+      return false;
+    }
+
+    if (!prefs.strategy) {
+      setError('Pick your travel style to continue.');
+      setStep(2);
       scrollWizardIntoView();
       return false;
     }
 
     setError(null);
     return true;
-  }, [isOnline, prefs.country, prefs.ptoDays, scrollWizardIntoView]);
+  }, [isOnline, prefs.country, prefs.ptoDays, prefs.strategy, scrollWizardIntoView]);
 
   const handleGenerate = useCallback(async () => {
     if (!validateReadyState()) return;
 
-    setStep(5);
+    setStep(3); // Solver terminal step
     setError(null);
     startProgressLoop();
 
@@ -339,7 +326,7 @@ const App: React.FC = () => {
       }).catch(err => console.error('Failed to log plan:', err));
 
       setTimeout(() => {
-        setStep(6);
+        setStep(4); // Results step
         setView('results');
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }, 500);
@@ -347,9 +334,9 @@ const App: React.FC = () => {
       console.error(err);
       clearProgressMessage();
       setError('Plan generation failed. Check your connection and inputs, then try again.');
-      setStep(4);
+      setStep(2); // Go back to step 2 on error
     }
-  }, [prefs, validateReadyState]);
+  }, [prefs, validateReadyState, clearProgressMessage, startProgressLoop]);
 
   const handlePaymentSuccess = useCallback(() => {
     setIsLocked(false);
@@ -388,7 +375,7 @@ const App: React.FC = () => {
 
   // Auto-save wizard progress when step or prefs change
   useEffect(() => {
-    if (step > 0 && step < 5 && view === 'landing') {
+    if (step > 0 && step < 3 && view === 'landing') {
       saveProgress(step, prefs);
     }
   }, [step, prefs, view, saveProgress]);
@@ -745,11 +732,100 @@ const App: React.FC = () => {
       {view === 'landing' && (
         <>
           <PainHero onCta={scrollToWizard} />
-          <BurnCalculator />
+
+          {/* THE WIZARD - Moved up to reduce friction */}
+          <div id="wizard-section" ref={wizardRef} className="w-full bg-gradient-to-br from-light-100 via-light-200 to-light-300 py-14 md:py-24 px-4 scroll-mt-24 relative z-[55]">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-10 md:mb-12">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold bg-gradient-to-r from-rose-accent via-lavender-accent to-peach-accent bg-clip-text text-transparent mb-3">Let's Plan Your Perfect Year ✨</h2>
+                <p className="text-gray-600 text-base sm:text-lg">Build your optimized schedule in 60 seconds.</p>
+              </div>
+
+              <div className="bg-white/80 dark:bg-dark-100/80 rounded-3xl border border-rose-100 dark:border-dark-border shadow-md p-4 md:p-6 mb-6">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-bold uppercase tracking-[0.18em] text-rose-accent">Step {step === 0 ? 1 : clampedStep} / 2</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{step === 0 ? 'The essentials' : stepLabels[clampedStep - 1]}</span>
+                  </div>
+                  <button
+                    onClick={handleReset}
+                    className="text-xs font-semibold text-gray-500 hover:text-rose-accent hidden md:inline-flex"
+                  >
+                    Start over
+                  </button>
+                </div>
+                <div className="mt-3 h-2 bg-rose-50 dark:bg-dark-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-rose-accent to-peach-accent rounded-full transition-all duration-300"
+                    style={{ width: `${Math.max(stepProgress, 8)}%` }}
+                  />
+                </div>
+                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">{totalPto > 0 ? `${totalPto} PTO days ready` : 'Just 2 quick steps to your dream year.'}</p>
+              </div>
+
+              <div {...swipeHandlers} className="relative z-[60] bg-white/95 dark:bg-dark-100/95 border border-rose-100 dark:border-dark-border rounded-[1.75rem] p-6 md:p-10 flex flex-col shadow-xl touch-pan-y">
+
+                <div className="min-h-[52px] mb-4" aria-live="polite" aria-atomic="true">
+                  {error ? (
+                    <div
+                      className="bg-rose-100 text-rose-700 px-4 py-3 rounded-2xl text-sm border border-rose-200 text-center transition-all duration-300"
+                      role="alert"
+                    >
+                      {error}
+                    </div>
+                  ) : progressMessage ? (
+                    <div className="bg-white text-rose-accent px-4 py-3 rounded-2xl text-sm border border-rose-100 text-center transition-all duration-300 shadow-sm">
+                      {progressMessage}
+                    </div>
+                  ) : (
+                    <div className="px-4 py-3" aria-hidden="true">&nbsp;</div>
+                  )}
+                </div>
+
+                {step === 0 && (
+                  <div className="text-center space-y-8 animate-fade-up relative z-10 py-10 my-auto">
+                    <div className="w-28 h-28 bg-gradient-to-br from-rose-100 to-lavender-100 rounded-full flex items-center justify-center mx-auto text-5xl border-4 border-white shadow-xl">✨</div>
+                    <div>
+                      <h3 className="text-3xl md:text-4xl font-display font-bold bg-gradient-to-r from-rose-accent to-lavender-accent bg-clip-text text-transparent mb-3">Ready to plan?</h3>
+                      <p className="text-gray-600 max-w-md mx-auto text-lg">Tell us how many days off you have, and we'll create the perfect schedule for you! 💖</p>
+                    </div>
+                    <button
+                      onClick={() => setStep(1)}
+                      className="w-full max-w-md mx-auto py-5 bg-gradient-to-r from-rose-accent to-lavender-accent text-white text-lg font-bold rounded-2xl transition-all hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 group shadow-lg"
+                    >
+                      Let's Get Started ✨
+                      <span className="group-hover:translate-x-1 transition-transform">→</span>
+                    </button>
+                  </div>
+                )}
+
+                {step === 1 && (
+                  <Step1PTO
+                    prefs={prefs}
+                    updatePrefs={updatePrefs}
+                    onNext={handleNext}
+                    direction={direction}
+                    validationState={validationMap[1]}
+                  />
+                )}
+                {step === 2 && (
+                  <Step3Strategy
+                    prefs={prefs}
+                    updatePrefs={updatePrefs}
+                    onNext={handleGenerate}
+                    onBack={handleBack}
+                    direction={direction}
+                    validationState={validationMap[2]}
+                  />
+                )}
+                {step === 3 && <SolverTerminal timeframe={prefs.timeframe} />}
+              </div>
+            </div>
+          </div>
+
+          {/* Educational sections moved below wizard */}
           <SolutionGrid />
           <TrustSection />
-
-            {/* Mobile quick CTA removed to declutter the flow */}
 
           {/* Saved Plans Section */}
           {savedPlans.length > 0 && (
@@ -810,117 +886,6 @@ const App: React.FC = () => {
               </div>
             </div>
           )}
-
-          {/* THE WIZARD */}
-          <div id="wizard-section" ref={wizardRef} className="w-full bg-gradient-to-br from-light-100 via-light-200 to-light-300 py-14 md:py-24 px-4 scroll-mt-24 relative z-[55]">
-            <div className="max-w-4xl mx-auto">
-              <div className="text-center mb-10 md:mb-12">
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold bg-gradient-to-r from-rose-accent via-lavender-accent to-peach-accent bg-clip-text text-transparent mb-3">Let's Plan Your Perfect Year ✨</h2>
-                <p className="text-gray-600 text-base sm:text-lg">Build your optimized schedule in 60 seconds.</p>
-              </div>
-
-              <div className="bg-white/80 dark:bg-dark-100/80 rounded-3xl border border-rose-100 dark:border-dark-border shadow-md p-4 md:p-6 mb-6">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs font-bold uppercase tracking-[0.18em] text-rose-accent">Step {step === 0 ? 1 : clampedStep} / 4</span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">{step === 0 ? 'Tell us your days off' : stepLabels[clampedStep - 1]}</span>
-                  </div>
-                  <button
-                    onClick={handleReset}
-                    className="text-xs font-semibold text-gray-500 hover:text-rose-accent hidden md:inline-flex"
-                  >
-                    Start over
-                  </button>
-                </div>
-                <div className="mt-3 h-2 bg-rose-50 dark:bg-dark-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-rose-accent to-peach-accent rounded-full transition-all duration-300"
-                    style={{ width: `${Math.max(stepProgress, 8)}%` }}
-                  />
-                </div>
-                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">{totalPto > 0 ? `${totalPto} PTO days ready` : 'Tap next to start in under a minute.'}</p>
-              </div>
-
-              <div {...swipeHandlers} className="relative z-[60] bg-white/95 dark:bg-dark-100/95 border border-rose-100 dark:border-dark-border rounded-[1.75rem] p-6 md:p-10 flex flex-col shadow-xl touch-pan-y">
-
-                <div className="min-h-[52px] mb-4" aria-live="polite" aria-atomic="true">
-                  {error ? (
-                    <div
-                      className="bg-rose-100 text-rose-700 px-4 py-3 rounded-2xl text-sm border border-rose-200 text-center transition-all duration-300"
-                      role="alert"
-                    >
-                      {error}
-                    </div>
-                  ) : progressMessage ? (
-                    <div className="bg-white text-rose-accent px-4 py-3 rounded-2xl text-sm border border-rose-100 text-center transition-all duration-300 shadow-sm">
-                      {progressMessage}
-                    </div>
-                  ) : (
-                    <div className="px-4 py-3" aria-hidden="true">&nbsp;</div>
-                  )}
-                </div>
-
-                {step === 0 && (
-                  <div className="text-center space-y-8 animate-fade-up relative z-10 py-10 my-auto">
-                    <div className="w-28 h-28 bg-gradient-to-br from-rose-100 to-lavender-100 rounded-full flex items-center justify-center mx-auto text-5xl border-4 border-white shadow-xl">✨</div>
-                    <div>
-                      <h3 className="text-3xl md:text-4xl font-display font-bold bg-gradient-to-r from-rose-accent to-lavender-accent bg-clip-text text-transparent mb-3">Ready to plan?</h3>
-                      <p className="text-gray-600 max-w-md mx-auto text-lg">Tell us how many days off you have, and we'll create the perfect schedule for you! 💖</p>
-                    </div>
-                    <button
-                      onClick={() => setStep(1)}
-                      className="w-full max-w-md mx-auto py-5 bg-gradient-to-r from-rose-accent to-lavender-accent text-white text-lg font-bold rounded-2xl transition-all hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 group shadow-lg"
-                    >
-                      Let's Get Started ✨
-                      <span className="group-hover:translate-x-1 transition-transform">→</span>
-                    </button>
-                  </div>
-                )}
-
-                {step === 1 && (
-                  <Step1PTO
-                    prefs={prefs}
-                    updatePrefs={updatePrefs}
-                    onNext={handleNext}
-                    direction={direction}
-                    validationState={validationMap[1]}
-                  />
-                )}
-                {step === 2 && (
-                  <Step2Timeframe
-                    prefs={prefs}
-                    updatePrefs={updatePrefs}
-                    onNext={handleNext}
-                    onBack={handleBack}
-                    direction={direction}
-                    validationState={validationMap[2]}
-                  />
-                )}
-                {step === 3 && (
-                  <Step3Strategy
-                    prefs={prefs}
-                    updatePrefs={updatePrefs}
-                    onNext={handleNext}
-                    onBack={handleBack}
-                    direction={direction}
-                    validationState={validationMap[3]}
-                  />
-                )}
-                {step === 4 && (
-                  <Step4Location
-                    prefs={prefs}
-                    updatePrefs={updatePrefs}
-                    onNext={handleGenerate}
-                    onBack={handleBack}
-                    direction={direction}
-                    validationState={validationMap[4]}
-                  />
-                )}
-                {step === 5 && <SolverTerminal timeframe={prefs.timeframe} />}
-              </div>
-            </div>
-          </div>
-
 
         </>
       )}

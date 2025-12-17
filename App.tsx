@@ -142,6 +142,14 @@ const App: React.FC = () => {
   const { trigger: triggerHaptic } = useHaptics();
 
   const totalPto = prefs.ptoDays + (prefs.hasBuddy ? prefs.buddyPtoDays : 0);
+  const recentSavedPlans = savedPlans.slice(0, 3);
+  const averageRecentDaysOff =
+    recentSavedPlans.length > 0
+      ? Math.round(
+          recentSavedPlans.reduce((sum, plan) => sum + plan.result.totalDaysOff, 0) /
+            recentSavedPlans.length
+        )
+      : null;
 
   const stepSummaries = [
     {
@@ -908,6 +916,21 @@ const App: React.FC = () => {
                     )}
                   </div>
                 ))}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-4 md:mb-6 text-[12px] md:text-sm">
+                <div className="flex items-center gap-2 bg-white/80 dark:bg-dark-100/80 border border-rose-100 dark:border-dark-border rounded-2xl px-3 py-2 shadow-sm">
+                  <span className="w-2.5 h-2.5 rounded-full bg-lavender-accent animate-pulse" aria-hidden />
+                  <span className="font-semibold text-gray-700 dark:text-gray-200">{savedPlans.length} saved plans</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white/80 dark:bg-dark-100/80 border border-emerald-100 dark:border-dark-border rounded-2xl px-3 py-2 shadow-sm">
+                  <svg className="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="font-semibold text-gray-700 dark:text-gray-200">
+                    {averageRecentDaysOff ? `Recent avg ${averageRecentDaysOff} days off` : 'Save a plan to see ROI'}
+                  </span>
+                </div>
               </div>
 
               {/* FIX: Removed 'overflow-hidden' and 'backdrop-blur' to fix mobile sticky buttons */}

@@ -129,10 +129,10 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
-                    className="relative"
+                    className="relative max-w-xl mx-auto w-full lg:ml-auto"
                 >
                     <div className="absolute inset-0 bg-gradient-to-tr from-rose-100 to-lavender-100 rounded-[2.5rem] blur-3xl -z-10 transform rotate-3"></div>
-                    <div className="glass-panel rounded-[2.5rem] p-8 md:p-12 border border-white/60 relative overflow-hidden min-h-[500px] flex flex-col shadow-xl bg-white/60 backdrop-blur-xl">
+                    <div className="glass-panel rounded-[2.5rem] p-6 sm:p-8 md:p-12 border border-white/60 relative overflow-hidden min-h-[420px] sm:min-h-[460px] md:min-h-[500px] flex flex-col shadow-xl bg-white/60 backdrop-blur-xl">
 
                         {/* Decorative UI Header */}
                         <div className="flex justify-between items-center mb-8 border-b border-rose-100 pb-6">

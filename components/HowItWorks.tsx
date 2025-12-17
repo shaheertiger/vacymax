@@ -7,7 +7,7 @@ interface HowItWorksProps {
 
 export const HowItWorks: React.FC<HowItWorksProps> = ({ onBack, onLaunch }) => {
     return (
-        <div className="pt-32 pb-20 px-6 md:px-12 max-w-7xl mx-auto space-y-24 animate-fade-up bg-light-100 min-h-screen">
+        <div className="pt-24 pb-16 md:pt-28 md:pb-20 px-5 md:px-12 max-w-7xl mx-auto space-y-16 md:space-y-24 animate-fade-up bg-light-100 min-h-screen">
 
             {/* Header - Simple Style */}
             <div className="text-center space-y-6 max-w-4xl mx-auto relative z-10">
@@ -15,52 +15,60 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onBack, onLaunch }) => {
                     <span className="w-2 h-2 bg-rose-400 rounded-full animate-pulse"></span>
                     The Philosophy
                 </div>
-                <h1 className="text-5xl md:text-7xl font-display font-bold text-gray-800 tracking-tight leading-[1.1]">
-                    3 Steps to <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-peach-400">Your Dream Year.</span>
+                <h1 className="text-4xl md:text-6xl font-display font-bold text-gray-800 tracking-tight leading-tight">
+                    3 Steps to <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-peach-400">Your Dream Year.</span>
                 </h1>
-                <p className="text-lg text-gray-500 leading-relaxed max-w-2xl mx-auto">
-                    We don't just "show you a calendar". We analyze every opportunity to turn single days off into extended vacations, maximizing your freedom without sacrificing your career.
+                <p className="text-base md:text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto">
+                    Skip the guesswork. We turn weekends and holidays into effortless long breaks—so you reclaim time without jeopardizing your career.
                 </p>
             </div>
 
             {/* The Visualizer */}
             <div className="relative w-full max-w-5xl mx-auto">
-                <div className="relative z-10 bg-white border border-rose-100 rounded-[2.5rem] p-8 md:p-12 shadow-xl overflow-hidden">
-                    <div className="grid lg:grid-cols-2 gap-16 items-center">
+                <div className="relative z-10 bg-white border border-rose-100 rounded-[2.5rem] p-6 md:p-10 shadow-xl overflow-hidden">
+                    <div className="grid lg:grid-cols-2 gap-10 md:gap-16 items-start">
 
                         {/* Left: Simple Breakdown */}
-                        <div className="space-y-12">
-                            <div className="space-y-4">
-                                <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-4 font-display">
-                                    <span className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500 text-lg shadow-sm">1</span>
-                                    Identify Anchors
-                                </h3>
-                                <p className="text-gray-500 text-sm leading-relaxed pl-14">
-                                    We map out every weekend and public holiday in your region. These are your "Anchors"—the foundation of your restoration.
-                                </p>
-                            </div>
-                            <div className="space-y-4">
-                                <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-4 font-display">
-                                    <span className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500 text-lg shadow-sm">2</span>
-                                    Bridge The Gaps
-                                </h3>
-                                <p className="text-gray-500 text-sm leading-relaxed pl-14">
-                                    We find the single working days stuck between a holiday and a weekend. By taking just this one day off, you unlock a 4-day mini-vacation.
-                                </p>
-                            </div>
-                            <div className="space-y-4">
-                                <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-4 font-display">
-                                    <span className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500 text-lg shadow-sm">3</span>
-                                    Maximize Joy
-                                </h3>
-                                <p className="text-gray-500 text-sm leading-relaxed pl-14">
-                                    We calculate the "Efficiency Score" of every trip. We only suggest dates that give you double the time off for every PTO day used.
-                                </p>
+                        <div className="space-y-6 md:space-y-10">
+                            {[{
+                                title: 'Identify Anchors',
+                                detail: 'We map every weekend and holiday to find the reset moments that frame your year.',
+                            }, {
+                                title: 'Bridge the Gaps',
+                                detail: 'We spot lone workdays between anchors so a single PTO day unlocks long, effortless breaks.',
+                            }, {
+                                title: 'Maximize Joy',
+                                detail: 'We score every option for ROI—double the time off for every PTO day you spend.',
+                            }].map((step, index) => (
+                                <details key={step.title} className="group bg-rose-50/60 border border-rose-100 rounded-2xl p-4 md:p-5 shadow-sm">
+                                    <summary className="flex items-center gap-4 cursor-pointer select-none">
+                                        <span className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-rose-500 text-lg font-bold shadow-sm">{index + 1}</span>
+                                        <div className="flex-1">
+                                            <div className="text-lg md:text-xl font-display font-bold text-gray-800">{step.title}</div>
+                                            <p className="text-xs text-rose-500 font-semibold uppercase tracking-wide">Tap to read more</p>
+                                        </div>
+                                        <span className="text-rose-400 transition-transform group-open:rotate-180">⌄</span>
+                                    </summary>
+                                    <p className="text-gray-600 text-sm leading-relaxed mt-3 pl-14">{step.detail}</p>
+                                </details>
+                            ))}
+
+                            <div className="bg-white border border-rose-100 rounded-2xl p-4 sm:p-5 shadow-lg flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 sticky sm:static bottom-4">
+                                <div>
+                                    <p className="text-xs font-bold uppercase text-rose-500 tracking-wide">Ready when you are</p>
+                                    <p className="text-sm text-gray-700">Drop your dates and we’ll design a stress-free year in minutes.</p>
+                                </div>
+                                <button
+                                    onClick={onLaunch}
+                                    className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-rose-400 to-peach-400 text-white text-sm font-bold rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                                >
+                                    Design My Year
+                                </button>
                             </div>
                         </div>
 
                         {/* Right: The Visualizer */}
-                        <div className="relative h-[400px] bg-gradient-to-br from-rose-50 to-white border border-rose-100 rounded-3xl flex items-center justify-center p-8 overflow-hidden group shadow-inner">
+                        <div className="relative h-[380px] md:h-[420px] bg-gradient-to-br from-rose-50 to-white border border-rose-100 rounded-3xl flex items-center justify-center p-6 md:p-8 overflow-hidden group shadow-inner">
                             {/* Abstract Visuals */}
                             <div className="absolute inset-0 flex items-center justify-center opacity-30 group-hover:opacity-40 transition-opacity duration-700">
                                 <div className="w-64 h-64 bg-rose-200/20 rounded-full blur-3xl absolute top-10 left-10 animate-float"></div>
@@ -68,7 +76,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onBack, onLaunch }) => {
                             </div>
 
                             {/* Active Calculation Overlay */}
-                            <div className="relative z-10 w-full max-w-sm bg-white/90 backdrop-blur-md border border-rose-100 rounded-2xl p-6 shadow-lg">
+                            <div className="relative z-10 w-full max-w-sm bg-white/90 backdrop-blur-md border border-rose-100 rounded-2xl p-5 md:p-6 shadow-lg">
                                 <div className="flex justify-between items-center border-b border-rose-50 pb-3 mb-4">
                                     <span className="text-gray-800 font-bold text-xs uppercase tracking-widest">Optimization Engine</span>
                                     <span className="flex items-center gap-1.5">
@@ -111,30 +119,37 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onBack, onLaunch }) => {
             </div>
 
             {/* Feature Grid */}
-            <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-                {[
-                    {
-                        icon: "⚙️",
-                        title: "Smart Matching",
-                        desc: "We use actual calendar data to find the best dates, tailored to you."
-                    },
-                    {
-                        icon: "📈",
-                        title: "Value Calculator",
-                        desc: "Your time is precious. We show you exactly how much your vacation days are worth."
-                    },
-                    {
-                        icon: "🔒",
-                        title: "Private & Safe",
-                        desc: "Your data stays on your device. We do not store your personal information."
-                    },
-                ].map((item, i) => (
-                    <div key={i} className="bg-white border border-rose-50 p-8 rounded-3xl hover:shadow-lg transition-all group hover:-translate-y-1">
-                        <div className="text-4xl mb-6 bg-rose-50 w-16 h-16 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">{item.icon}</div>
-                        <h3 className="text-xl font-bold text-gray-800 mb-3 font-display">{item.title}</h3>
-                        <p className="text-sm text-gray-500 leading-relaxed">{item.desc}</p>
-                    </div>
-                ))}
+            <div className="max-w-6xl mx-auto space-y-6">
+                <div className="text-center space-y-2">
+                    <p className="text-xs uppercase font-bold tracking-[0.3em] text-rose-500">Why it works</p>
+                    <h2 className="text-2xl md:text-3xl font-display font-bold text-gray-800">Built for busy people who hate wasting PTO</h2>
+                    <p className="text-sm text-gray-600 max-w-2xl mx-auto">Scan the highlights, then dive in with a single tap.</p>
+                </div>
+                <div className="grid md:grid-cols-3 gap-5 md:gap-6">
+                    {[
+                        {
+                            icon: "⚙️",
+                            title: "Smart Matching",
+                            desc: "Real calendar data, not guesses. We surface the trips that fit your life automatically."
+                        },
+                        {
+                            icon: "📈",
+                            title: "Value Calculator",
+                            desc: "See the ROI of every PTO day so you know exactly what each request unlocks."
+                        },
+                        {
+                            icon: "🔒",
+                            title: "Private & Safe",
+                            desc: "Your plan is computed locally. No personal data stored—ever."
+                        },
+                    ].map((item, i) => (
+                        <div key={i} className="bg-white border border-rose-50 p-6 md:p-8 rounded-3xl hover:shadow-lg transition-all group hover:-translate-y-1">
+                            <div className="text-4xl mb-5 md:mb-6 bg-rose-50 w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">{item.icon}</div>
+                            <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-2 md:mb-3 font-display">{item.title}</h3>
+                            <p className="text-sm text-gray-500 leading-relaxed">{item.desc}</p>
+                        </div>
+                    ))}
+                </div>
             </div>
 
             {/* Final CTA */}

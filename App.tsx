@@ -387,13 +387,13 @@ const App: React.FC = () => {
     // Inline year detection
     const now = new Date();
     const detectedYear = (now.getFullYear() === 2025 && now.getMonth() < 3)
-      ? TimeframeType.CALENDAR_2025
-      : TimeframeType.CALENDAR_2026;
+      ? ('Calendar Year 2025' as TimeframeType)
+      : ('Calendar Year 2026' as TimeframeType);
 
     setPrefs({
       ptoDays: detectedPTO,
       timeframe: detectedYear,
-      strategy: OptimizationStrategy.BALANCED,
+      strategy: 'The "CEO" Schedule' as OptimizationStrategy,
       country: detectedCountry,
       region: '',
       hasBuddy: false,
@@ -441,8 +441,8 @@ const App: React.FC = () => {
       // Inline year detection
       const now = new Date();
       const detectedYear = (now.getFullYear() === 2025 && now.getMonth() < 3)
-        ? TimeframeType.CALENDAR_2025
-        : TimeframeType.CALENDAR_2026;
+        ? ('Calendar Year 2025' as TimeframeType)
+        : ('Calendar Year 2026' as TimeframeType);
 
       setPrefs(prev => ({
         ...prev,

@@ -19,7 +19,7 @@ const COUNTRIES = [
 
 const STRATEGIES = [
     {
-        id: OptimizationStrategy.BALANCED,
+        id: 'The "CEO" Schedule' as OptimizationStrategy,
         title: 'The "CEO" Schedule ✨',
         desc: 'Mix long trips with long weekends. Perfect balance of adventure and recovery.',
         fullDesc: 'The ultimate power move. We identify the highest-value opportunities to create a schedule that balances restoration with ambition. Ideal for busy leaders.',
@@ -27,7 +27,7 @@ const STRATEGIES = [
         color: 'from-rose-500/10 to-peach-500/10',
     },
     {
-        id: OptimizationStrategy.LONG_WEEKENDS,
+        id: 'The Socialite' as OptimizationStrategy,
         title: 'The Socialite 🥂',
         desc: 'Maximize events and weekend getaways. More frequent, shorter breaks.',
         fullDesc: "Never miss a moment. We optimize your calendar for frequency, ensuring you're always the one with plans. Great for event lovers and frequent travelers.",
@@ -35,7 +35,7 @@ const STRATEGIES = [
         color: 'from-lavender-500/10 to-indigo-500/10',
     },
     {
-        id: OptimizationStrategy.EXTENDED,
+        id: 'The Jetsetter' as OptimizationStrategy,
         title: 'The Jetsetter ✈️',
         desc: 'Prioritize longer trips for international travel and deep resets.',
         fullDesc: "Pack your bags. We find the longest continuous blocks of time to facilitate international travel and complete disconnection. Perfect for travelers.",
@@ -43,7 +43,7 @@ const STRATEGIES = [
         color: 'from-amber-500/10 to-orange-500/10',
     },
     {
-        id: OptimizationStrategy.MINI_BREAKS,
+        id: 'The Wellness Era' as OptimizationStrategy,
         title: 'The Wellness Era 🧘‍♀️',
         desc: 'Regular mini-breaks for consistent self-care and recharge.',
         fullDesc: "Sustainable living. We structure your year with rhythm and routine, ensuring you never go too long without a recharge. Best for mental health focus.",
@@ -217,9 +217,9 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
     };
 
     const yearOptions = [
-        { value: TimeframeType.CALENDAR_2025, label: '2025', tag: 'Closing' },
-        { value: TimeframeType.CALENDAR_2026, label: '2026', tag: 'Recommended' },
-        { value: TimeframeType.ROLLING_12, label: 'Next 12mo', tag: 'Flexible' },
+        { value: 'Calendar Year 2025' as TimeframeType, label: '2025', tag: 'Closing' },
+        { value: 'Calendar Year 2026' as TimeframeType, label: '2026', tag: 'Recommended' },
+        { value: 'Next 12 Months' as TimeframeType, label: 'Next 12mo', tag: 'Flexible' },
     ];
 
     return (
@@ -316,7 +316,7 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
                     <div className="flex items-center gap-2 mb-4">
                         <div className="w-1.5 h-1.5 rounded-full bg-rose-accent"></div>
                         <label className="text-xs font-bold text-rose-accent uppercase tracking-widest">Timeline 📅</label>
-                        {prefs.timeframe === TimeframeType.CALENDAR_2026 && (
+                        {prefs.timeframe === ('Calendar Year 2026' as TimeframeType) && (
                             <span className="ml-auto text-[10px] bg-rose-50 text-rose-600 px-2 py-0.5 rounded-full font-bold">
                                 Recommended
                             </span>
@@ -367,9 +367,9 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
 // --- STEP 2 ---
 export const Step2Timeframe: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, onNext, onBack, direction = 'next', validationState }) => {
     const options = [
-        { value: TimeframeType.CALENDAR_2026, label: '2026', desc: 'Plan your next year early', tag: 'Recommended' },
-        { value: TimeframeType.CALENDAR_2025, label: '2025', desc: 'Remaining holidays this year', tag: 'Closing Soon' },
-        { value: TimeframeType.ROLLING_12, label: 'Next 12 Months', desc: 'Rolling 12-month calendar', tag: 'Flexible' },
+        { value: 'Calendar Year 2026' as TimeframeType, label: '2026', desc: 'Plan your next year early', tag: 'Recommended' },
+        { value: 'Calendar Year 2025' as TimeframeType, label: '2025', desc: 'Remaining holidays this year', tag: 'Closing Soon' },
+        { value: 'Next 12 Months' as TimeframeType, label: 'Next 12 Months', desc: 'Rolling 12-month calendar', tag: 'Flexible' },
     ];
 
     const handleSelection = (val: TimeframeType) => {
@@ -431,7 +431,7 @@ export const Step3Strategy: React.FC<StepProps> = React.memo(({ prefs, updatePre
                         title={strat.title}
                         desc={strat.desc}
                         tag={strat.roi}
-                        accentColor={strat.id === OptimizationStrategy.LONG_WEEKENDS ? 'violet' : 'lime'} // Mapped to Lavender/Rose in component
+                        accentColor={strat.id === ('The Socialite' as OptimizationStrategy) ? 'violet' : 'lime'} // Mapped to Lavender/Rose in component
                     >
                         {/* Decorative gradient overlay */}
                         <div className={`absolute inset-0 bg-gradient-to-br ${strat.color} opacity-0 transition-opacity duration-500 rounded-3xl ${prefs.strategy === strat.id ? 'opacity-100' : 'group-hover:opacity-20'}`}></div>

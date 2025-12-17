@@ -490,6 +490,29 @@ const generateVacationPlan = async (rawPrefs: UserPreferences): Promise<Optimiza
         candidates = runScan(true);
     }
 
+    // Super rescue: For users with 0 PTO, prioritize finding free blocks only
+    // Also helps when holiday data is sparse
+    if (prefs.ptoDays === 0) {
+        // Filter to only include 0-PTO-cost blocks for 0 PTO users
+        const freeCandidates = new CandidateList(256);
+        for (let i = 0; i < candidates.count; i++) {
+            if (candidates.ptoCost[i] === 0) {
+                freeCandidates.add(
+                    candidates.startIdx[i],
+                    candidates.len[i],
+                    candidates.ptoCost[i],
+                    candidates.buddyCost[i],
+                    candidates.efficiency[i],
+                    candidates.score[i]
+                );
+            }
+        }
+        // Only use filtered list if it has results
+        if (freeCandidates.count > 0) {
+            candidates = freeCandidates;
+        }
+    }
+
     // --- SELECTION LOGIC (GREEDY KNAPSACK) ---
     const generatePlanFromOrder = (indices: Int32Array): { blocks: VacationBlock[], totalDays: number, totalValue: number } => {
         const selected: VacationBlock[] = [];
@@ -617,8 +640,17 @@ const generateVacationPlan = async (rawPrefs: UserPreferences): Promise<Optimiza
     const selectedBlocks = winner.blocks;
     selectedBlocks.sort((a, b) => a.startDate.localeCompare(b.startDate));
 
-    // Handle empty results gracefully
+    // Handle empty results gracefully with better guidance
     if (selectedBlocks.length === 0) {
+        let suggestion = 'Try increasing your PTO days or selecting a different strategy.';
+        if (prefs.ptoDays === 0) {
+            suggestion = 'Add at least 1-2 PTO days to unlock smart bridge opportunities with holidays.';
+        } else if (!prefs.country) {
+            suggestion = 'Select your country to see public holidays that can extend your vacations.';
+        } else if (prefs.ptoDays < 5) {
+            suggestion = 'Try the "Long Weekends" strategy for better results with fewer PTO days.';
+        }
+
         const emptyResult: OptimizationResult = {
             planName: "No Opportunities Found",
             targetYear: startYear,
@@ -629,7 +661,7 @@ const generateVacationPlan = async (rawPrefs: UserPreferences): Promise<Optimiza
             totalFreeDays: 0,
             totalValueRecovered: 0,
             vacationBlocks: [],
-            summary: `No vacation blocks could be optimized for ${prefs.country || 'your region'}. Try adjusting your PTO days or strategy.`
+            summary: suggestion
         };
         planCache.set(cacheKey, emptyResult);
         return emptyResult;

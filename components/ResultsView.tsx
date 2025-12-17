@@ -457,33 +457,51 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
                             Create Graphic
                         </button>
                         {onSavePlan && (
-                            <button
-                                onClick={handleSavePlan}
-                                disabled={isSaved || isLocked}
-                                className={`flex items-center gap-1.5 text-xs border px-3 py-1.5 rounded-lg transition-all shadow-sm ${
-                                    isSaved
-                                        ? 'bg-green-50 border-green-200 text-green-600'
-                                        : isLocked
-                                            ? 'bg-gray-50 border-gray-100 text-gray-400 cursor-not-allowed'
-                                        : 'bg-white hover:bg-lavender-50 border-lavender-100 text-lavender-accent hover:scale-105 active:scale-95'
-                                }`}
-                            >
-                                {isSaved ? (
-                                    <>
-                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            <div className="flex flex-col items-end gap-1">
+                                <button
+                                    onClick={isLocked ? handleUnlockClick : handleSavePlan}
+                                    disabled={isSaved}
+                                    aria-disabled={isLocked}
+                                    className={`flex items-center gap-1.5 text-xs border px-3 py-1.5 rounded-lg transition-all shadow-sm ${
+                                        isSaved
+                                            ? 'bg-green-50 border-green-200 text-green-600'
+                                            : isLocked
+                                                ? 'bg-gray-100 border-gray-200 text-gray-500 hover:bg-gray-100/90 ring-1 ring-inset ring-gray-200'
+                                                : 'bg-white hover:bg-lavender-50 border-lavender-100 text-lavender-accent hover:scale-105 active:scale-95'
+                                    }`}
+                                >
+                                    {isSaved ? (
+                                        <>
+                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            Saved
+                                        </>
+                                    ) : isLocked ? (
+                                        <>
+                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c1.105 0 2-.895 2-2V7a2 2 0 10-4 0v2c0 1.105.895 2 2 2zm6 0h-1V7a5 5 0 00-10 0v4H6a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2v-6a2 2 0 00-2-2z" />
+                                            </svg>
+                                            Unlock to Save
+                                        </>
+                                    ) : (
+                                        <>
+                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                                            </svg>
+                                            Save Plan
+                                        </>
+                                    )}
+                                </button>
+                                {isLocked && !isSaved && (
+                                    <p className="text-[11px] text-gray-500 flex items-center gap-1">
+                                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m2-4h-2m1-5a9 9 0 110 18 9 9 0 010-18z" />
                                         </svg>
-                                        Saved
-                                    </>
-                                ) : (
-                                    <>
-                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                                        </svg>
-                                        Save Plan
-                                    </>
+                                        Saving is limited until you unlock the full plan. Tap to unlock and keep all trips.
+                                    </p>
                                 )}
-                            </button>
+                            </div>
                         )}
                         <button
                             onClick={() => downloadICS(visibleBlocks)}

@@ -249,9 +249,43 @@ const App: React.FC = () => {
     setPrefs((prev) => ({ ...prev, [key]: value }));
   }, []);
 
+  const validationMap = React.useMemo(
+    () => ({
+      1: {
+        isValid: totalPto > 0,
+        helperText: totalPto > 0 ? '' : 'Add at least 1 PTO day so we can optimize your calendar.',
+      },
+      2: {
+        isValid: Boolean(prefs.timeframe),
+        helperText: prefs.timeframe
+          ? ''
+          : 'Choose a timeframe so we can align your holidays.',
+      },
+      3: {
+        isValid: Boolean(prefs.strategy),
+        helperText: prefs.strategy ? '' : 'Pick your energy for the year to continue.',
+      },
+      4: {
+        isValid: Boolean(prefs.country && (!prefs.hasBuddy || prefs.buddyCountry)),
+        helperText: prefs.hasBuddy
+          ? 'Select a country for you and your buddy to generate the plan.'
+          : 'Pick your country so we can fetch the right public holidays.',
+      },
+    }),
+    [prefs.buddyCountry, prefs.hasBuddy, prefs.strategy, prefs.timeframe, prefs.country, totalPto]
+  );
+
   const handleNext = useCallback(() => {
+    const validationState = validationMap[step as keyof typeof validationMap];
+    if (validationState && !validationState.isValid) {
+      setError(validationState.helperText);
+      scrollWizardIntoView();
+      return;
+    }
+
     const nextStep = step + 1;
     setDirection('next');
+    setError(null);
     setStep(nextStep);
 
     // Scroll to wizard top on mobile to keep focus
@@ -260,7 +294,7 @@ const App: React.FC = () => {
         scrollWizardIntoView();
       }, 100);
     }
-  }, [step, scrollWizardIntoView]);
+  }, [step, scrollWizardIntoView, validationMap]);
 
   const handleBack = useCallback(() => {
     setDirection('back');
@@ -293,15 +327,9 @@ const App: React.FC = () => {
       return false;
     }
 
-    if (prefs.ptoDays <= 0) {
-      setError('Add at least 1 PTO day so we can optimize your calendar.');
-      setStep((prev) => Math.max(prev, 1));
-      scrollWizardIntoView();
-      return false;
-    }
-
-    if (!prefs.country) {
-      setError('Pick your country so we can fetch the right public holidays.');
+    const validationState = validationMap[4];
+    if (validationState && !validationState.isValid) {
+      setError(validationState.helperText);
       setStep((prev) => Math.max(prev, 4));
       scrollWizardIntoView();
       return false;
@@ -309,7 +337,7 @@ const App: React.FC = () => {
 
     setError(null);
     return true;
-  }, [isOnline, prefs.country, prefs.ptoDays, scrollWizardIntoView]);
+  }, [isOnline, scrollWizardIntoView, validationMap]);
 
   const handleGenerate = useCallback(async () => {
     if (!validateReadyState()) return;
@@ -968,10 +996,45 @@ const App: React.FC = () => {
                   </div>
                 )}
 
-                {step === 1 && <Step1PTO prefs={prefs} updatePrefs={updatePrefs} onNext={handleNext} direction={direction} />}
-                {step === 2 && <Step2Timeframe prefs={prefs} updatePrefs={updatePrefs} onNext={handleNext} onBack={handleBack} direction={direction} />}
-                {step === 3 && <Step3Strategy prefs={prefs} updatePrefs={updatePrefs} onNext={handleNext} onBack={handleBack} direction={direction} />}
-                {step === 4 && <Step4Location prefs={prefs} updatePrefs={updatePrefs} onNext={handleGenerate} onBack={handleBack} direction={direction} />}
+                {step === 1 && (
+                  <Step1PTO
+                    prefs={prefs}
+                    updatePrefs={updatePrefs}
+                    onNext={handleNext}
+                    direction={direction}
+                    validationState={validationMap[1]}
+                  />
+                )}
+                {step === 2 && (
+                  <Step2Timeframe
+                    prefs={prefs}
+                    updatePrefs={updatePrefs}
+                    onNext={handleNext}
+                    onBack={handleBack}
+                    direction={direction}
+                    validationState={validationMap[2]}
+                  />
+                )}
+                {step === 3 && (
+                  <Step3Strategy
+                    prefs={prefs}
+                    updatePrefs={updatePrefs}
+                    onNext={handleNext}
+                    onBack={handleBack}
+                    direction={direction}
+                    validationState={validationMap[3]}
+                  />
+                )}
+                {step === 4 && (
+                  <Step4Location
+                    prefs={prefs}
+                    updatePrefs={updatePrefs}
+                    onNext={handleGenerate}
+                    onBack={handleBack}
+                    direction={direction}
+                    validationState={validationMap[4]}
+                  />
+                )}
                 {step === 5 && <SolverTerminal timeframe={prefs.timeframe} />}
               </div>
             </div>

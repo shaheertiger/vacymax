@@ -228,13 +228,13 @@ export const ShareableGraphic: React.FC<ShareableGraphicProps> = ({ result, onCl
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-            <div className="bg-white dark:bg-dark-surface rounded-3xl max-w-md w-full overflow-hidden shadow-2xl animate-scale-in">
+            <div className="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl animate-scale-in">
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-dark-border">
-                    <h3 className="font-bold text-gray-800 dark:text-gray-100">Share Your Results</h3>
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                    <h3 className="font-bold text-gray-800">Share Your Results</h3>
                     <button
                         onClick={onClose}
-                        className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-dark-200"
+                        className="p-2 text-gray-400 hover:text-gray-600 transition-colors rounded-lg hover:bg-gray-100"
                     >
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -298,7 +298,7 @@ export const ShareableGraphic: React.FC<ShareableGraphicProps> = ({ result, onCl
                     <button
                         onClick={handleDownload}
                         disabled={isGenerating}
-                        className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 dark:bg-dark-200 text-gray-700 dark:text-gray-300 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-dark-border transition-colors disabled:opacity-50"
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-colors disabled:opacity-50"
                     >
                         {isGenerating ? (
                             <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">

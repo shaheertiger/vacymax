@@ -83,7 +83,7 @@ const SolverTerminal = ({ timeframe }: { timeframe: TimeframeType }) => {
         {lines.map((line, i) => (
           <div key={i} className="flex items-center gap-3 animate-fade-up">
             <div className="w-6 h-6 rounded-full bg-rose-100 flex items-center justify-center text-xs text-rose-accent">✓</div>
-            <span className="text-dark-text font-medium">{line}</span>
+            <span className="text-gray-800 font-medium">{line}</span>
           </div>
         ))}
       </div>
@@ -540,13 +540,13 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-[100dvh] flex flex-col text-dark-text dark:text-gray-100 pb-12 overflow-x-hidden bg-light-100 dark:bg-dark-100 relative transition-colors duration-300">
+    <div className="min-h-[100dvh] flex flex-col text-gray-800 pb-12 overflow-x-hidden bg-light-100 relative transition-colors duration-300">
       {/* Desktop-only magic effects - Disabled per user feedback */}
 
       <SEOHead view={view} prefs={prefs} result={result || undefined} country={prefs.country} />
 
       {/* Navigation */}
-      <nav className="w-full py-3 md:py-6 px-4 md:px-12 flex justify-between items-center z-[60] fixed top-0 left-0 right-0 bg-white/80 dark:bg-dark-100/90 backdrop-blur-md border-b border-rose-100 dark:border-dark-border transition-all duration-300 safe-pt shadow-sm">
+      <nav className="w-full py-3 md:py-6 px-4 md:px-12 flex justify-between items-center z-[60] fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-rose-100 transition-all duration-300 safe-pt shadow-sm">
         <div className="flex items-center gap-2 cursor-pointer group flex-shrink-0" onClick={handleReset}>
           <div className="w-8 h-8 bg-gradient-to-br from-rose-accent to-peach-accent rounded-xl flex items-center justify-center shadow-lg transform group-hover:rotate-12 transition-transform">
             <span className="text-white text-lg">🌸</span>
@@ -557,13 +557,13 @@ const App: React.FC = () => {
         <div className="flex items-center gap-2 md:gap-6">
           <button
             onClick={() => setView('how-it-works')}
-            className="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-rose-accent transition-colors hidden md:block"
+            className="text-xs md:text-sm font-medium text-slate-500 hover:text-rose-accent transition-colors hidden md:block"
           >
             How it Works
           </button>
           <button
             onClick={() => setView('strategy-demos')}
-            className="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-lavender-accent transition-colors hidden md:block"
+            className="text-xs md:text-sm font-medium text-slate-500 hover:text-lavender-accent transition-colors hidden md:block"
           >
             Vacation Styles
           </button>
@@ -572,7 +572,7 @@ const App: React.FC = () => {
           {step > 0 && (
             <button
               onClick={handleReset}
-              className="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-rose-accent transition-colors hidden md:block"
+              className="text-xs md:text-sm font-medium text-slate-500 hover:text-rose-accent transition-colors hidden md:block"
             >
               Restart
             </button>
@@ -617,23 +617,23 @@ const App: React.FC = () => {
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-[59] bg-white/95 dark:bg-dark-100/95 backdrop-blur-xl pt-24 px-6 md:hidden flex flex-col gap-6 animate-fade-in text-center">
+        <div className="fixed inset-0 z-[59] bg-white/95 backdrop-blur-xl pt-24 px-6 md:hidden flex flex-col gap-6 animate-fade-in text-center">
           <button
             onClick={() => { setView('how-it-works'); setIsMobileMenuOpen(false); }}
-            className="text-2xl font-display font-bold text-gray-800 dark:text-gray-100 hover:text-rose-accent transition-colors py-2 border-b border-gray-100 dark:border-dark-border"
+            className="text-2xl font-display font-bold text-gray-800 hover:text-rose-accent transition-colors py-2 border-b border-gray-100"
           >
             How it Works
           </button>
           <button
             onClick={() => { setView('strategy-demos'); setIsMobileMenuOpen(false); }}
-            className="text-2xl font-display font-bold text-gray-800 dark:text-gray-100 hover:text-rose-accent transition-colors py-2 border-b border-gray-100 dark:border-dark-border"
+            className="text-2xl font-display font-bold text-gray-800 hover:text-rose-accent transition-colors py-2 border-b border-gray-100"
           >
             Vacation Styles
           </button>
           {step > 0 && (
             <button
               onClick={() => { handleReset(); setIsMobileMenuOpen(false); }}
-              className="text-2xl font-display font-bold text-rose-500 hover:text-rose-600 transition-colors py-2 border-b border-gray-100 dark:border-dark-border"
+              className="text-2xl font-display font-bold text-rose-500 hover:text-rose-600 transition-colors py-2 border-b border-gray-100"
             >
               Restart Plan
             </button>
@@ -680,20 +680,20 @@ const App: React.FC = () => {
       {/* Resume Progress Banner */}
       {showResumeBanner && view === 'landing' && step === 0 && (
         <div className="fixed top-20 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-auto md:max-w-lg z-[58] animate-fade-up">
-          <div className="bg-gradient-to-r from-lavender-50 to-rose-50 dark:from-dark-surface dark:to-dark-200 border border-lavender-200 dark:border-dark-border rounded-2xl p-4 shadow-lg flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-lavender-100 dark:bg-lavender-accent/20 flex items-center justify-center text-lavender-accent flex-shrink-0">
+          <div className="bg-gradient-to-r from-lavender-50 to-rose-50 border border-lavender-200 rounded-2xl p-4 shadow-lg flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-lavender-100 flex items-center justify-center text-lavender-accent flex-shrink-0">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-gray-800 dark:text-gray-100">Welcome back!</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">Continue where you left off</p>
+              <p className="text-sm font-bold text-gray-800">Welcome back!</p>
+              <p className="text-xs text-gray-500 truncate">Continue where you left off</p>
             </div>
             <div className="flex gap-2 flex-shrink-0">
               <button
                 onClick={handleDismissResume}
-                className="px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                className="px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors"
               >
                 Dismiss
               </button>
@@ -711,7 +711,7 @@ const App: React.FC = () => {
       {/* PWA Install Banner */}
       {showInstallBanner && isInstallable && (
         <div className="fixed bottom-20 left-4 right-4 md:bottom-4 md:left-auto md:right-4 md:w-80 z-[70] animate-fade-up">
-          <div className="bg-gradient-to-r from-rose-500 to-peach-accent dark:from-rose-600 dark:to-peach-accent rounded-2xl p-4 shadow-xl flex items-center gap-4">
+          <div className="bg-gradient-to-r from-rose-500 to-peach-accent rounded-2xl p-4 shadow-xl flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl flex-shrink-0">
               📱
             </div>
@@ -743,52 +743,52 @@ const App: React.FC = () => {
       )}
 
       {/* iOS Install Instructions */}
-      {showIOSPrompt && (
-        <div className="fixed bottom-20 left-4 right-4 md:bottom-4 md:left-auto md:right-4 md:w-96 z-[70] animate-fade-up">
-          <div className="bg-white dark:bg-dark-surface border border-rose-100 dark:border-dark-border rounded-2xl p-5 shadow-xl">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-rose-50 dark:bg-rose-accent/20 flex items-center justify-center text-2xl flex-shrink-0">
-                📲
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-bold text-gray-800 dark:text-gray-100 mb-1">Add to Home Screen</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
-                  Tap <span className="inline-flex items-center gap-1 bg-gray-100 dark:bg-dark-200 px-1.5 py-0.5 rounded">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316" />
-                    </svg>
-                    Share
-                  </span> then "Add to Home Screen" for quick access
-                </p>
+        {showIOSPrompt && (
+          <div className="fixed bottom-20 left-4 right-4 md:bottom-4 md:left-auto md:right-4 md:w-96 z-[70] animate-fade-up">
+            <div className="bg-white border border-rose-100 rounded-2xl p-5 shadow-xl">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-rose-50 flex items-center justify-center text-2xl flex-shrink-0">
+                  📲
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-bold text-gray-800 mb-1">Add to Home Screen</p>
+                  <p className="text-xs text-gray-500 mb-3">
+                    Tap <span className="inline-flex items-center gap-1 bg-gray-100 px-1.5 py-0.5 rounded">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316" />
+                      </svg>
+                      Share
+                    </span> then "Add to Home Screen" for quick access
+                  </p>
+                  <button
+                    onClick={dismissIOSPrompt}
+                    className="text-xs font-medium text-rose-accent hover:text-rose-600 transition-colors"
+                  >
+                    Got it
+                  </button>
+                </div>
                 <button
                   onClick={dismissIOSPrompt}
-                  className="text-xs font-medium text-rose-accent hover:text-rose-600 transition-colors"
+                  className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
                 >
-                  Got it
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
               </div>
-              <button
-                onClick={dismissIOSPrompt}
-                className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Offline Banner */}
-      {!isOnline && (
-        <div className="fixed top-20 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-auto z-[58] animate-fade-up">
-          <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-xl px-4 py-2 shadow-lg flex items-center gap-3">
-            <span className="text-amber-500">⚠️</span>
-            <span className="text-sm font-medium text-amber-700 dark:text-amber-300">You're offline - saved plans still available</span>
+        {!isOnline && (
+          <div className="fixed top-20 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-auto z-[58] animate-fade-up">
+            <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2 shadow-lg flex items-center gap-3">
+              <span className="text-amber-500">⚠️</span>
+              <span className="text-sm font-medium text-amber-700">You're offline - saved plans still available</span>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* --- LANDING PAGE --- */}
       {view === 'landing' && (
@@ -803,11 +803,11 @@ const App: React.FC = () => {
                 <p className="text-gray-600 text-base sm:text-lg">Build your optimized schedule in 60 seconds.</p>
               </div>
 
-              <div className="bg-white/80 dark:bg-dark-100/80 rounded-3xl border border-rose-100 dark:border-dark-border shadow-md p-4 md:p-6 mb-6">
+              <div className="bg-white/80 rounded-3xl border border-rose-100 shadow-md p-4 md:p-6 mb-6">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <span className="text-xs font-bold uppercase tracking-[0.18em] text-rose-accent">Step {step === 0 ? 1 : clampedStep} / 2</span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">{step === 0 ? 'The essentials' : stepLabels[clampedStep - 1]}</span>
+                    <span className="text-sm text-gray-500">{step === 0 ? 'The essentials' : stepLabels[clampedStep - 1]}</span>
                   </div>
                   <button
                     onClick={handleReset}
@@ -816,16 +816,16 @@ const App: React.FC = () => {
                     Start over
                   </button>
                 </div>
-                <div className="mt-3 h-2 bg-rose-50 dark:bg-dark-200 rounded-full overflow-hidden">
+                <div className="mt-3 h-2 bg-rose-50 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-rose-accent to-peach-accent rounded-full transition-all duration-300"
                     style={{ width: `${Math.max(stepProgress, 8)}%` }}
                   />
                 </div>
-                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">{totalPto > 0 ? `${totalPto} PTO days ready` : 'Just 2 quick steps to your dream year.'}</p>
+                <p className="mt-2 text-xs text-gray-500">{totalPto > 0 ? `${totalPto} PTO days ready` : 'Just 2 quick steps to your dream year.'}</p>
               </div>
 
-              <div {...swipeHandlers} className="relative z-[60] bg-white/95 dark:bg-dark-100/95 border border-rose-100 dark:border-dark-border rounded-[1.75rem] p-6 md:p-10 flex flex-col shadow-xl touch-pan-y">
+              <div {...swipeHandlers} className="relative z-[60] bg-white/95 border border-rose-100 rounded-[1.75rem] p-6 md:p-10 flex flex-col shadow-xl touch-pan-y">
 
                 <div className="min-h-[52px] mb-4" aria-live="polite" aria-atomic="true">
                   {error ? (
@@ -891,14 +891,14 @@ const App: React.FC = () => {
 
           {/* Saved Plans Section */}
           {savedPlans.length > 0 && (
-            <div className="w-full bg-gradient-to-br from-lavender-50 to-rose-50 dark:from-dark-200 dark:to-dark-100 py-16 px-4">
+            <div className="w-full bg-gradient-to-br from-lavender-50 to-rose-50 py-16 px-4">
               <div className="max-w-4xl mx-auto">
                 <div className="flex items-center justify-between mb-8">
                   <div>
-                    <h2 className="text-2xl md:text-3xl font-display font-bold text-gray-800 dark:text-gray-100">Your Saved Plans</h2>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Pick up where you left off</p>
+                    <h2 className="text-2xl md:text-3xl font-display font-bold text-gray-800">Your Saved Plans</h2>
+                    <p className="text-gray-500 text-sm mt-1">Pick up where you left off</p>
                   </div>
-                  <span className="text-xs font-bold text-lavender-accent bg-lavender-100 dark:bg-lavender-accent/20 px-3 py-1 rounded-full">
+                  <span className="text-xs font-bold text-lavender-accent bg-lavender-100 px-3 py-1 rounded-full">
                     {savedPlans.length} saved
                   </span>
                 </div>
@@ -913,31 +913,31 @@ const App: React.FC = () => {
                         setIsLocked(false);
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
-                      className="w-full bg-white dark:bg-dark-surface border border-lavender-100 dark:border-dark-border rounded-2xl p-5 text-left hover:shadow-lg hover:border-lavender-200 dark:hover:border-lavender-accent/30 transition-all group"
+                      className="w-full bg-white border border-lavender-100 rounded-2xl p-5 text-left hover:shadow-lg hover:border-lavender-200 transition-all group"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xs font-bold text-lavender-accent bg-lavender-50 dark:bg-lavender-accent/20 px-2 py-0.5 rounded">
+                            <span className="text-xs font-bold text-lavender-accent bg-lavender-50 px-2 py-0.5 rounded">
                               {plan.result.planName}
                             </span>
-                            <span className="text-xs text-gray-400 dark:text-gray-500">
+                            <span className="text-xs text-gray-400">
                               {new Date(plan.savedAt).toLocaleDateString()}
                             </span>
                           </div>
-                          <h3 className="font-bold text-gray-800 dark:text-gray-100 truncate group-hover:text-lavender-accent transition-colors">
+                          <h3 className="font-bold text-gray-800 truncate group-hover:text-lavender-accent transition-colors">
                             {plan.result.totalDaysOff} days off with {plan.result.totalPtoUsed} PTO
                           </h3>
-                          <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                          <p className="text-sm text-gray-500 truncate">
                             {plan.prefs.country}{plan.prefs.region ? `, ${plan.prefs.region}` : ''} • {plan.result.vacationBlocks.length} trips
                           </p>
                         </div>
                         <div className="flex items-center gap-3 ml-4">
                           <div className="text-right hidden sm:block">
-                            <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider">Value</p>
+                            <p className="text-xs text-gray-400 uppercase tracking-wider">Value</p>
                             <p className="font-bold text-rose-accent">${plan.result.totalValueRecovered.toLocaleString()}</p>
                           </div>
-                          <svg className="w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:text-lavender-accent group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg className="w-5 h-5 text-gray-300 group-hover:text-lavender-accent group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                           </svg>
                         </div>

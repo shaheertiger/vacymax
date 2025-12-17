@@ -49,7 +49,7 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
                         The Journey to Freedom 🕊️
                     </div>
 
-                    <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-bold tracking-tight text-dark-text leading-[1.1] mb-4 md:mb-6">
+                    <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-bold tracking-tight text-gray-800 leading-[1.1] mb-4 md:mb-6">
                         We Double Your<br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-accent to-peach-accent italic">Holidays.</span>
                     </h1>

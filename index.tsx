@@ -1,4 +1,4 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React, { ErrorInfo, ReactNode } from 'react';
 import ReactDOM from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
 import App from './App';
@@ -15,9 +15,16 @@ interface ErrorBoundaryState {
 }
 
 // Production-grade Error Boundary to prevent white screen of death
-class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   public state: ErrorBoundaryState = { hasError: false, error: null, stack: null };
-  public props!: Readonly<ErrorBoundaryProps>;
+
+  // Explicitly declare React base class fields for TypeScript when React type defs are unavailable
+  declare props: Readonly<ErrorBoundaryProps>;
+  declare setState: (
+    state:
+      | Partial<ErrorBoundaryState>
+      | ((prevState: Readonly<ErrorBoundaryState>, props: Readonly<ErrorBoundaryProps>) => Partial<ErrorBoundaryState> | null)
+  ) => void;
 
   constructor(props: ErrorBoundaryProps) {
     super(props);

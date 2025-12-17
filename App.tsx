@@ -417,9 +417,9 @@ const App: React.FC = () => {
         setView('landing');
       }
 
-      setIsLocked(!hasUnlockToken);
+      setUnlockStatus(hasUnlockToken ? 'idle' : 'failed');
     },
-    [savedPlans, hasUnlockedSession, handleUnlockFailure, markUnlocked]
+    [savedPlans, hasUnlockedSession, handleUnlockFailure, markUnlocked, setUnlockStatus]
   );
 
   const handleReset = useCallback(() => {

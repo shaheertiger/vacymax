@@ -105,6 +105,7 @@ const MAX_SAVED_PLANS = 5;
 
 export function useSavedPlans() {
   const [savedPlans, setSavedPlans] = useState<SavedPlan[]>([]);
+  const [migrationNotice, setMigrationNotice] = useState<string | null>(null);
 
   const buildMetadata = useCallback((result?: OptimizationResult): SavedPlanMetadata => ({
     planName: result?.planName,
@@ -121,11 +122,37 @@ export function useSavedPlans() {
       const saved = localStorage.getItem(STORAGE_KEYS.SAVED_PLANS);
       if (saved) {
         const parsed: SavedPlan[] = JSON.parse(saved);
-        setSavedPlans(parsed.map(plan => ({
-          ...plan,
-          isUnlocked: plan.isUnlocked ?? false,
-          metadata: plan.metadata ?? buildMetadata(plan.result),
-        })));
+        let migratedCount = 0;
+        const sanitized = parsed.map(plan => {
+          const hadIsUnlocked = 'isUnlocked' in plan;
+          const computedMetadata = plan.metadata ?? buildMetadata(plan.result);
+          const metadata: SavedPlanMetadata = {
+            ...computedMetadata,
+            planName: computedMetadata.planName || plan.name,
+          };
+
+          if (!hadIsUnlocked) {
+            migratedCount += 1;
+          }
+
+          return {
+            ...plan,
+            isUnlocked: plan.isUnlocked ?? false,
+            metadata,
+          };
+        });
+
+        setSavedPlans(sanitized);
+
+        if (migratedCount > 0) {
+          console.info(`Updated ${migratedCount} legacy saved plan(s) to include lock metadata.`);
+          setMigrationNotice(`We refreshed ${migratedCount} saved plan${migratedCount > 1 ? 's' : ''} to work with the latest lock settings.`);
+          try {
+            localStorage.setItem(STORAGE_KEYS.SAVED_PLANS, JSON.stringify(sanitized));
+          } catch (e) {
+            console.warn('Failed to persist migrated saved plans:', e);
+          }
+        }
       }
     } catch (e) {
       console.warn('Failed to load saved plans:', e);
@@ -184,6 +211,7 @@ export function useSavedPlans() {
     savePlan,
     deletePlan,
     clearAllPlans,
+    migrationNotice,
   };
 }
 

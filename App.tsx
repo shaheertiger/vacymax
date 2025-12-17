@@ -383,14 +383,15 @@ const App: React.FC = () => {
       const plan = planId ? savedPlans.find((item) => item.id === planId) : savedPlans[0];
       if (!plan) return;
 
-      const unlocked = plan.isUnlocked || hasUnlockedSession;
+      const hasUnlockToken = hasUnlockedSession || plan.isUnlocked === true;
 
-      if (unlocked) {
+      if (plan.isUnlocked) {
         markUnlocked();
       }
 
       setPrefs(plan.prefs);
-      if (plan.result) {
+
+      if (hasUnlockToken && plan.result) {
         setResult(plan.result);
         setView('results');
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -398,7 +399,8 @@ const App: React.FC = () => {
         setResult(null);
         setView('landing');
       }
-      setIsLocked(!unlocked);
+
+      setIsLocked(!hasUnlockToken);
     },
     [savedPlans, hasUnlockedSession, markUnlocked]
   );

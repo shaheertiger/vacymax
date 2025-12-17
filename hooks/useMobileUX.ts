@@ -4,7 +4,7 @@ type HapticType = 'light' | 'medium' | 'heavy' | 'success' | 'error' | 'selectio
 
 export const useHaptics = () => {
     const trigger = useCallback((type: HapticType = 'light') => {
-        if (!navigator.vibrate) return;
+        if (typeof navigator === 'undefined' || !navigator.vibrate) return;
 
         switch (type) {
             case 'light':
@@ -77,6 +77,8 @@ export const useSwipe = ({
 
 export const useScrollLock = (isLocked: boolean) => {
     useEffect(() => {
+        if (typeof document === 'undefined') return;
+
         if (isLocked) {
             document.body.style.overflow = 'hidden';
             // Prevent iOS rubber banding

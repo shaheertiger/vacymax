@@ -352,6 +352,20 @@ const App: React.FC = () => {
     setTimeout(() => setShowSuccessMessage(false), 8000);
   }, []);
 
+  const openSavedPlan = useCallback(
+    (planId?: string) => {
+      const plan = planId ? savedPlans.find((item) => item.id === planId) : savedPlans[0];
+      if (!plan) return;
+
+      setPrefs(plan.prefs);
+      setResult(plan.result);
+      setView('results');
+      setIsLocked(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    [savedPlans]
+  );
+
   const handleReset = useCallback(() => {
     setStep(0);
 
@@ -783,9 +797,19 @@ const App: React.FC = () => {
       {/* Offline Banner */}
         {!isOnline && (
           <div className="fixed top-20 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-auto z-[58] animate-fade-up">
-            <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2 shadow-lg flex items-center gap-3">
-              <span className="text-amber-500">⚠️</span>
-              <span className="text-sm font-medium text-amber-700">You're offline - saved plans still available</span>
+            <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2 shadow-lg flex items-center gap-3 flex-wrap md:flex-nowrap">
+              <div className="flex items-center gap-2">
+                <span className="text-amber-500">⚠️</span>
+                <span className="text-sm font-medium text-amber-700">You're offline - saved plans still available</span>
+              </div>
+              {savedPlans.length > 0 && (
+                <button
+                  onClick={() => openSavedPlan()}
+                  className="text-xs font-semibold text-amber-800 bg-white/70 border border-amber-200 px-3 py-1.5 rounded-lg hover:bg-white transition-colors"
+                >
+                  Open last saved plan
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -906,13 +930,7 @@ const App: React.FC = () => {
                   {savedPlans.slice(0, 3).map((plan) => (
                     <button
                       key={plan.id}
-                      onClick={() => {
-                        setPrefs(plan.prefs);
-                        setResult(plan.result);
-                        setView('results');
-                        setIsLocked(false);
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                      }}
+                      onClick={() => openSavedPlan(plan.id)}
                       className="w-full bg-white border border-lavender-100 rounded-2xl p-5 text-left hover:shadow-lg hover:border-lavender-200 transition-all group"
                     >
                       <div className="flex items-center justify-between">

@@ -3,7 +3,7 @@ import { UserPreferences, OptimizationStrategy, TimeframeType } from '../types';
 import { StepHeader, NavButtons, SelectionCard, DebouncedInput } from './Shared';
 import { useHaptics } from '../hooks/useMobileUX';
 
-const TOTAL_STEPS = 2; // Consolidated from 4 to 2 steps
+const TOTAL_STEPS = 4;
 
 // --- CONSTANTS & STATIC DATA ---
 const DAILY_VALUE_ESTIMATE = 460;

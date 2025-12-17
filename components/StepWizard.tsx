@@ -354,7 +354,7 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
                 <p className="text-xs text-rose-500 font-semibold text-center mb-3">{helperText}</p>
             )}
 
-            <NavButtons onNext={handleNextClick} nextDisabled={!isValid} nextLabel="Next: Timeline →" />
+            <NavButtons onNext={handleNextClick} nextDisabled={!isValid} nextLabel="Next: Timeline →" stepLabel="Step 1 · Essentials" />
         </div>
     );
 });
@@ -391,7 +391,7 @@ export const Step2Timeframe: React.FC<StepProps> = React.memo(({ prefs, updatePr
                 <p className="text-xs text-rose-500 font-semibold text-center mb-3">{validationState.helperText}</p>
             )}
 
-            <NavButtons onNext={onNext} onBack={onBack} nextLabel="Next: Your Style →" nextDisabled={validationState ? !validationState.isValid : false} />
+            <NavButtons onNext={onNext} onBack={onBack} nextLabel="Next: Your Style →" nextDisabled={validationState ? !validationState.isValid : false} stepLabel="Step 2 · Timeline" />
         </div>
     );
 });
@@ -432,7 +432,7 @@ export const Step3Strategy: React.FC<StepProps> = React.memo(({ prefs, updatePre
                 <p className="text-xs text-rose-500 font-semibold text-center mb-3">{validationState.helperText}</p>
             )}
 
-            <NavButtons onNext={onNext} onBack={onBack} nextLabel="Generate My Plan" nextDisabled={validationState ? !validationState.isValid : false} />
+            <NavButtons onNext={onNext} onBack={onBack} nextLabel="Generate My Plan" nextDisabled={validationState ? !validationState.isValid : false} stepLabel="Step 3 · Your Energy" />
         </div>
     );
 });
@@ -521,6 +521,7 @@ export const Step4Location: React.FC<StepProps> = React.memo(({ prefs, updatePre
                 nextDisabled={nextDisabled || generating}
                 nextLabel={generating ? loadingText : "Reveal My Dream Schedule"}
                 isLoading={generating}
+                stepLabel="Step 4 · Location"
             />
         </div>
     );

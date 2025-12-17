@@ -104,10 +104,11 @@ const App: React.FC = () => {
   const [view, setView] = useState<ViewState>('landing');
   const [step, setStep] = useState<number>(0);
   // Initialize with empty defaults, will be populated after mount
+  // Use string literals to avoid TDZ errors with enums
   const [prefs, setPrefs] = useState<UserPreferences>({
     ptoDays: 15,
-    timeframe: TimeframeType.CALENDAR_2026,
-    strategy: OptimizationStrategy.BALANCED,
+    timeframe: 'Calendar Year 2026' as TimeframeType,
+    strategy: 'The "CEO" Schedule' as OptimizationStrategy,
     country: '',
     region: '',
     hasBuddy: false,

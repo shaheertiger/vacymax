@@ -25,16 +25,36 @@ export const ShareableGraphic: React.FC<ShareableGraphicProps> = ({ result, onCl
             const { default: html2canvas } = await import('html2canvas').catch(() => ({ default: null }));
 
             if (html2canvas) {
-                const canvas = await html2canvas(cardRef.current, {
-                    backgroundColor: null,
-                    scale: 2,
+                const cardNode = cardRef.current;
+                const rect = cardNode.getBoundingClientRect();
+                const pixelRatio = Math.min(window.devicePixelRatio || 2, 3);
+
+                // Allow fonts/gradients to settle for mobile captures
+                await document.fonts.ready.catch(() => Promise.resolve());
+                await new Promise((resolve) => requestAnimationFrame(resolve));
+
+                const canvas = await html2canvas(cardNode, {
+                    backgroundColor: '#fdf2f8',
+                    scale: pixelRatio,
+                    width: rect.width,
+                    height: rect.height,
+                    scrollX: 0,
+                    scrollY: -window.scrollY,
                     useCORS: true,
                 });
 
+                const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png', 1));
+
+                if (!blob) {
+                    throw new Error('Unable to create image blob');
+                }
+
+                const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.download = 'my-vacation-plan.png';
-                link.href = canvas.toDataURL('image/png');
+                link.href = url;
                 link.click();
+                URL.revokeObjectURL(url);
             } else {
                 // Fallback: Copy text to clipboard
                 const text = `I'm getting ${result.totalDaysOff} days off with only ${result.totalPtoUsed} PTO days (+${efficiency}% efficiency)! Plan your perfect year at doublemyholidays.com`;

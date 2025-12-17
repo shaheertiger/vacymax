@@ -104,9 +104,20 @@ const LoadingFallback = () => (
 const App: React.FC = () => {
   const [view, setView] = useState<ViewState>('landing');
   const [step, setStep] = useState<number>(0);
-  // Use lazy initialization to create smart defaults only once
-  const [prefs, setPrefs] = useState<UserPreferences>(() => createSmartDefaults());
+  // Initialize with empty defaults, will be populated after mount
+  const [prefs, setPrefs] = useState<UserPreferences>({
+    ptoDays: 15,
+    timeframe: TimeframeType.CALENDAR_2026,
+    strategy: OptimizationStrategy.BALANCED,
+    country: '',
+    region: '',
+    hasBuddy: false,
+    buddyPtoDays: 0,
+    buddyCountry: '',
+    buddyRegion: '',
+  });
   const [result, setResult] = useState<OptimizationResult | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [progressMessage, setProgressMessage] = useState<string | null>(null);
   const [isLocked, setIsLocked] = useState(true);
@@ -345,7 +356,18 @@ const App: React.FC = () => {
 
   const handleReset = useCallback(() => {
     setStep(0);
-    setPrefs(createSmartDefaults()); // Recreate smart defaults on reset
+    const smartDefaults = createSmartDefaults();
+    setPrefs({
+      ptoDays: smartDefaults.ptoDays,
+      timeframe: smartDefaults.timeframe,
+      strategy: OptimizationStrategy.BALANCED,
+      country: smartDefaults.country,
+      region: '',
+      hasBuddy: false,
+      buddyPtoDays: 0,
+      buddyCountry: '',
+      buddyRegion: '',
+    });
     setResult(null);
     setIsLocked(true);
     setShowSuccessMessage(false);
@@ -354,6 +376,20 @@ const App: React.FC = () => {
     clearProgress();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [clearProgress]);
+
+  // Initialize smart defaults after mount (client-side only)
+  useEffect(() => {
+    if (!isInitialized && typeof window !== 'undefined') {
+      const smartDefaults = createSmartDefaults();
+      setPrefs(prev => ({
+        ...prev,
+        country: smartDefaults.country,
+        ptoDays: smartDefaults.ptoDays,
+        timeframe: smartDefaults.timeframe,
+      }));
+      setIsInitialized(true);
+    }
+  }, [isInitialized]);
 
   // Track session on app load
   useEffect(() => {

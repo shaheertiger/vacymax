@@ -211,5 +211,15 @@ export function useUnlockedSession() {
     }
   }, []);
 
-  return { isUnlocked, markUnlocked };
+  const resetUnlock = useCallback(() => {
+    setIsUnlocked(false);
+    if (typeof localStorage === 'undefined') return;
+    try {
+      localStorage.removeItem(STORAGE_KEYS.UNLOCKED_SESSIONS);
+    } catch (e) {
+      // Ignore
+    }
+  }, []);
+
+  return { isUnlocked, markUnlocked, resetUnlock };
 }

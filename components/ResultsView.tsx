@@ -108,13 +108,31 @@ interface ResultsViewProps {
     result: OptimizationResult;
     onReset: () => void;
     onUnlock: () => void;
+    onUnlockStart?: () => void;
+    onUnlockFailure?: (message?: string) => void;
     isLocked: boolean;
+    shouldPromptUnlock?: boolean;
+    onUnlockPromptHandled?: () => void;
+    lockNotice?: string | null;
     userCountry?: string;
     prefs: UserPreferences;
     onSavePlan?: (name?: string) => void;
 }
 
-export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnlock, isLocked, userCountry, prefs, onSavePlan }) => {
+export const ResultsView: React.FC<ResultsViewProps> = ({
+    result,
+    onReset,
+    onUnlock,
+    onUnlockStart,
+    onUnlockFailure,
+    isLocked,
+    shouldPromptUnlock,
+    onUnlockPromptHandled,
+    lockNotice,
+    userCountry,
+    prefs,
+    onSavePlan
+}) => {
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
     const [showShareGraphic, setShowShareGraphic] = useState(false);
@@ -202,12 +220,29 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
 
     const efficiencyLabel = isInfiniteEfficiency ? 'Infinite efficiency' : `+${((multiplier - 1) * 100).toFixed(0)}%`;
 
-    const handleUnlockClick = useCallback(() => setShowPaymentModal(true), []);
-    const handleClosePaymentModal = useCallback(() => setShowPaymentModal(false), []);
+    const handleUnlockClick = useCallback(() => {
+        onUnlockStart?.();
+        setShowPaymentModal(true);
+    }, [onUnlockStart]);
+
+    const handleClosePaymentModal = useCallback(() => {
+        setShowPaymentModal(false);
+        if (isLocked) {
+            onUnlockFailure?.();
+        }
+    }, [isLocked, onUnlockFailure]);
     const handlePaymentSuccess = useCallback(() => {
         setShowPaymentModal(false);
         onUnlock();
     }, [onUnlock]);
+
+    useEffect(() => {
+        if (shouldPromptUnlock && isLocked) {
+            onUnlockStart?.();
+            setShowPaymentModal(true);
+            onUnlockPromptHandled?.();
+        }
+    }, [isLocked, onUnlockPromptHandled, onUnlockStart, shouldPromptUnlock]);
 
     const handleSavePlan = useCallback(() => {
         if (!onSavePlan || isSaved || isLocked) {
@@ -249,6 +284,24 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
                 prefs={prefs}
                 planStats={planStats}
             />
+
+            {lockNotice && (
+                <div className="max-w-6xl mx-auto w-full">
+                    <div className="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-2xl text-sm shadow-sm flex items-start gap-3">
+                        <span className="mt-0.5">🔒</span>
+                        <div className="space-y-1">
+                            <p className="font-semibold">{lockNotice}</p>
+                            <button
+                                onClick={handleUnlockClick}
+                                className="inline-flex items-center gap-2 text-xs font-bold text-rose-accent hover:text-rose-600"
+                            >
+                                Unlock now
+                                <span aria-hidden>→</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {showShareGraphic && (
                 <ShareableGraphic

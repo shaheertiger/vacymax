@@ -119,11 +119,14 @@ const App: React.FC = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [progressMessage, setProgressMessage] = useState<string | null>(null);
-  const { isUnlocked: hasUnlockedSession, markUnlocked } = useUnlockedSession();
-  const [isLocked, setIsLocked] = useState(!hasUnlockedSession);
+  const { isUnlocked: hasUnlockedSession, markUnlocked, resetUnlock } = useUnlockedSession();
+  const [unlockStatus, setUnlockStatus] = useState<'idle' | 'pending' | 'failed'>('idle');
+  const isLocked = !hasUnlockedSession || unlockStatus !== 'idle';
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showResumeBanner, setShowResumeBanner] = useState(false);
+  const [lockNotice, setLockNotice] = useState<string | null>(null);
+  const [shouldPromptUnlock, setShouldPromptUnlock] = useState(false);
 
   const stepLabels = ['Essentials', 'Your Style'];
   const clampedStep = Math.min(Math.max(step, 1), 2);
@@ -166,6 +169,13 @@ const App: React.FC = () => {
     setIsMobileMenuOpen(false);
   }, [view, step]);
 
+  useEffect(() => {
+    if (hasUnlockedSession) {
+      setUnlockStatus('idle');
+      setLockNotice(null);
+    }
+  }, [hasUnlockedSession]);
+
   // Lock body scroll when menu is open
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -174,12 +184,6 @@ const App: React.FC = () => {
       document.body.style.overflow = 'unset';
     }
   }, [isMobileMenuOpen]);
-
-  useEffect(() => {
-    if (hasUnlockedSession) {
-      setIsLocked(false);
-    }
-  }, [hasUnlockedSession]);
 
   // Scroll only when starting the wizard from hero/How it Works
   const scrollToWizard = useCallback(() => {
@@ -352,9 +356,22 @@ const App: React.FC = () => {
     }
   }, [prefs, validateReadyState, clearProgressMessage, startProgressLoop]);
 
+  const handleUnlockStart = useCallback(() => {
+    setUnlockStatus('pending');
+    setLockNotice(null);
+  }, []);
+
+  const handleUnlockFailure = useCallback((message?: string) => {
+    setUnlockStatus('failed');
+    setLockNotice(message || 'We could not verify your unlock. Please try again.');
+    resetUnlock();
+  }, [resetUnlock]);
+
   const handlePaymentSuccess = useCallback(() => {
-    setIsLocked(false);
+    setUnlockStatus('idle');
     markUnlocked();
+    setLockNotice(null);
+    setShouldPromptUnlock(false);
     setShowSuccessMessage(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setTimeout(() => setShowSuccessMessage(false), 8000);
@@ -383,13 +400,11 @@ const App: React.FC = () => {
       const plan = planId ? savedPlans.find((item) => item.id === planId) : savedPlans[0];
       if (!plan) return;
 
-      const unlocked = plan.isUnlocked || hasUnlockedSession;
-
-      if (unlocked) {
-        markUnlocked();
-      }
+      const isPlanUnlocked = Boolean(plan.isUnlocked && plan.result);
+      const hasValidUnlock = isPlanUnlocked && hasUnlockedSession;
 
       setPrefs(plan.prefs);
+
       if (plan.result) {
         setResult(plan.result);
         setView('results');
@@ -398,9 +413,25 @@ const App: React.FC = () => {
         setResult(null);
         setView('landing');
       }
-      setIsLocked(!unlocked);
+
+      if (!isPlanUnlocked) {
+        handleUnlockFailure('This saved plan is locked. Please unlock to view the full details.');
+        setShouldPromptUnlock(Boolean(plan.result));
+        return;
+      }
+
+      if (!hasValidUnlock) {
+        handleUnlockFailure('We couldn\'t verify your payment token. Please unlock again to continue.');
+        setShouldPromptUnlock(Boolean(plan.result));
+        return;
+      }
+
+      markUnlocked();
+      setUnlockStatus('idle');
+      setLockNotice(null);
+      setShouldPromptUnlock(false);
     },
-    [savedPlans, hasUnlockedSession, markUnlocked]
+    [savedPlans, hasUnlockedSession, handleUnlockFailure, markUnlocked]
   );
 
   const handleReset = useCallback(() => {
@@ -451,13 +482,15 @@ const App: React.FC = () => {
       buddyRegion: '',
     });
     setResult(null);
-    setIsLocked(true);
+    setUnlockStatus(hasUnlockedSession ? 'idle' : 'failed');
+    setLockNotice(null);
+    setShouldPromptUnlock(false);
     setShowSuccessMessage(false);
     setShowResumeBanner(false);
     setView('landing');
     clearProgress();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [clearProgress]);
+  }, [clearProgress, hasUnlockedSession]);
 
   // Initialize smart defaults after mount (client-side only)
   useEffect(() => {
@@ -537,6 +570,8 @@ const App: React.FC = () => {
     if (savedProgress) {
       setPrefs(savedProgress.prefs);
       setStep(savedProgress.step);
+      setLockNotice(null);
+      setShouldPromptUnlock(false);
       setShowResumeBanner(false);
       setTimeout(() => {
         const element = document.getElementById('wizard-section');
@@ -560,7 +595,10 @@ const App: React.FC = () => {
     // Accept payment=success OR session_id (Payment Links may only send session_id)
     if (paymentStatus === 'success' || sessionId) {
       // Payment successful - unlock the plan
-      setIsLocked(false);
+      setUnlockStatus('idle');
+      markUnlocked();
+      setLockNotice(null);
+      setShouldPromptUnlock(false);
       setShowSuccessMessage(true);
 
       // Clean up URL
@@ -1066,6 +1104,11 @@ const App: React.FC = () => {
               onReset={handleReset}
               isLocked={isLocked}
               onUnlock={handlePaymentSuccess}
+              onUnlockStart={handleUnlockStart}
+              onUnlockFailure={handleUnlockFailure}
+              shouldPromptUnlock={shouldPromptUnlock}
+              onUnlockPromptHandled={() => setShouldPromptUnlock(false)}
+              lockNotice={lockNotice}
               userCountry={prefs.country}
               prefs={prefs}
               onSavePlan={handleSavePlanRequest}

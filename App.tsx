@@ -634,7 +634,7 @@ const App: React.FC = () => {
       <SEOHead view={view} prefs={prefs} result={result || undefined} country={prefs.country} />
 
       {/* Navigation */}
-      <nav className="w-full py-3 md:py-6 px-4 md:px-12 flex justify-between items-center z-[60] fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-rose-100 transition-all duration-300 safe-pt shadow-sm">
+      <nav className="w-full py-3 md:py-6 px-4 md:px-12 safe-px flex justify-between items-center z-[60] fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-rose-100 transition-all duration-300 safe-pt shadow-sm">
         <div className="flex items-center gap-2 cursor-pointer group flex-shrink-0" onClick={handleReset}>
           <div className="w-8 h-8 bg-gradient-to-br from-rose-accent to-peach-accent rounded-xl flex items-center justify-center shadow-lg transform group-hover:rotate-12 transition-transform">
             <span className="text-white text-lg">🌸</span>
@@ -894,7 +894,7 @@ const App: React.FC = () => {
           <PainHero onCta={scrollToWizard} />
 
           {/* THE WIZARD - Moved up to reduce friction */}
-          <div id="wizard-section" ref={wizardRef} className="w-full bg-gradient-to-br from-light-100 via-light-200 to-light-300 py-14 md:py-24 px-4 scroll-mt-24 relative z-[55]">
+          <div id="wizard-section" ref={wizardRef} className="w-full bg-gradient-to-br from-light-100 via-light-200 to-light-300 py-14 md:py-24 px-4 safe-px scroll-mt-24 relative z-[55]">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-10 md:mb-12">
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold bg-gradient-to-r from-rose-accent via-lavender-accent to-peach-accent bg-clip-text text-transparent mb-3">Let's Plan Your Perfect Year ✨</h2>

@@ -180,6 +180,11 @@ input[type=range]::-webkit-slider-runnable-track {
   padding-bottom: max(env(safe-area-inset-bottom), 24px);
 }
 
+.safe-px {
+  padding-left: max(env(safe-area-inset-left), 16px);
+  padding-right: max(env(safe-area-inset-right), 16px);
+}
+
 /* Mobile Touch Feedback */
 @media (hover: none) {
 

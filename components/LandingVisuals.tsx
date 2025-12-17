@@ -24,7 +24,7 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
     };
 
     return (
-        <div className="relative pt-24 md:pt-32 pb-16 md:pb-20 px-4 md:px-12 overflow-hidden bg-light-100 min-h-[auto] md:min-h-[90vh] flex flex-col justify-center">
+        <div className="relative pt-24 md:pt-32 pb-16 md:pb-20 px-4 md:px-12 safe-px overflow-hidden bg-light-100 min-h-[auto] md:min-h-[90vh] flex flex-col justify-center">
             {/* Dynamic Background */}
             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-rose-50 via-light-100 to-light-100 z-0"></div>
 

@@ -61,6 +61,10 @@ interface StepProps {
     onNext: () => void;
     onBack?: () => void;
     direction?: 'next' | 'back';
+    validationState?: {
+        isValid: boolean;
+        helperText: string;
+    };
 }
 
 const LocationSelector = React.memo(({
@@ -154,7 +158,7 @@ const normalizePtoValue = (rawValue: string) => {
 
 const PRESETS = [10, 15, 20, 25];
 
-export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, onNext, direction = 'next' }) => {
+export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, onNext, direction = 'next', validationState }) => {
     const { trigger } = useHaptics();
     const userDays = prefs.ptoDays;
     const buddyDays = prefs.buddyPtoDays || 0;
@@ -211,10 +215,11 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
     }, [buddyDays, prefs.hasBuddy, userDays]);
 
     const { totalDays, valueEstimate, potentialDays } = totals;
-    const canProceed = totalDays > 0;
+    const isValid = validationState?.isValid ?? totalDays > 0;
+    const helperText = validationState?.helperText;
 
     const handleNextClick = () => {
-        if (!canProceed) return;
+        if (!isValid) return;
         trigger('success');
         onNext();
     };
@@ -351,13 +356,17 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
                 </div >
             </div >
 
-            <NavButtons onNext={handleNextClick} nextDisabled={!canProceed} nextLabel="Confirm Balance" />
+            {!isValid && helperText && (
+                <p className="text-xs text-rose-500 font-semibold text-center mb-3">{helperText}</p>
+            )}
+
+            <NavButtons onNext={handleNextClick} nextDisabled={!isValid} nextLabel="Confirm Balance" />
         </div >
     );
 });
 
 // --- STEP 2 ---
-export const Step2Timeframe: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, onNext, onBack, direction = 'next' }) => {
+export const Step2Timeframe: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, onNext, onBack, direction = 'next', validationState }) => {
     const options = [
         { value: TimeframeType.CALENDAR_2026, label: '2026', desc: 'Plan your next year early', tag: 'Recommended' },
         { value: TimeframeType.CALENDAR_2025, label: '2025', desc: 'Remaining holidays this year', tag: 'Closing Soon' },
@@ -390,12 +399,16 @@ export const Step2Timeframe: React.FC<StepProps> = React.memo(({ prefs, updatePr
                 ))}
             </div>
 
-            <NavButtons onNext={onNext} onBack={onBack} nextLabel="Next" />
+            {!validationState?.isValid && validationState?.helperText && (
+                <p className="text-xs text-rose-500 font-semibold text-center mb-3">{validationState.helperText}</p>
+            )}
+
+            <NavButtons onNext={onNext} onBack={onBack} nextLabel="Next" nextDisabled={validationState ? !validationState.isValid : false} />
         </div>
     );
 });
 
-export const Step3Strategy: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, onNext, onBack, direction = 'next' }) => {
+export const Step3Strategy: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, onNext, onBack, direction = 'next', validationState }) => {
 
     const handleSelection = (id: string) => {
         updatePrefs('strategy', id as any);
@@ -428,14 +441,18 @@ export const Step3Strategy: React.FC<StepProps> = React.memo(({ prefs, updatePre
                 ))}
             </div>
 
-            <NavButtons onNext={onNext} onBack={onBack} nextLabel="Next" />
+            {!validationState?.isValid && validationState?.helperText && (
+                <p className="text-xs text-rose-500 font-semibold text-center mb-3">{validationState.helperText}</p>
+            )}
+
+            <NavButtons onNext={onNext} onBack={onBack} nextLabel="Next" nextDisabled={validationState ? !validationState.isValid : false} />
         </div>
     );
 });
 
-export const Step4Location: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, onNext, onBack, direction = 'next' }) => {
+export const Step4Location: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, onNext, onBack, direction = 'next', validationState }) => {
 
-    const nextDisabled = !prefs.country || (prefs.hasBuddy && !prefs.buddyCountry);
+    const nextDisabled = validationState ? !validationState.isValid : false;
     const [generating, setGenerating] = useState(false);
     const [loadingText, setLoadingText] = useState("Generate Plan");
 
@@ -511,6 +528,10 @@ export const Step4Location: React.FC<StepProps> = React.memo(({ prefs, updatePre
                     </div>
                 )}
             </div>
+
+            {!validationState?.isValid && validationState?.helperText && (
+                <p className="text-xs text-rose-500 font-semibold text-center mb-3">{validationState.helperText}</p>
+            )}
 
             <NavButtons
                 onNext={handleGenerateClick}

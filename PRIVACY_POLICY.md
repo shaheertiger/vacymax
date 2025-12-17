@@ -11,6 +11,13 @@ Welcome to **DoubleMyHolidays** ("we," "our," or "us"). We respect your privacy 
 
 This policy complies with the **General Data Protection Regulation (GDPR)**, the **California Consumer Privacy Act (CCPA)**, and other applicable data protection laws.
 
+### Quick summary
+
+- We only collect what we need to process payments, show you holidays, and improve the product.
+- Sensitive salary information never leaves your browser.
+- Payments are processed by Stripe; application data is stored in Supabase (hosted Postgres) with row-level security.
+- You can request access, export, or deletion of your data at any time.
+
 **By using our Service, you agree to the collection and use of information in accordance with this Privacy Policy.**
 
 ---
@@ -140,6 +147,15 @@ We share your information with the following trusted third parties:
 ### 5.4 Data Processing Agreements
 
 We have executed Data Processing Agreements (DPAs) with all third-party processors to ensure GDPR compliance.
+
+### 5.5 Supabase (Database)
+
+**Service**: Managed Postgres database (Supabase)
+**Data Shared**: Payment records, user email, and plan metadata
+**Purpose**: Store payment logs and application data with row-level security enabled
+**Privacy Policy**: https://supabase.com/privacy
+**Location**: Hosted in the region configured for your Supabase project
+**Security**: Encryption at rest and in transit; least-privilege service role keys
 
 ---
 

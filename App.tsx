@@ -122,15 +122,10 @@ const App: React.FC = () => {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showResumeBanner, setShowResumeBanner] = useState(false);
-  const [showMobileCta, setShowMobileCta] = useState(false);
-  const [isWizardVisible, setIsWizardVisible] = useState(false);
 
   const stepLabels = ['PTO days', 'Timeframe', 'Style', 'Location'];
   const clampedStep = Math.min(Math.max(step, 1), 4);
   const stepProgress = step === 0 ? 0 : (clampedStep / 4) * 100;
-  const stepStatusLabel = step === 0 ? 'Ready when you are' : stepLabels[clampedStep - 1];
-  const mobileStepSummary = step === 0 ? 'Start your plan in one tap' : `${stepStatusLabel} • ${clampedStep}/4`;
-  const mobileProgressWidth = Math.max(stepProgress, step === 0 ? 12 : 20);
 
   // Behavioral UX states
   const [direction, setDirection] = useState<'next' | 'back'>('next');
@@ -140,6 +135,8 @@ const App: React.FC = () => {
   const { savedPlans, savePlan } = useSavedPlans();
   const { isDark, toggleDarkMode } = useDarkMode();
   const { trigger: triggerHaptic } = useHaptics();
+
+  const totalPto = prefs.ptoDays + (prefs.hasBuddy ? prefs.buddyPtoDays : 0);
 
   // PWA hooks
   const { isInstallable, promptInstall } = usePWAInstall();
@@ -160,17 +157,6 @@ const App: React.FC = () => {
   const scrollWizardIntoView = useCallback(() => {
     const element = wizardRef.current || document.getElementById('wizard-section');
     element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, []);
-
-  const isWizardTopInView = useCallback(() => {
-    const node = wizardRef.current;
-    if (!node) return false;
-
-    const rect = node.getBoundingClientRect();
-    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-
-    // Treat the wizard as visible when its top is within a comfortable viewport buffer.
-    return rect.top > -120 && rect.top < viewportHeight * 0.6;
   }, []);
 
   // Close mobile menu when view changes
@@ -243,7 +229,34 @@ const App: React.FC = () => {
     }, 80);
   }, [scrollWizardIntoView, triggerHaptic, view]);
 
+  const validateReadyState = useCallback(() => {
+    if (!isOnline) {
+      setError('You appear to be offline. Reconnect to generate a new plan.');
+      scrollWizardIntoView();
+      return false;
+    }
+
+    if (prefs.ptoDays <= 0) {
+      setError('Add at least 1 PTO day so we can optimize your calendar.');
+      setStep((prev) => Math.max(prev, 1));
+      scrollWizardIntoView();
+      return false;
+    }
+
+    if (!prefs.country) {
+      setError('Pick your country so we can fetch the right public holidays.');
+      setStep((prev) => Math.max(prev, 4));
+      scrollWizardIntoView();
+      return false;
+    }
+
+    setError(null);
+    return true;
+  }, [isOnline, prefs.country, prefs.ptoDays, scrollWizardIntoView]);
+
   const handleGenerate = useCallback(async () => {
+    if (!validateReadyState()) return;
+
     setStep(5);
     setError(null);
     try {
@@ -260,8 +273,6 @@ const App: React.FC = () => {
         strategy: prefs.strategy,
       }).catch(err => console.error('Failed to log plan:', err));
 
-
-
       setTimeout(() => {
         setStep(6);
         setView('results');
@@ -272,7 +283,7 @@ const App: React.FC = () => {
       setError("We couldn't generate a plan. Please check your inputs.");
       setStep(4);
     }
-  }, [prefs]);
+  }, [prefs, validateReadyState]);
 
   const handlePaymentSuccess = useCallback(() => {
     setIsLocked(false);
@@ -315,56 +326,6 @@ const App: React.FC = () => {
       saveProgress(step, prefs);
     }
   }, [step, prefs, view, saveProgress]);
-
-  // Mobile CTA visibility based on wizard position
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const node = wizardRef.current;
-
-    // Reset state when leaving the landing view
-    if (!node || view !== 'landing') {
-      setIsWizardVisible(false);
-      setShowMobileCta(false);
-      return;
-    }
-
-    if ('IntersectionObserver' in window) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          const entry = entries[0];
-          const isInView = entry.isIntersecting && entry.boundingClientRect.top < window.innerHeight * 0.6;
-          setIsWizardVisible(isInView);
-          setShowMobileCta(!isInView && window.innerWidth < 768);
-        },
-        { threshold: [0, 0.25, 0.5, 0.75, 1] }
-      );
-
-      observer.observe(node);
-
-      return () => observer.disconnect();
-    }
-
-    const handleVisibility = () => {
-      if (window.innerWidth >= 768) {
-        setShowMobileCta(false);
-        return;
-      }
-
-      const inView = isWizardTopInView();
-      setIsWizardVisible(inView);
-      setShowMobileCta(!inView);
-    };
-
-    handleVisibility();
-    window.addEventListener('scroll', handleVisibility, { passive: true });
-    window.addEventListener('resize', handleVisibility);
-
-    return () => {
-      window.removeEventListener('scroll', handleVisibility);
-      window.removeEventListener('resize', handleVisibility);
-    };
-  }, [isWizardTopInView, view]);
 
   // Resume saved progress
   const handleResumeProgress = useCallback(() => {
@@ -722,37 +683,7 @@ const App: React.FC = () => {
           <SolutionGrid />
           <TrustSection />
 
-            {showMobileCta && !isMobileMenuOpen && (
-              <div className="fixed bottom-0 left-0 right-0 z-[70] px-4 pb-3 md:hidden pointer-events-none">
-                <div className="max-w-4xl mx-auto">
-                  <div className="bg-white/95 dark:bg-dark-100/95 border border-rose-100 dark:border-dark-border shadow-2xl rounded-[22px] p-3 flex items-center gap-3 safe-pb pointer-events-auto transition-transform duration-300 will-change-transform">
-                    <div className="flex-1 text-left space-y-1" aria-live="polite" aria-atomic="true">
-                      <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.12em] text-rose-accent">
-                        <span className={`w-1.5 h-1.5 rounded-full ${isWizardVisible ? 'bg-lavender-accent' : 'bg-rose-accent animate-pulse'}`} />
-                        {isWizardVisible ? 'Wizard ready' : 'Quick jump'}
-                        {step > 0 && <span className="text-gray-400">•</span>}
-                        {step > 0 && <span className="text-gray-500 dark:text-gray-400">{`Step ${clampedStep}/4`}</span>}
-                      </div>
-                      <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">{mobileStepSummary}</p>
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 h-1.5 bg-rose-50 dark:bg-dark-200 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-gradient-to-r from-rose-accent to-peach-accent rounded-full transition-all duration-500"
-                            style={{ width: `${mobileProgressWidth}%` }}
-                          />
-                        </div>
-                        <button
-                          onClick={handleMobileCta}
-                          className="px-3 py-2 bg-gradient-to-r from-rose-accent to-peach-accent text-white font-bold rounded-xl shadow-md shadow-rose-accent/20 active:scale-95 transition-transform text-xs whitespace-nowrap"
-                        >
-                          {step === 0 ? 'Start' : 'Resume'}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            {/* Mobile quick CTA removed to declutter the flow */}
 
           {/* Saved Plans Section */}
           {savedPlans.length > 0 && (
@@ -822,37 +753,29 @@ const App: React.FC = () => {
                 <p className="text-gray-600 text-base sm:text-lg">Build your optimized schedule in 60 seconds.</p>
               </div>
 
-              {/* FIX: Removed 'overflow-hidden' and 'backdrop-blur' to fix mobile sticky buttons */}
-              {/* FIX: Added z-[60] to ensure it sits ABOVE the bg-noise layer */}
-              <div {...swipeHandlers} className="relative z-[60] glass-panel rounded-[2rem] p-6 md:p-12 min-h-[600px] flex flex-col shadow-2xl touch-pan-y">
-                <div className="md:hidden sticky -top-4 -mx-4 px-4 pb-2 z-[62]">
-                  <div className="bg-white/95 dark:bg-dark-100/95 border border-rose-100 dark:border-dark-border rounded-2xl shadow-md p-3 flex items-center gap-3">
-                    <div className="flex-1 space-y-1" aria-live="polite" aria-atomic="true">
-                      <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-[0.14em] text-rose-accent">
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-rose-accent animate-pulse" />
-                          {step === 0 ? 'Wizard' : `Step ${clampedStep} of 4`}
-                        </div>
-                        <span className="text-[10px] text-gray-500 dark:text-gray-400 font-semibold">{stepStatusLabel}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 h-1.5 bg-rose-50 dark:bg-dark-200 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-gradient-to-r from-rose-accent to-peach-accent rounded-full transition-all duration-500"
-                            style={{ width: `${Math.max(mobileProgressWidth, step === 0 ? 8 : 16)}%` }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <button
-                      onClick={scrollWizardIntoView}
-                      className="p-2 text-xs font-semibold bg-rose-50 dark:bg-dark-200 text-rose-accent rounded-xl border border-rose-100 dark:border-dark-border active:scale-95 transition"
-                      aria-label="Back to wizard"
-                    >
-                      ↑
-                    </button>
+              <div className="bg-white/80 dark:bg-dark-100/80 rounded-3xl border border-rose-100 dark:border-dark-border shadow-md p-4 md:p-6 mb-6">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-bold uppercase tracking-[0.18em] text-rose-accent">Step {step === 0 ? 1 : clampedStep} / 4</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{step === 0 ? 'Tell us your days off' : stepLabels[clampedStep - 1]}</span>
                   </div>
+                  <button
+                    onClick={handleReset}
+                    className="text-xs font-semibold text-gray-500 hover:text-rose-accent hidden md:inline-flex"
+                  >
+                    Start over
+                  </button>
                 </div>
+                <div className="mt-3 h-2 bg-rose-50 dark:bg-dark-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-rose-accent to-peach-accent rounded-full transition-all duration-300"
+                    style={{ width: `${Math.max(stepProgress, 8)}%` }}
+                  />
+                </div>
+                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">{totalPto > 0 ? `${totalPto} PTO days ready` : 'Tap next to start in under a minute.'}</p>
+              </div>
+
+              <div {...swipeHandlers} className="relative z-[60] bg-white/95 dark:bg-dark-100/95 border border-rose-100 dark:border-dark-border rounded-[1.75rem] p-6 md:p-10 flex flex-col shadow-xl touch-pan-y">
 
                 <div className="min-h-[52px] mb-4" aria-live="polite" aria-atomic="true">
                   <div

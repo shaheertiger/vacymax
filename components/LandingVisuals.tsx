@@ -67,6 +67,43 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
                             Unlock My Freedom
                             <span className="group-hover:translate-x-1 transition-transform">🕊️</span>
                         </button>
+                        <div className="flex sm:hidden items-center gap-3 px-4 py-3 rounded-full bg-white/80 border border-rose-100 shadow-sm">
+                            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-rose-accent">
+                                <span className="w-2 h-2 rounded-full bg-lavender-accent animate-pulse"></span>
+                                1-Min Wizard
+                            </div>
+                            <span className="text-gray-500 text-xs">Optimized for one-thumb use</span>
+                        </div>
+                    </div>
+
+                    {/* Mobile highlight cards */}
+                    <div className="mt-5 -mx-2 flex sm:hidden items-stretch gap-3 overflow-x-auto px-2 pb-2" aria-label="Mobile comforts">
+                        {[{
+                            title: 'Swipe friendly',
+                            desc: 'Tap or swipe through 4 steps',
+                            icon: '📲'
+                        }, {
+                            title: 'Lightweight',
+                            desc: '<30s to unlock first plan',
+                            icon: '⚡'
+                        }, {
+                            title: 'Save & resume',
+                            desc: 'We auto-save your progress',
+                            icon: '💾'
+                        }].map((item) => (
+                            <div
+                                key={item.title}
+                                className="min-w-[220px] flex-1 bg-white/80 border border-rose-100 rounded-2xl px-4 py-3 shadow-sm backdrop-blur-md"
+                            >
+                                <div className="flex items-center gap-3 mb-2">
+                                    <div className="w-9 h-9 rounded-xl bg-rose-50 flex items-center justify-center text-lg">
+                                        {item.icon}
+                                    </div>
+                                    <p className="text-sm font-bold text-gray-800">{item.title}</p>
+                                </div>
+                                <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
+                            </div>
+                        ))}
                     </div>
 
                     {/* Social Proof - Simplified on mobile */}
@@ -92,10 +129,10 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
-                    className="relative"
+                    className="relative max-w-xl mx-auto w-full lg:ml-auto"
                 >
                     <div className="absolute inset-0 bg-gradient-to-tr from-rose-100 to-lavender-100 rounded-[2.5rem] blur-3xl -z-10 transform rotate-3"></div>
-                    <div className="glass-panel rounded-[2.5rem] p-8 md:p-12 border border-white/60 relative overflow-hidden min-h-[500px] flex flex-col shadow-xl bg-white/60 backdrop-blur-xl">
+                    <div className="glass-panel rounded-[2.5rem] p-6 sm:p-8 md:p-12 border border-white/60 relative overflow-hidden min-h-[420px] sm:min-h-[460px] md:min-h-[500px] flex flex-col shadow-xl bg-white/60 backdrop-blur-xl">
 
                         {/* Decorative UI Header */}
                         <div className="flex justify-between items-center mb-8 border-b border-rose-100 pb-6">
@@ -239,6 +276,7 @@ export const BurnCalculator = () => {
                                 value={salary}
                                 onChange={(e) => setSalary(Number(e.target.value))}
                                 className="w-full h-2 bg-rose-100 rounded-lg appearance-none cursor-pointer accent-rose-500"
+                                aria-label="Annual salary"
                             />
                         </div>
 
@@ -254,6 +292,7 @@ export const BurnCalculator = () => {
                                 value={daysLeft}
                                 onChange={(e) => setDaysLeft(Number(e.target.value))}
                                 className="w-full h-2 bg-rose-100 rounded-lg appearance-none cursor-pointer accent-rose-500"
+                                aria-label="Unused vacation days"
                             />
                         </div>
 

@@ -4,7 +4,7 @@ import { Step1PTO, Step3Strategy } from './components/StepWizard';
 import { generateVacationPlan } from './services/vacationService';
 import { SEOHead } from './components/SEOHead';
 import { useSwipe, useHaptics } from './hooks/useMobileUX';
-import { useWizardProgress, useSavedPlans } from './hooks/useLocalStorage';
+import { useWizardProgress, useSavedPlans, useUnlockedSession } from './hooks/useLocalStorage';
 import { usePWAInstall, useIOSInstallPrompt, useOnlineStatus } from './hooks/usePWA';
 import { PainHero, BurnCalculator, SolutionGrid, BattleTestedMarquee } from './components/LandingVisuals';
 import { TrustSection } from './components/TrustSection';
@@ -119,7 +119,8 @@ const App: React.FC = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [progressMessage, setProgressMessage] = useState<string | null>(null);
-  const [isLocked, setIsLocked] = useState(true);
+  const { isUnlocked: hasUnlockedSession, markUnlocked } = useUnlockedSession();
+  const [isLocked, setIsLocked] = useState(!hasUnlockedSession);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showResumeBanner, setShowResumeBanner] = useState(false);
@@ -173,6 +174,12 @@ const App: React.FC = () => {
       document.body.style.overflow = 'unset';
     }
   }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    if (hasUnlockedSession) {
+      setIsLocked(false);
+    }
+  }, [hasUnlockedSession]);
 
   // Scroll only when starting the wizard from hero/How it Works
   const scrollToWizard = useCallback(() => {
@@ -347,23 +354,53 @@ const App: React.FC = () => {
 
   const handlePaymentSuccess = useCallback(() => {
     setIsLocked(false);
+    markUnlocked();
     setShowSuccessMessage(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setTimeout(() => setShowSuccessMessage(false), 8000);
-  }, []);
+  }, [markUnlocked]);
+
+  const handleSavePlanRequest = useCallback(() => {
+    if (!result) return;
+
+    const metadata = {
+      planName: result.planName,
+      totalDaysOff: result.totalDaysOff,
+      totalPtoUsed: result.totalPtoUsed,
+      totalValueRecovered: result.totalValueRecovered,
+      tripCount: result.vacationBlocks.length,
+      summary: result.summary,
+    };
+
+    savePlan(prefs, isLocked ? undefined : result, {
+      isUnlocked: !isLocked,
+      metadata,
+    });
+  }, [isLocked, prefs, result, savePlan]);
 
   const openSavedPlan = useCallback(
     (planId?: string) => {
       const plan = planId ? savedPlans.find((item) => item.id === planId) : savedPlans[0];
       if (!plan) return;
 
+      const unlocked = plan.isUnlocked || hasUnlockedSession;
+
+      if (unlocked) {
+        markUnlocked();
+      }
+
       setPrefs(plan.prefs);
-      setResult(plan.result);
-      setView('results');
-      setIsLocked(false);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (plan.result) {
+        setResult(plan.result);
+        setView('results');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        setResult(null);
+        setView('landing');
+      }
+      setIsLocked(!unlocked);
     },
-    [savedPlans]
+    [savedPlans, hasUnlockedSession, markUnlocked]
   );
 
   const handleReset = useCallback(() => {
@@ -933,33 +970,43 @@ const App: React.FC = () => {
                       onClick={() => openSavedPlan(plan.id)}
                       className="w-full bg-white border border-lavender-100 rounded-2xl p-5 text-left hover:shadow-lg hover:border-lavender-200 transition-all group"
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xs font-bold text-lavender-accent bg-lavender-50 px-2 py-0.5 rounded">
-                              {plan.result.planName}
-                            </span>
-                            <span className="text-xs text-gray-400">
-                              {new Date(plan.savedAt).toLocaleDateString()}
-                            </span>
+                      {(() => {
+                        const planName = plan.result?.planName || plan.metadata.planName || plan.name;
+                        const totalDaysOff = plan.result?.totalDaysOff ?? plan.metadata.totalDaysOff ?? 0;
+                        const totalPtoUsed = plan.result?.totalPtoUsed ?? plan.metadata.totalPtoUsed ?? 0;
+                        const tripCount = plan.result?.vacationBlocks?.length ?? plan.metadata.tripCount ?? 0;
+                        const totalValueRecovered = plan.result?.totalValueRecovered ?? plan.metadata.totalValueRecovered ?? 0;
+
+                        return (
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-xs font-bold text-lavender-accent bg-lavender-50 px-2 py-0.5 rounded">
+                                  {planName}
+                                </span>
+                                <span className="text-xs text-gray-400">
+                                  {new Date(plan.savedAt).toLocaleDateString()}
+                                </span>
+                              </div>
+                              <h3 className="font-bold text-gray-800 truncate group-hover:text-lavender-accent transition-colors">
+                                {totalDaysOff} days off with {totalPtoUsed} PTO
+                              </h3>
+                              <p className="text-sm text-gray-500 truncate">
+                                {plan.prefs.country}{plan.prefs.region ? `, ${plan.prefs.region}` : ''} • {tripCount} trips
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-3 ml-4">
+                              <div className="text-right hidden sm:block">
+                                <p className="text-xs text-gray-400 uppercase tracking-wider">Value</p>
+                                <p className="font-bold text-rose-accent">${totalValueRecovered.toLocaleString()}</p>
+                              </div>
+                              <svg className="w-5 h-5 text-gray-300 group-hover:text-lavender-accent group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </div>
                           </div>
-                          <h3 className="font-bold text-gray-800 truncate group-hover:text-lavender-accent transition-colors">
-                            {plan.result.totalDaysOff} days off with {plan.result.totalPtoUsed} PTO
-                          </h3>
-                          <p className="text-sm text-gray-500 truncate">
-                            {plan.prefs.country}{plan.prefs.region ? `, ${plan.prefs.region}` : ''} • {plan.result.vacationBlocks.length} trips
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-3 ml-4">
-                          <div className="text-right hidden sm:block">
-                            <p className="text-xs text-gray-400 uppercase tracking-wider">Value</p>
-                            <p className="font-bold text-rose-accent">${plan.result.totalValueRecovered.toLocaleString()}</p>
-                          </div>
-                          <svg className="w-5 h-5 text-gray-300 group-hover:text-lavender-accent group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </div>
-                      </div>
+                        );
+                      })()}
                     </button>
                   ))}
                 </div>
@@ -1021,7 +1068,7 @@ const App: React.FC = () => {
               onUnlock={handlePaymentSuccess}
               userCountry={prefs.country}
               prefs={prefs}
-              onSavePlan={() => savePlan(prefs, result)}
+              onSavePlan={handleSavePlanRequest}
             />
           </Suspense>
         </main>

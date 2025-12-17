@@ -238,15 +238,16 @@ export const BurnCalculator = () => {
             <div className="max-w-6xl mx-auto px-4 md:px-6 grid lg:grid-cols-2 gap-10 md:gap-20 items-center relative z-10">
                 <div className="space-y-6 md:space-y-8">
                     <div className="inline-block px-3 md:px-4 py-1 md:py-1.5 bg-rose-100 rounded-lg text-rose-500 text-[10px] md:text-xs font-bold uppercase tracking-widest">
-                        ⚠️ The Freedom Audit
+                        ✨ Optional Snapshot
                     </div>
                     <h2 className="text-3xl sm:text-4xl md:text-6xl font-display font-bold text-gray-900 leading-[1.1]">
-                        Is your job <br />
-                        <span className="text-rose-400 italic">stealing your joy?</span>
+                        See how far <br />
+                        <span className="text-rose-400 italic">your days can stretch.</span>
                     </h2>
                     <p className="text-gray-500 text-base md:text-lg leading-relaxed max-w-md">
-                        Every unused PTO day is freedom given back. Reclaim your time.
+                        A calm, optional check-in to visualize the value of the PTO you still have left.
                     </p>
+                    <p className="text-gray-400 text-sm">This step is optional—hop back to the planner whenever you want.</p>
 
                     <div className="flex flex-wrap gap-4 md:gap-8">
                         <div>
@@ -308,11 +309,17 @@ export const BurnCalculator = () => {
                                 onClick={() => document.getElementById('wizard-section')?.scrollIntoView({ behavior: 'smooth' })}
                                 className="w-full py-5 bg-gradient-to-r from-rose-accent to-peach-accent text-white text-lg rounded-xl transition-all font-bold flex items-center justify-center gap-2 hover:shadow-lg hover:-translate-y-1"
                             >
-                                Reclaim My Worth
+                                Preview my extra days
                             </button>
                             <p className="text-center mt-4 text-[10px] text-gray-400 uppercase tracking-widest">
                                 <span className="inline-block w-2 h-2 bg-rose-400 rounded-full mr-2 animate-pulse"></span> Prioritize yourself
                             </p>
+                            <button
+                                onClick={() => document.getElementById('wizard-section')?.scrollIntoView({ behavior: 'smooth' })}
+                                className="mt-3 w-full text-sm text-rose-500 font-bold underline underline-offset-4"
+                            >
+                                Skip to the planner
+                            </button>
                         </div>
                     </div>
                 </div>

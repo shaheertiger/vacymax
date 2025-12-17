@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { OptimizationResult, UserPreferences } from '../types';
 import { PaymentModal, getRegionalPrice } from './PaymentModal';
 import { formatDate, formatCurrency, generateGoogleCalendarLink, downloadICS } from '../services/utils';
@@ -118,6 +118,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
     const [showShareGraphic, setShowShareGraphic] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
     // NEW: View Mode Toggle (Joint vs Solo)
     const hasBuddy = result.totalPtoUsedBuddy !== undefined;
@@ -149,6 +150,13 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
     );
 
     const price = useMemo(() => getRegionalPrice(userCountry), [userCountry]);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(typeof window !== 'undefined' && window.innerWidth < 768);
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // --- DYNAMIC STATS CALCULATION (MEMOIZED) ---
     const stats = useMemo(() => {
@@ -192,6 +200,8 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
 
     const { displayedPtoUsed, displayedFreeDays, multiplier, isInfiniteEfficiency, planStats } = stats;
 
+    const efficiencyLabel = isInfiniteEfficiency ? 'Infinite efficiency' : `+${((multiplier - 1) * 100).toFixed(0)}%`;
+
     const handleUnlockClick = useCallback(() => setShowPaymentModal(true), []);
     const handleClosePaymentModal = useCallback(() => setShowPaymentModal(false), []);
     const handlePaymentSuccess = useCallback(() => {
@@ -223,6 +233,8 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
         )
     }
 
+    const mobilePrimaryLabel = isLocked ? 'Unlock full plan' : isSaved ? 'Saved to device' : 'Save plan';
+
     return (
         <div className="w-full max-w-6xl mx-auto space-y-6 md:space-y-8 pb-32">
 
@@ -241,6 +253,92 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
                     result={result}
                     onClose={() => setShowShareGraphic(false)}
                 />
+            )}
+
+            {/* Mobile bottom action rail for iPhone-friendly reachability */}
+            {isMobile && (
+                <div className="md:hidden fixed bottom-0 left-0 right-0 z-[85] px-3 pb-[calc(env(safe-area-inset-bottom,0px)+12px)] pointer-events-none">
+                    <div className="max-w-xl mx-auto bg-white/95 dark:bg-dark-surface/95 border border-rose-100 dark:border-dark-border shadow-[0_18px_32px_rgba(0,0,0,0.1)] rounded-[20px] px-4 py-3 flex items-center gap-3 backdrop-blur-xl pointer-events-auto">
+                        <div className="flex-1 min-w-0 space-y-0.5">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-rose-accent flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-rose-accent animate-pulse"></span>
+                                {isLocked ? `Unlock ${hiddenCount} trips` : 'Keep handy'}
+                            </p>
+                            <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">{result.planName || 'Optimal Schedule'}</p>
+                            <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">{result.totalDaysOff} days off • {efficiencyLabel}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={isLocked ? handleUnlockClick : handleSavePlan}
+                                className={`px-3 py-2 rounded-xl text-[13px] font-semibold shadow-md active:scale-95 transition-all ${isLocked ? 'bg-gradient-to-r from-rose-accent to-peach-accent text-white' : 'bg-rose-50 text-rose-accent border border-rose-100'}`}
+                            >
+                                {mobilePrimaryLabel}
+                            </button>
+                            <button
+                                onClick={() => setShowShareGraphic(true)}
+                                className="p-2 rounded-xl text-[12px] font-semibold bg-white dark:bg-dark-100 text-gray-600 dark:text-gray-200 border border-rose-100 dark:border-dark-border shadow-sm active:scale-95"
+                                aria-label="Share plan"
+                            >
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M12 7h.01M17 7h.01M7 12h.01M12 12h.01M17 12h.01M7 17h10" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Mobile Hero Snapshot */}
+            {isMobile && (
+                <div className="md:hidden -mt-2 animate-enter">
+                    <div className="bg-gradient-to-br from-white via-rose-50 to-lavender-50 rounded-[28px] p-4 border border-rose-100 shadow-sm">
+                        <div className="flex items-start justify-between gap-3">
+                            <div className="space-y-1">
+                                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-rose-accent">Your result</p>
+                                <h2 className="text-2xl font-display font-bold text-gray-800 leading-tight">{result.planName || 'Optimal Schedule'}</h2>
+                                <p className="text-sm text-gray-500">{viewMode === 'joint' && hasBuddy ? 'Shared calendar ready for two' : 'Personalized recharge plan'}</p>
+                            </div>
+                            <div className="bg-white border border-rose-100 text-rose-accent rounded-2xl px-3 py-2 text-center shadow-sm">
+                                <div className="text-[11px] font-bold uppercase tracking-[0.12em] text-gray-400">Days Off</div>
+                                <div className="text-xl font-display font-extrabold">{result.totalDaysOff}</div>
+                            </div>
+                        </div>
+
+                        <div className="mt-4 flex flex-wrap gap-2">
+                            {[
+                                { label: efficiencyLabel, accent: 'bg-rose-100', dot: 'bg-rose-accent' },
+                                { label: `${formatCurrency(result.totalValueRecovered)} saved`, accent: 'bg-lavender-100', dot: 'bg-lavender-accent' },
+                            ].map((chip) => (
+                                <span key={chip.label} className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white text-gray-700 border text-xs font-semibold shadow-[0_4px_12px_rgba(0,0,0,0.05)] ${chip.accent}`}>
+                                    <span className={`w-1.5 h-1.5 rounded-full ${chip.dot}`}></span>
+                                    {chip.label}
+                                </span>
+                            ))}
+                        </div>
+                        <p className="mt-3 text-xs text-gray-500">
+                            {viewMode === 'joint' && hasBuddy ? 'Built for two — together mode' : 'Solo focus — me time first'}
+                        </p>
+
+                        {hasBuddy && (
+                            <div className="mt-4">
+                                <div className="inline-flex bg-white/80 border border-rose-100 rounded-full p-1 shadow-inner">
+                                    <button
+                                        onClick={() => setViewMode('joint')}
+                                        className={`px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide rounded-full transition-all duration-300 ${viewMode === 'joint' ? 'bg-rose-100 text-rose-600 shadow' : 'text-gray-400 hover:text-gray-600'}`}
+                                    >
+                                        Together
+                                    </button>
+                                    <button
+                                        onClick={() => setViewMode('solo')}
+                                        className={`px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide rounded-full transition-all duration-300 ${viewMode === 'solo' ? 'bg-rose-100 text-rose-600 shadow' : 'text-gray-400 hover:text-gray-600'}`}
+                                    >
+                                        Me Time
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
             )}
 
             {/* Header Cards with Staggered Entrance */}
@@ -339,9 +437,9 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
             </div>
 
             <div className="space-y-4">
-                <div className="flex items-center justify-between px-2 animate-enter delay-400">
-                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Your Wellness Schedule</h3>
-                    <div className="flex gap-2 flex-wrap justify-end">
+                    <div className="flex items-center justify-between px-2 animate-enter delay-400">
+                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Your Wellness Schedule</h3>
+                        <div className="flex gap-2 flex-wrap justify-end">
                         <SocialShare
                             totalDaysOff={result.totalDaysOff}
                             ptoUsed={result.totalPtoUsed}
@@ -426,6 +524,15 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
                                         </span>
                                         <span className="flex items-center gap-1.5 text-rose-400 font-medium">
                                             ⏱ {block.totalDaysOff} Days Off
+                                        </span>
+                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-accent border border-rose-100 md:hidden">
+                                            {block.ptoDaysUsed}d you
+                                            {viewMode === 'joint' && hasBuddy && (
+                                                <>
+                                                    <span className="text-gray-300">•</span>
+                                                    {(block.buddyPtoDaysUsed ?? 0)}d partner
+                                                </>
+                                            )}
                                         </span>
                                     </div>
                                 </div>

@@ -400,12 +400,15 @@ const App: React.FC = () => {
       const plan = planId ? savedPlans.find((item) => item.id === planId) : savedPlans[0];
       if (!plan) return;
 
-      const isPlanUnlocked = Boolean(plan.isUnlocked && plan.result);
-      const hasValidUnlock = isPlanUnlocked && hasUnlockedSession;
+      const hasUnlockToken = hasUnlockedSession || plan.isUnlocked === true;
+
+      if (plan.isUnlocked) {
+        markUnlocked();
+      }
 
       setPrefs(plan.prefs);
 
-      if (plan.result) {
+      if (hasUnlockToken && plan.result) {
         setResult(plan.result);
         setView('results');
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -414,22 +417,7 @@ const App: React.FC = () => {
         setView('landing');
       }
 
-      if (!isPlanUnlocked) {
-        handleUnlockFailure('This saved plan is locked. Please unlock to view the full details.');
-        setShouldPromptUnlock(Boolean(plan.result));
-        return;
-      }
-
-      if (!hasValidUnlock) {
-        handleUnlockFailure('We couldn\'t verify your payment token. Please unlock again to continue.');
-        setShouldPromptUnlock(Boolean(plan.result));
-        return;
-      }
-
-      markUnlocked();
-      setUnlockStatus('idle');
-      setLockNotice(null);
-      setShouldPromptUnlock(false);
+      setIsLocked(!hasUnlockToken);
     },
     [savedPlans, hasUnlockedSession, handleUnlockFailure, markUnlocked]
   );

@@ -9,10 +9,9 @@ export function usePWAInstall() {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isInstallable, setIsInstallable] = useState(false);
-  const isBrowser = typeof window !== 'undefined' && typeof navigator !== 'undefined';
 
   useEffect(() => {
-    if (!isBrowser) {
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
       return;
     }
 
@@ -47,7 +46,7 @@ export function usePWAInstall() {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
-  }, [isBrowser]);
+  }, []);
 
   const promptInstall = useCallback(async () => {
     if (!installPrompt) return false;
@@ -79,10 +78,9 @@ export function usePWAInstall() {
 // Check if user is on iOS (for custom install instructions)
 export function useIOSInstallPrompt() {
   const [showIOSPrompt, setShowIOSPrompt] = useState(false);
-  const isBrowser = typeof window !== 'undefined' && typeof navigator !== 'undefined';
 
   useEffect(() => {
-    if (!isBrowser) {
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
       return;
     }
 
@@ -103,7 +101,7 @@ export function useIOSInstallPrompt() {
         return () => clearTimeout(timer);
       }
     }
-  }, [isBrowser]);
+  }, []);
 
   const dismissIOSPrompt = useCallback(() => {
     setShowIOSPrompt(false);
@@ -120,13 +118,16 @@ export function useIOSInstallPrompt() {
 
 // Online/offline status hook
 export function useOnlineStatus() {
-  const isBrowser = typeof window !== 'undefined' && typeof navigator !== 'undefined';
-  const [isOnline, setIsOnline] = useState(
-    isBrowser ? navigator.onLine : true
-  );
+  const [isOnline, setIsOnline] = useState(() => {
+    // Check browser environment inline to avoid TDZ issues
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+      return true;
+    }
+    return navigator.onLine;
+  });
 
   useEffect(() => {
-    if (!isBrowser) {
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
       return;
     }
 
@@ -140,7 +141,7 @@ export function useOnlineStatus() {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [isBrowser]);
+  }, []);
 
   return isOnline;
 }

@@ -15,103 +15,193 @@ export const ShareableGraphic: React.FC<ShareableGraphicProps> = ({ result, onCl
         ? ((result.totalDaysOff / result.totalPtoUsed - 1) * 100).toFixed(0)
         : '∞';
 
-    const handleDownload = useCallback(async () => {
-        if (!cardRef.current) return;
+    // Draw the graphic directly to canvas for reliable mobile rendering
+    const drawGraphicToCanvas = useCallback(() => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return null;
 
+        // Set canvas size (2x for retina)
+        const scale = 2;
+        const width = 400;
+        const height = 500;
+        canvas.width = width * scale;
+        canvas.height = height * scale;
+        ctx.scale(scale, scale);
+
+        // Draw gradient background
+        const gradient = ctx.createLinearGradient(0, 0, width, height);
+        gradient.addColorStop(0, '#F43F5E'); // rose-500
+        gradient.addColorStop(0.5, '#FB7185'); // rose-400
+        gradient.addColorStop(1, '#FF9B7A'); // peach-accent
+
+        // Rounded rectangle background
+        const radius = 24;
+        ctx.beginPath();
+        ctx.moveTo(radius, 0);
+        ctx.lineTo(width - radius, 0);
+        ctx.quadraticCurveTo(width, 0, width, radius);
+        ctx.lineTo(width, height - radius);
+        ctx.quadraticCurveTo(width, height, width - radius, height);
+        ctx.lineTo(radius, height);
+        ctx.quadraticCurveTo(0, height, 0, height - radius);
+        ctx.lineTo(0, radius);
+        ctx.quadraticCurveTo(0, 0, radius, 0);
+        ctx.closePath();
+        ctx.fillStyle = gradient;
+        ctx.fill();
+
+        // Draw decorative circles
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.beginPath();
+        ctx.arc(width - 40, 40, 60, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(40, height - 40, 50, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Logo and brand name
+        ctx.font = 'bold 16px system-ui, -apple-system, sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.fillText('🌴 DoubleMyHolidays', 30, 50);
+
+        // "I'm getting" text
+        ctx.font = '18px system-ui, -apple-system, sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.fillText("I'm getting", 30, 120);
+
+        // Main days off number
+        ctx.font = 'bold 72px system-ui, -apple-system, sans-serif';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText(`${result.totalDaysOff}`, 30, 200);
+
+        // "days off" text
+        ctx.font = 'bold 28px system-ui, -apple-system, sans-serif';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText('days off', 30 + ctx.measureText(`${result.totalDaysOff}`).width + 15, 200);
+
+        // Stats boxes
+        const boxY = 260;
+        const boxHeight = 70;
+        const boxWidth = 100;
+        const boxGap = 20;
+        const boxes = [
+            { label: 'PTO Used', value: `${result.totalPtoUsed}` },
+            { label: 'Efficiency', value: `+${efficiency}%` },
+            { label: 'Trips', value: `${result.vacationBlocks.length}` }
+        ];
+
+        boxes.forEach((box, i) => {
+            const boxX = 30 + (boxWidth + boxGap) * i;
+
+            // Draw box background
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.beginPath();
+            ctx.roundRect(boxX, boxY, boxWidth, boxHeight, 12);
+            ctx.fill();
+
+            // Label
+            ctx.font = '12px system-ui, -apple-system, sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.fillText(box.label, boxX + 12, boxY + 22);
+
+            // Value
+            ctx.font = 'bold 24px system-ui, -apple-system, sans-serif';
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillText(box.value, boxX + 12, boxY + 52);
+        });
+
+        // Bottom divider
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(30, 360);
+        ctx.lineTo(width - 30, 360);
+        ctx.stroke();
+
+        // Footer text
+        ctx.font = '14px system-ui, -apple-system, sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.fillText('Plan your perfect year at', 30, 400);
+
+        ctx.font = 'bold 16px system-ui, -apple-system, sans-serif';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText('doublemyholidays.com', 30, 425);
+
+        return canvas;
+    }, [result, efficiency]);
+
+    const handleDownload = useCallback(async () => {
         setIsGenerating(true);
 
         let clonedCard: HTMLDivElement | null = null;
         let captureShell: HTMLDivElement | null = null;
 
         try {
-            // Use html2canvas if available, otherwise use a simple approach
-            const { default: html2canvas } = await import('html2canvas').catch(() => ({ default: null }));
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-            if (html2canvas) {
-                const cardNode = cardRef.current;
-                const rect = cardNode.getBoundingClientRect();
-                const width = Math.ceil(rect.width);
-                const height = Math.ceil(rect.height);
-                const padding = 24;
-                const pixelRatio = Math.min(window.devicePixelRatio || 2, 3);
+            // Use canvas-drawn graphic for reliable mobile rendering
+            const canvas = drawGraphicToCanvas();
 
-                // Clone the card into a padded shell so shadows/rounding aren't clipped on mobile captures
-                clonedCard = cardNode.cloneNode(true) as HTMLDivElement;
-                Object.assign(clonedCard.style, {
-                    position: 'relative',
-                    width: `${width}px`,
-                    height: `${height}px`,
-                });
+            if (!canvas) {
+                throw new Error('Failed to create canvas');
+            }
 
-                captureShell = document.createElement('div');
-                Object.assign(captureShell.style, {
-                    position: 'fixed',
-                    top: '0',
-                    left: '0',
-                    width: `${width + padding * 2}px`,
-                    height: `${height + padding * 2}px`,
-                    padding: `${padding}px`,
-                    boxSizing: 'border-box',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    pointerEvents: 'none',
-                    opacity: '0',
-                    zIndex: '-1',
-                    transform: 'translateZ(0)',
-                    background: '#fdf2f8',
-                });
-                captureShell.appendChild(clonedCard);
-                document.body.appendChild(captureShell);
+            const imageData = canvas.toDataURL('image/png');
 
-                // Allow fonts/gradients to settle for mobile captures
-                await document.fonts.ready.catch(() => Promise.resolve());
-                await new Promise((resolve) => requestAnimationFrame(resolve));
-                await new Promise((resolve) => requestAnimationFrame(resolve));
-
-                const canvas = await html2canvas(captureShell, {
-                    backgroundColor: '#fdf2f8',
-                    scale: pixelRatio,
-                    width: width + padding * 2,
-                    height: height + padding * 2,
-                    scrollX: 0,
-                    scrollY: 0,
-                    useCORS: true,
-                });
-
-                const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png', 1));
-
-                if (!blob) {
-                    throw new Error('Unable to create image blob');
+            // For iOS Safari, open in new tab for users to save
+            if (isIOS) {
+                const newWindow = window.open();
+                if (newWindow) {
+                    newWindow.document.write(`
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <meta name="viewport" content="width=device-width, initial-scale=1">
+                            <title>Save Your Vacation Plan</title>
+                            <style>
+                                body { margin: 0; display: flex; flex-direction: column; align-items: center; background: #f5f5f5; padding: 20px; font-family: system-ui; }
+                                p { color: #333; margin-bottom: 16px; text-align: center; font-size: 14px; }
+                                img { max-width: 100%; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+                            </style>
+                        </head>
+                        <body>
+                            <p>Press and hold the image, then tap "Save Image"</p>
+                            <img src="${imageData}" alt="My Vacation Plan"/>
+                        </body>
+                        </html>
+                    `);
+                    newWindow.document.close();
+                } else {
+                    // If popup blocked, try blob download
+                    throw new Error('Popup blocked');
                 }
-
-                const url = URL.createObjectURL(blob);
+            } else {
+                // Standard download for other browsers
                 const link = document.createElement('a');
                 link.download = 'my-vacation-plan.png';
-                link.href = url;
+                link.href = imageData;
                 link.click();
-                URL.revokeObjectURL(url);
-            } else {
-                // Fallback: Copy text to clipboard
-                const text = `I'm getting ${result.totalDaysOff} days off with only ${result.totalPtoUsed} PTO days (+${efficiency}% efficiency)! Plan your perfect year at doublemyholidays.com`;
-                await navigator.clipboard.writeText(text);
-                setCopied(true);
-                setTimeout(() => setCopied(false), 2000);
             }
         } catch (error) {
             console.error('Failed to generate image:', error);
             // Fallback to text copy
             const text = `I'm getting ${result.totalDaysOff} days off with only ${result.totalPtoUsed} PTO days (+${efficiency}% efficiency)! Plan your perfect year at doublemyholidays.com`;
-            await navigator.clipboard.writeText(text);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
+            try {
+                await navigator.clipboard.writeText(text);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            } catch {
+                // If clipboard fails too, show alert
+                alert('Unable to download. Please take a screenshot instead!');
+            }
         } finally {
             if (captureShell?.parentNode) {
                 captureShell.parentNode.removeChild(captureShell);
             }
             setIsGenerating(false);
         }
-    }, [result, efficiency]);
+    }, [result, efficiency, drawGraphicToCanvas]);
 
     const handleShare = useCallback(async () => {
         const shareData = {

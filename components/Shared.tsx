@@ -200,12 +200,30 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
                                     ?
                                 </div>
                                 {showTooltip && (
-                                    <div className="absolute top-full right-0 mt-3 w-[260px] max-w-[80vw] bg-white border border-rose-100 p-4 rounded-xl shadow-[0_10px_40px_-5px_rgba(0,0,0,0.15)] z-[200] text-left animate-fade-up pointer-events-none">
-                                        <p className="text-xs text-gray-600 leading-relaxed font-medium">
-                                            {tooltipText}
-                                        </p>
-                                        <div className="absolute -top-1 right-3 w-2 h-2 bg-white border-t border-l border-rose-100 transform rotate-45"></div>
-                                    </div>
+                                    <>
+                                        {/* Backdrop for mobile to close tooltip on outside click */}
+                                        <div
+                                            className="fixed inset-0 z-[199] md:hidden"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setShowTooltip(false);
+                                                setTooltipClickedOpen(false);
+                                            }}
+                                        />
+                                        {/* Tooltip: below on mobile (top-full), above on desktop (md:bottom-full) */}
+                                        <div className="fixed md:absolute left-4 right-4 md:left-auto md:right-0 top-auto md:top-auto bottom-auto md:bottom-full mt-2 md:mt-0 md:mb-3 w-auto md:w-[260px] max-w-[92vw] bg-white border border-rose-100 p-4 rounded-xl shadow-[0_10px_40px_-5px_rgba(0,0,0,0.15)] z-[200] text-left animate-fade-up"
+                                            style={{
+                                                // On mobile, position near the button but centered
+                                                ...(typeof window !== 'undefined' && window.innerWidth < 768 ? {} : {})
+                                            }}
+                                        >
+                                            <p className="text-xs text-gray-600 leading-relaxed font-medium">
+                                                {tooltipText}
+                                            </p>
+                                            {/* Arrow pointing up on mobile, down on desktop */}
+                                            <div className="hidden md:block absolute -bottom-1 right-3 w-2 h-2 bg-white border-r border-b border-rose-100 transform rotate-45"></div>
+                                        </div>
+                                    </>
                                 )}
                             </div>
                         )}

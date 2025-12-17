@@ -661,7 +661,7 @@ const App: React.FC = () => {
 
       {/* PWA Install Banner */}
       {showInstallBanner && isInstallable && (
-        <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-80 z-[58] animate-fade-up">
+        <div className="fixed bottom-20 left-4 right-4 md:bottom-4 md:left-auto md:right-4 md:w-80 z-[70] animate-fade-up">
           <div className="bg-gradient-to-r from-rose-500 to-peach-accent dark:from-rose-600 dark:to-peach-accent rounded-2xl p-4 shadow-xl flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl flex-shrink-0">
               📱
@@ -695,7 +695,7 @@ const App: React.FC = () => {
 
       {/* iOS Install Instructions */}
       {showIOSPrompt && (
-        <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 z-[58] animate-fade-up">
+        <div className="fixed bottom-20 left-4 right-4 md:bottom-4 md:left-auto md:right-4 md:w-96 z-[70] animate-fade-up">
           <div className="bg-white dark:bg-dark-surface border border-rose-100 dark:border-dark-border rounded-2xl p-5 shadow-xl">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 rounded-xl bg-rose-50 dark:bg-rose-accent/20 flex items-center justify-center text-2xl flex-shrink-0">

@@ -36,13 +36,27 @@ export const HolidayTooltip: React.FC<{ holiday: HolidayInfo }> = ({ holiday }) 
             <span className="cursor-help text-[10px] font-bold bg-lavender-50 text-lavender-accent border border-lavender-100 px-2 py-1 rounded uppercase tracking-wider hover:bg-lavender-100 transition-colors shadow-sm">
                 {holiday.name}
             </span>
-            <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 transition-all duration-200 pointer-events-none ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
-                <div className="bg-white border border-rose-100 p-3 rounded-lg shadow-xl text-xs text-center backdrop-blur-md relative z-50">
-                    <div className="font-bold text-gray-800 mb-1">{formatDate(holiday.date)}</div>
-                    <div className="text-gray-500 leading-tight">{desc}</div>
-                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-white border-r border-b border-rose-100"></div>
-                </div>
-            </div>
+            {isOpen && (
+                <>
+                    {/* Backdrop for mobile */}
+                    <div
+                        className="fixed inset-0 z-[199] md:hidden"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsOpen(false);
+                            setClickedOpen(false);
+                        }}
+                    />
+                    {/* Tooltip - fixed on mobile, absolute on desktop */}
+                    <div className="fixed md:absolute left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 bottom-auto md:bottom-full top-auto md:top-auto mt-2 md:mt-0 md:mb-2 w-auto md:w-48 z-[200]">
+                        <div className="bg-white border border-rose-100 p-3 rounded-lg shadow-xl text-xs text-center backdrop-blur-md relative">
+                            <div className="font-bold text-gray-800 mb-1">{formatDate(holiday.date)}</div>
+                            <div className="text-gray-500 leading-tight">{desc}</div>
+                            <div className="hidden md:block absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-white border-r border-b border-rose-100"></div>
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     )
 }

@@ -243,7 +243,34 @@ const App: React.FC = () => {
     }, 80);
   }, [scrollWizardIntoView, triggerHaptic, view]);
 
+  const validateReadyState = useCallback(() => {
+    if (!isOnline) {
+      setError('You appear to be offline. Reconnect to generate a new plan.');
+      scrollWizardIntoView();
+      return false;
+    }
+
+    if (prefs.ptoDays <= 0) {
+      setError('Add at least 1 PTO day so we can optimize your calendar.');
+      setStep((prev) => Math.max(prev, 1));
+      scrollWizardIntoView();
+      return false;
+    }
+
+    if (!prefs.country) {
+      setError('Pick your country so we can fetch the right public holidays.');
+      setStep((prev) => Math.max(prev, 4));
+      scrollWizardIntoView();
+      return false;
+    }
+
+    setError(null);
+    return true;
+  }, [isOnline, prefs.country, prefs.ptoDays, scrollWizardIntoView]);
+
   const handleGenerate = useCallback(async () => {
+    if (!validateReadyState()) return;
+
     setStep(5);
     setError(null);
     try {
@@ -260,8 +287,6 @@ const App: React.FC = () => {
         strategy: prefs.strategy,
       }).catch(err => console.error('Failed to log plan:', err));
 
-
-
       setTimeout(() => {
         setStep(6);
         setView('results');
@@ -272,7 +297,7 @@ const App: React.FC = () => {
       setError("We couldn't generate a plan. Please check your inputs.");
       setStep(4);
     }
-  }, [prefs]);
+  }, [prefs, validateReadyState]);
 
   const handlePaymentSuccess = useCallback(() => {
     setIsLocked(false);

@@ -24,14 +24,22 @@ export const StepHeader = React.memo(({ stepNumber, totalSteps, title, subtitle 
     </div>
 ));
 
-export const NavButtons = React.memo(({ onNext, onBack, nextDisabled, nextLabel = "Continue", isLoading = false }: { onNext: () => void, onBack?: () => void, nextDisabled?: boolean, nextLabel?: string | null, isLoading?: boolean }) => (
+export const NavButtons = React.memo(({ onNext, onBack, nextDisabled, nextLabel = "Continue", isLoading = false, stepLabel }: { onNext: () => void, onBack?: () => void, nextDisabled?: boolean, nextLabel?: string | null, isLoading?: boolean, stepLabel?: string }) => (
     <div className="fixed bottom-0 left-0 right-0 z-[100] p-3 pb-5 bg-white/95 backdrop-blur-xl border-t-2 border-rose-100 md:sticky md:bottom-6 md:left-12 md:right-12 md:p-0 md:bg-transparent md:border-none flex flex-row justify-between items-center gap-3 md:gap-4 animate-fade-up transition-all duration-300 safe-pb shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:shadow-none">
-        {onBack ? (
-            <button onClick={onBack} disabled={isLoading} className="text-gray-500 hover:text-rose-accent px-5 py-3.5 md:px-4 md:py-2 font-bold transition-colors flex items-center gap-2 text-sm md:text-xs uppercase tracking-widest group rounded-xl md:rounded-lg bg-white hover:bg-rose-50 md:bg-transparent disabled:opacity-50 active:scale-95 min-h-[52px] shadow-md md:shadow-none border border-rose-200 md:border-rose-100 md:border-none">
-                <span className="group-hover:-translate-x-1 transition-transform">←</span>
-                <span className="inline">Back</span>
-            </button>
-        ) : <div className="hidden md:block" />}
+        <div className="flex items-center gap-3 flex-1 md:flex-none md:justify-start">
+            {stepLabel && (
+                <span className="md:hidden inline-flex items-center px-3 py-1 rounded-full bg-rose-50 text-rose-accent text-xs font-bold tracking-wide shadow-sm border border-rose-100">
+                    {stepLabel}
+                </span>
+            )}
+
+            {onBack ? (
+                <button onClick={onBack} disabled={isLoading} className="text-gray-500 hover:text-rose-accent px-5 py-3.5 md:px-4 md:py-2 font-bold transition-colors flex items-center gap-2 text-sm md:text-xs uppercase tracking-widest group rounded-xl md:rounded-lg bg-white hover:bg-rose-50 md:bg-transparent disabled:opacity-50 active:scale-95 min-h-[52px] shadow-md md:shadow-none border border-rose-200 md:border-rose-100 md:border-none">
+                    <span className="group-hover:-translate-x-1 transition-transform">←</span>
+                    <span className="inline">Back</span>
+                </button>
+            ) : <div className="hidden md:block" />}
+        </div>
 
         <button
             onClick={onNext}

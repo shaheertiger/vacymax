@@ -150,10 +150,13 @@ const LocationSelector = React.memo(({
 
 // --- STEP COMPONENTS ---
 
+const PTO_MIN = 0;
+const PTO_MAX = 60;
+
 const normalizePtoValue = (rawValue: string) => {
     const parsed = parseInt(rawValue, 10);
-    if (Number.isNaN(parsed) || parsed < 0) return 0;
-    return Math.min(parsed, 365);
+    if (Number.isNaN(parsed) || parsed < PTO_MIN) return PTO_MIN;
+    return Math.min(parsed, PTO_MAX);
 };
 
 const PRESETS = [10, 15, 20, 25];
@@ -170,8 +173,8 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
     }, [userDays]);
 
     const handlePtoChange = (valStr: string) => {
-        setLocalPto(valStr);
         const val = normalizePtoValue(valStr);
+        setLocalPto(Number.parseInt(valStr, 10) > PTO_MAX ? val.toString() : valStr);
         updatePrefs('ptoDays', val);
 
         if (val > 0 && val % 5 === 0) {
@@ -291,8 +294,8 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
                             type="number"
                             inputMode="numeric"
                             pattern="[0-9]*"
-                            min={0}
-                            max={60}
+                            min={PTO_MIN}
+                            max={PTO_MAX}
                             value={localPto}
                             onChange={(e) => handlePtoChange(e.target.value)}
                             className="bg-transparent text-5xl md:text-6xl font-display font-bold text-gray-800 focus:outline-none placeholder-gray-200 tracking-tight w-full"
@@ -303,12 +306,17 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
 
                     <input
                         type="range"
-                        min="0"
-                        max="40"
+                        min={PTO_MIN}
+                        max={PTO_MAX}
                         value={userDays}
                         onChange={(e) => handlePtoChange(e.target.value)}
                         className="w-full h-2 bg-rose-100 rounded-lg appearance-none cursor-pointer accent-rose-accent hover:accent-rose-500 touch-pan-x"
                     />
+                    <div className="flex justify-between text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-widest">
+                        <span>{PTO_MIN} days</span>
+                        <span>{Math.floor((PTO_MAX - PTO_MIN) / 2)} days</span>
+                        <span className="text-rose-accent">Max {PTO_MAX} days</span>
+                    </div>
                 </div>
 
                 {/* Year Selection - Compact pills */}

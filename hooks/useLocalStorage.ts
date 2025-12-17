@@ -14,8 +14,9 @@ interface WizardProgress {
   savedAt: number;
 }
 
-export function useWizardProgress(initialPrefs: UserPreferences) {
+export function useWizardProgress() {
   const [hasRestoredProgress, setHasRestoredProgress] = useState(false);
+  const [restoredProgress, setRestoredProgress] = useState<WizardProgress | null>(null);
 
   const saveProgress = useCallback((step: number, prefs: UserPreferences) => {
     if (step > 0 && step < 5) {
@@ -44,6 +45,8 @@ export function useWizardProgress(initialPrefs: UserPreferences) {
         localStorage.removeItem(STORAGE_KEYS.WIZARD_PROGRESS);
         return null;
       }
+
+      setHasRestoredProgress(true);
       return progress;
     } catch (e) {
       console.warn('Failed to load wizard progress:', e);
@@ -54,10 +57,19 @@ export function useWizardProgress(initialPrefs: UserPreferences) {
   const clearProgress = useCallback(() => {
     try {
       localStorage.removeItem(STORAGE_KEYS.WIZARD_PROGRESS);
+      setHasRestoredProgress(false);
+      setRestoredProgress(null);
     } catch (e) {
       console.warn('Failed to clear wizard progress:', e);
     }
   }, []);
+
+  useEffect(() => {
+    const progress = loadProgress();
+    if (progress) {
+      setRestoredProgress(progress);
+    }
+  }, [loadProgress]);
 
   return {
     saveProgress,
@@ -65,6 +77,7 @@ export function useWizardProgress(initialPrefs: UserPreferences) {
     clearProgress,
     hasRestoredProgress,
     setHasRestoredProgress,
+    restoredProgress,
   };
 }
 

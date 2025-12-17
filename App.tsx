@@ -132,7 +132,7 @@ const App: React.FC = () => {
   const [direction, setDirection] = useState<'next' | 'back'>('next');
 
   // localStorage hooks
-  const { saveProgress, loadProgress, clearProgress } = useWizardProgress(prefs);
+  const { saveProgress, loadProgress, clearProgress, hasRestoredProgress, restoredProgress } = useWizardProgress();
   const { savedPlans, savePlan } = useSavedPlans();
   const { trigger: triggerHaptic } = useHaptics();
 
@@ -460,13 +460,18 @@ const App: React.FC = () => {
     }).catch(err => console.error('Failed to track session:', err));
   }, []);
 
-  // Check for saved wizard progress on mount
+  // Hydrate saved wizard progress on first load
   useEffect(() => {
-    const savedProgress = loadProgress();
-    if (savedProgress && savedProgress.step > 0) {
-      setShowResumeBanner(true);
+    if (restoredProgress) {
+      setPrefs(restoredProgress.prefs);
+      setStep(restoredProgress.step);
+      setIsInitialized(true);
     }
-  }, [loadProgress]);
+  }, [restoredProgress]);
+
+  useEffect(() => {
+    setShowResumeBanner(hasRestoredProgress);
+  }, [hasRestoredProgress]);
 
   // Auto-save wizard progress when step or prefs change
   useEffect(() => {

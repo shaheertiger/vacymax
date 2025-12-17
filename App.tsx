@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, Suspense, lazy, useCallback } from 'react';
 import { OptimizationStrategy, TimeframeType, UserPreferences, OptimizationResult } from './types';
-import { Step1PTO, Step3Strategy } from './components/StepWizard';
+import { Step1PTO, Step2Timeframe, Step3Strategy } from './components/StepWizard';
 import { generateVacationPlan } from './services/vacationService';
 import { SEOHead } from './components/SEOHead';
 import { useSwipe, useHaptics } from './hooks/useMobileUX';
@@ -128,9 +128,9 @@ const App: React.FC = () => {
   const [lockNotice, setLockNotice] = useState<string | null>(null);
   const [shouldPromptUnlock, setShouldPromptUnlock] = useState(false);
 
-  const stepLabels = ['Essentials', 'Your Style'];
-  const clampedStep = Math.min(Math.max(step, 1), 2);
-  const stepProgress = step === 0 ? 0 : (clampedStep / 2) * 100;
+  const stepLabels = ['Essentials', 'Timeline', 'Your Style'];
+  const clampedStep = Math.min(Math.max(step, 1), stepLabels.length);
+  const stepProgress = step === 0 ? 0 : (clampedStep / stepLabels.length) * 100;
 
   // Behavioral UX states
   const [direction, setDirection] = useState<'next' | 'back'>('next');
@@ -207,10 +207,14 @@ const App: React.FC = () => {
   const validationMap = React.useMemo(
     () => ({
       1: {
-        isValid: totalPto > 0 && Boolean(prefs.country) && Boolean(prefs.timeframe),
-        helperText: totalPto === 0 ? 'Add at least 1 PTO day' : !prefs.country ? 'Select your country' : !prefs.timeframe ? 'Choose a year' : '',
+        isValid: totalPto > 0 && Boolean(prefs.country),
+        helperText: totalPto === 0 ? 'Add at least 1 PTO day' : !prefs.country ? 'Select your country' : '',
       },
       2: {
+        isValid: Boolean(prefs.timeframe),
+        helperText: prefs.timeframe ? '' : 'Pick your timeline to continue.',
+      },
+      3: {
         isValid: Boolean(prefs.strategy),
         helperText: prefs.strategy ? '' : 'Pick your travel style to continue.',
       },
@@ -311,9 +315,16 @@ const App: React.FC = () => {
       return false;
     }
 
+    if (!prefs.timeframe) {
+      setError('Pick your timeline to continue.');
+      setStep(2);
+      scrollWizardIntoView();
+      return false;
+    }
+
     if (!prefs.strategy) {
       setError('Pick your travel style to continue.');
-      setStep(2);
+      setStep(3);
       scrollWizardIntoView();
       return false;
     }
@@ -325,7 +336,7 @@ const App: React.FC = () => {
   const handleGenerate = useCallback(async () => {
     if (!validateReadyState()) return;
 
-    setStep(3); // Solver terminal step
+    setStep(4); // Solver terminal step
     setError(null);
     startProgressLoop();
 
@@ -344,7 +355,7 @@ const App: React.FC = () => {
       }).catch(err => console.error('Failed to log plan:', err));
 
       setTimeout(() => {
-        setStep(4); // Results step
+        setStep(5); // Results step
         setView('results');
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }, 500);
@@ -352,7 +363,7 @@ const App: React.FC = () => {
       console.error(err);
       clearProgressMessage();
       setError('Plan generation failed. Check your connection and inputs, then try again.');
-      setStep(2); // Go back to step 2 on error
+      setStep(3); // Go back to strategy step on error
     }
   }, [prefs, validateReadyState, clearProgressMessage, startProgressLoop]);
 
@@ -893,7 +904,7 @@ const App: React.FC = () => {
               <div className="bg-white/80 rounded-3xl border border-rose-100 shadow-md p-4 md:p-6 mb-6">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="text-xs font-bold uppercase tracking-[0.18em] text-rose-accent">Step {step === 0 ? 1 : clampedStep} / 2</span>
+                    <span className="text-xs font-bold uppercase tracking-[0.18em] text-rose-accent">Step {step === 0 ? 1 : clampedStep} / {stepLabels.length}</span>
                     <span className="text-sm text-gray-500">{step === 0 ? 'The essentials' : stepLabels[clampedStep - 1]}</span>
                   </div>
                   <button
@@ -909,7 +920,7 @@ const App: React.FC = () => {
                     style={{ width: `${Math.max(stepProgress, 8)}%` }}
                   />
                 </div>
-                <p className="mt-2 text-xs text-gray-500">{totalPto > 0 ? `${totalPto} PTO days ready` : 'Just 2 quick steps to your dream year.'}</p>
+                <p className="mt-2 text-xs text-gray-500">{totalPto > 0 ? `${totalPto} PTO days ready` : 'Just 3 quick steps to your dream year.'}</p>
               </div>
 
               <div {...swipeHandlers} className="relative z-[60] bg-white/95 border border-rose-100 rounded-[1.75rem] p-6 md:p-10 flex flex-col shadow-xl touch-pan-y">
@@ -958,16 +969,26 @@ const App: React.FC = () => {
                   />
                 )}
                 {step === 2 && (
+                  <Step2Timeframe
+                    prefs={prefs}
+                    updatePrefs={updatePrefs}
+                    onNext={handleNext}
+                    onBack={handleBack}
+                    direction={direction}
+                    validationState={validationMap[2]}
+                  />
+                )}
+                {step === 3 && (
                   <Step3Strategy
                     prefs={prefs}
                     updatePrefs={updatePrefs}
                     onNext={handleGenerate}
                     onBack={handleBack}
                     direction={direction}
-                    validationState={validationMap[2]}
+                    validationState={validationMap[3]}
                   />
                 )}
-                {step === 3 && <SolverTerminal timeframe={prefs.timeframe} />}
+                {step === 4 && <SolverTerminal timeframe={prefs.timeframe} />}
               </div>
             </div>
           </div>

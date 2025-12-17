@@ -3,7 +3,7 @@ import { UserPreferences, OptimizationStrategy, TimeframeType } from '../types';
 import { StepHeader, NavButtons, SelectionCard, DebouncedInput } from './Shared';
 import { useHaptics } from '../hooks/useMobileUX';
 
-const TOTAL_STEPS = 2; // Consolidated from 4 to 2 steps
+const TOTAL_STEPS = 3; // Essentials, Timeline, Strategy
 
 // --- CONSTANTS & STATIC DATA ---
 const DAILY_VALUE_ESTIMATE = 460;
@@ -50,6 +50,12 @@ const STRATEGIES = [
         roi: 'Healthy',
         color: 'from-emerald-500/10 to-teal-500/10',
     },
+];
+
+const TIMEFRAME_OPTIONS = [
+    { value: TimeframeType.CALENDAR_2026, label: '2026', desc: 'Plan your next year early', tag: 'Recommended' },
+    { value: TimeframeType.CALENDAR_2025, label: '2025', desc: 'Remaining holidays this year', tag: 'Closing Soon' },
+    { value: TimeframeType.ROLLING_12, label: 'Next 12 Months', desc: 'Rolling 12-month calendar', tag: 'Flexible' },
 ];
 
 interface StepProps {
@@ -189,11 +195,6 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
         updatePrefs('country', country);
     };
 
-    const handleYearChange = (year: TimeframeType) => {
-        trigger('light');
-        updatePrefs('timeframe', year);
-    };
-
     const totals = React.useMemo(() => {
         const safeTotal = Number.isFinite(userDays) ? userDays : 0;
 
@@ -216,11 +217,7 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
         onNext();
     };
 
-    const yearOptions = [
-        { value: TimeframeType.CALENDAR_2025, label: '2025', tag: 'Closing' },
-        { value: TimeframeType.CALENDAR_2026, label: '2026', tag: 'Recommended' },
-        { value: TimeframeType.ROLLING_12, label: 'Next 12mo', tag: 'Flexible' },
-    ];
+    const selectedTimeframe = React.useMemo(() => TIMEFRAME_OPTIONS.find((opt) => opt.value === prefs.timeframe), [prefs.timeframe]);
 
     return (
         <div className={`flex flex-col h-full relative pb-32 animate-in fade-in ${direction === 'back' ? 'slide-in-from-left-8' : 'slide-in-from-right-8'} duration-500 will-change-transform`}>
@@ -311,35 +308,25 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
                     />
                 </div>
 
-                {/* Year Selection - Compact pills */}
-                <div className="bg-white/80 rounded-3xl p-4 md:p-6 border border-rose-100 shadow-sm">
-                    <div className="flex items-center gap-2 mb-4">
-                        <div className="w-1.5 h-1.5 rounded-full bg-rose-accent"></div>
-                        <label className="text-xs font-bold text-rose-accent uppercase tracking-widest">Timeline 📅</label>
-                        {prefs.timeframe === (TimeframeType.CALENDAR_2026) && (
-                            <span className="ml-auto text-[10px] bg-rose-50 text-rose-600 px-2 py-0.5 rounded-full font-bold">
-                                Recommended
-                            </span>
-                        )}
-                    </div>
-                    <div className="grid grid-cols-3 gap-2 md:gap-3">
-                        {yearOptions.map((opt) => (
-                            <button
-                                key={opt.value}
-                                onClick={() => handleYearChange(opt.value)}
-                                className={`relative p-3 md:p-4 rounded-2xl border text-center transition-all duration-300 active:scale-95 min-h-[72px] flex flex-col items-center justify-center ${prefs.timeframe === opt.value
-                                    ? 'bg-white border-rose-accent shadow-lg ring-1 ring-inset ring-rose-50'
-                                    : 'bg-white/40 border-white/60 hover:bg-white/80 hover:border-rose-200'
-                                }`}
-                            >
-                                <span className={`text-xs font-bold mb-1 uppercase ${prefs.timeframe === opt.value ? 'text-rose-600 bg-rose-50' : 'text-gray-400 bg-gray-100'} px-2 py-0.5 rounded`}>
-                                    {opt.tag}
+                {/* Timeline Summary - full selection handled in Step 2 */}
+                <div className="bg-white/80 rounded-3xl p-4 md:p-6 border border-rose-100 shadow-sm flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-rose-50 flex items-center justify-center text-lg">📅</div>
+                    <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-rose-accent"></div>
+                            <p className="text-xs font-bold text-rose-accent uppercase tracking-widest">Timeline</p>
+                            {selectedTimeframe?.tag && (
+                                <span className="ml-2 text-[10px] bg-rose-50 text-rose-600 px-2 py-0.5 rounded-full font-bold">
+                                    {selectedTimeframe.tag}
                                 </span>
-                                <span className={`text-lg md:text-xl font-display font-bold ${prefs.timeframe === opt.value ? 'text-gray-800' : 'text-gray-500'}`}>
-                                    {opt.label}
-                                </span>
-                            </button>
-                        ))}
+                            )}
+                        </div>
+                        <p className="text-base md:text-lg font-display font-semibold text-gray-900">
+                            {selectedTimeframe?.label || 'Choose your timeline next'}
+                        </p>
+                        <p className="text-sm text-gray-500 mt-1">
+                            We'll fine-tune your calendar in Step 2. You can adjust the year or switch to a rolling 12 months.
+                        </p>
                     </div>
                 </div>
 
@@ -359,19 +346,13 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
                 <p className="text-xs text-rose-500 font-semibold text-center mb-3">{helperText}</p>
             )}
 
-            <NavButtons onNext={handleNextClick} nextDisabled={!isValid} nextLabel="Choose Your Style →" />
+            <NavButtons onNext={handleNextClick} nextDisabled={!isValid} nextLabel="Next: Timeline →" />
         </div>
     );
 });
 
 // --- STEP 2 ---
 export const Step2Timeframe: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, onNext, onBack, direction = 'next', validationState }) => {
-    const options = [
-        { value: TimeframeType.CALENDAR_2026, label: '2026', desc: 'Plan your next year early', tag: 'Recommended' },
-        { value: TimeframeType.CALENDAR_2025, label: '2025', desc: 'Remaining holidays this year', tag: 'Closing Soon' },
-        { value: TimeframeType.ROLLING_12, label: 'Next 12 Months', desc: 'Rolling 12-month calendar', tag: 'Flexible' },
-    ];
-
     const handleSelection = (val: TimeframeType) => {
         updatePrefs('timeframe', val);
     };
@@ -386,7 +367,7 @@ export const Step2Timeframe: React.FC<StepProps> = React.memo(({ prefs, updatePr
             />
 
             <div className="grid grid-cols-1 gap-4 max-w-3xl mb-8 pr-1">
-                {options.map((opt) => (
+                {TIMEFRAME_OPTIONS.map((opt) => (
                     <SelectionCard
                         key={opt.value}
                         selected={prefs.timeframe === opt.value}
@@ -402,7 +383,7 @@ export const Step2Timeframe: React.FC<StepProps> = React.memo(({ prefs, updatePr
                 <p className="text-xs text-rose-500 font-semibold text-center mb-3">{validationState.helperText}</p>
             )}
 
-            <NavButtons onNext={onNext} onBack={onBack} nextLabel="Next" nextDisabled={validationState ? !validationState.isValid : false} />
+            <NavButtons onNext={onNext} onBack={onBack} nextLabel="Next: Your Style →" nextDisabled={validationState ? !validationState.isValid : false} />
         </div>
     );
 });
@@ -443,7 +424,7 @@ export const Step3Strategy: React.FC<StepProps> = React.memo(({ prefs, updatePre
                 <p className="text-xs text-rose-500 font-semibold text-center mb-3">{validationState.helperText}</p>
             )}
 
-            <NavButtons onNext={onNext} onBack={onBack} nextLabel="Next" nextDisabled={validationState ? !validationState.isValid : false} />
+            <NavButtons onNext={onNext} onBack={onBack} nextLabel="Generate My Plan" nextDisabled={validationState ? !validationState.isValid : false} />
         </div>
     );
 });

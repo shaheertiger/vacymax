@@ -21,6 +21,7 @@ export const ShareableGraphic: React.FC<ShareableGraphicProps> = ({ result, onCl
         setIsGenerating(true);
 
         let clonedCard: HTMLDivElement | null = null;
+        let captureShell: HTMLDivElement | null = null;
 
         try {
             // Use html2canvas if available, otherwise use a simple approach
@@ -31,32 +32,48 @@ export const ShareableGraphic: React.FC<ShareableGraphicProps> = ({ result, onCl
                 const rect = cardNode.getBoundingClientRect();
                 const width = Math.ceil(rect.width);
                 const height = Math.ceil(rect.height);
+                const padding = 24;
                 const pixelRatio = Math.min(window.devicePixelRatio || 2, 3);
 
-                // Clone the card to a fixed, on-screen position so mobile captures don't crop the edges
+                // Clone the card into a padded shell so shadows/rounding aren't clipped on mobile captures
                 clonedCard = cardNode.cloneNode(true) as HTMLDivElement;
                 Object.assign(clonedCard.style, {
+                    position: 'relative',
+                    width: `${width}px`,
+                    height: `${height}px`,
+                });
+
+                captureShell = document.createElement('div');
+                Object.assign(captureShell.style, {
                     position: 'fixed',
                     top: '0',
                     left: '0',
-                    width: `${width}px`,
-                    height: `${height}px`,
+                    width: `${width + padding * 2}px`,
+                    height: `${height + padding * 2}px`,
+                    padding: `${padding}px`,
+                    boxSizing: 'border-box',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     pointerEvents: 'none',
                     opacity: '0',
                     zIndex: '-1',
                     transform: 'translateZ(0)',
+                    background: '#fdf2f8',
                 });
-                document.body.appendChild(clonedCard);
+                captureShell.appendChild(clonedCard);
+                document.body.appendChild(captureShell);
 
                 // Allow fonts/gradients to settle for mobile captures
                 await document.fonts.ready.catch(() => Promise.resolve());
                 await new Promise((resolve) => requestAnimationFrame(resolve));
+                await new Promise((resolve) => requestAnimationFrame(resolve));
 
-                const canvas = await html2canvas(clonedCard, {
+                const canvas = await html2canvas(captureShell, {
                     backgroundColor: '#fdf2f8',
                     scale: pixelRatio,
-                    width,
-                    height,
+                    width: width + padding * 2,
+                    height: height + padding * 2,
                     scrollX: 0,
                     scrollY: 0,
                     useCORS: true,
@@ -89,8 +106,8 @@ export const ShareableGraphic: React.FC<ShareableGraphicProps> = ({ result, onCl
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         } finally {
-            if (clonedCard?.parentNode) {
-                clonedCard.parentNode.removeChild(clonedCard);
+            if (captureShell?.parentNode) {
+                captureShell.parentNode.removeChild(captureShell);
             }
             setIsGenerating(false);
         }

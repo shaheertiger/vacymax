@@ -2,9 +2,11 @@ import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+// Use the service role key so webhook writes are authorized even with RLS enabled.
+// The anon key cannot perform these inserts and silently fails in production.
 const supabase = createClient(
     process.env.SUPABASE_URL,
-    process.env.SUPABASE_ANON_KEY
+    process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 /**
@@ -19,6 +21,10 @@ const supabase = createClient(
 
 // Stripe webhook signature verification
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.error('Supabase environment variables are missing. Ensure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set.');
+}
 
 export const config = {
     api: {

@@ -71,8 +71,18 @@ export default async function handler(req, res) {
                 const session = event.data.object;
                 console.log('✅ Payment successful:', session.id);
 
-                // Extract metadata
+                // Extract metadata with safe parsing helper
                 const metadata = session.metadata || {};
+                const safeParseInt = (val) => {
+                    if (val === undefined || val === null || val === '') return 0;
+                    const parsed = parseInt(val, 10);
+                    return isNaN(parsed) ? 0 : parsed;
+                };
+                const safeParseFloat = (val) => {
+                    if (val === undefined || val === null || val === '') return 0;
+                    const parsed = parseFloat(val);
+                    return isNaN(parsed) ? 0 : parsed;
+                };
 
                 // Log to Supabase
                 try {
@@ -82,14 +92,14 @@ export default async function handler(req, res) {
                         amount: session.amount_total / 100, // Convert from cents
                         currency: session.currency,
                         plan_stats: {
-                            totalDays: parseInt(metadata.plan_total_days) || 0,
-                            efficiency: parseFloat(metadata.plan_efficiency) || 0,
-                            ptoUsed: parseInt(metadata.plan_pto_used) || 0,
+                            totalDays: safeParseInt(metadata.plan_total_days),
+                            efficiency: safeParseFloat(metadata.plan_efficiency),
+                            ptoUsed: safeParseInt(metadata.plan_pto_used),
                         },
                         user_metadata: {
-                            region: metadata.user_region,
-                            strategy: metadata.user_strategy,
-                            ptoDays: parseInt(metadata.user_pto_days) || 0,
+                            region: metadata.user_region || '',
+                            strategy: metadata.user_strategy || '',
+                            ptoDays: safeParseInt(metadata.user_pto_days),
                         },
                         status: 'completed',
                     });

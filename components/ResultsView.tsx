@@ -209,9 +209,16 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ result, onReset, onUnl
     if (!result.vacationBlocks || result.vacationBlocks.length === 0) {
         return (
             <div className="max-w-4xl mx-auto pt-12 text-center animate-enter">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">No optimal blocks found.</h2>
-                <p className="text-gray-500 mb-8">Try adjusting your preferences to find more opportunities.</p>
-                <button onClick={onReset} className="px-6 py-3 bg-white border border-rose-100 hover:bg-rose-50 rounded-lg text-rose-accent font-bold transition-all active:scale-95 shadow-sm">Start Over</button>
+                <div className="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
+                    🔍
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">No optimal blocks found</h2>
+                <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
+                    {result.summary || 'Try adjusting your preferences to find more opportunities.'}
+                </p>
+                <button onClick={onReset} className="px-6 py-3 bg-gradient-to-r from-rose-accent to-peach-accent hover:shadow-lg text-white rounded-xl font-bold transition-all active:scale-95 shadow-md">
+                    Try Different Settings
+                </button>
             </div>
         )
     }

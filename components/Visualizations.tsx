@@ -58,7 +58,7 @@ export const EfficiencyGauge: React.FC<{ multiplier: number, isJoint?: boolean, 
             <div className="relative w-32 h-16 mt-4 mb-2 overflow-hidden">
                 <div className="absolute w-32 h-32 rounded-full border-[12px] border-rose-50 top-0 left-0 box-border"></div>
                 <div
-                    className="absolute w-32 h-32 rounded-full border-[12px] border-rose-accent border-b-transparent border-r-transparent top-0 left-0 box-border transition-all duration-1000 ease-out origin-center rotate-45"
+                    className="absolute w-32 h-32 rounded-full border-[12px] border-rose-accent border-b-transparent border-r-transparent top-0 left-0 box-border transition-all duration-1000 ease-out origin-center"
                     style={{ transform: `rotate(${45 + (percentage * 1.8)}deg)` }}
                 ></div>
             </div>

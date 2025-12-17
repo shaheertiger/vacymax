@@ -1,10 +1,21 @@
 import { VacationBlock } from "../types";
 
 export const parseDateUTC = (dateStr: string) => {
+    if (!dateStr || typeof dateStr !== 'string') {
+        return new Date(Date.UTC(1970, 0, 1)); // Fallback to epoch
+    }
     const parts = dateStr.split('-');
+    if (parts.length !== 3) {
+        return new Date(Date.UTC(1970, 0, 1)); // Fallback for malformed dates
+    }
     const year = parseInt(parts[0], 10);
     const month = parseInt(parts[1], 10) - 1; // 0-indexed
     const day = parseInt(parts[2], 10);
+
+    // Validate parsed values
+    if (isNaN(year) || isNaN(month) || isNaN(day)) {
+        return new Date(Date.UTC(1970, 0, 1)); // Fallback for NaN values
+    }
     return new Date(Date.UTC(year, month, day));
 };
 

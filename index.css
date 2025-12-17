@@ -25,6 +25,8 @@ body {
   -webkit-tap-highlight-color: transparent;
   scroll-behavior: smooth;
   overscroll-behavior-y: none;
+  width: 100%;
+  max-width: 100vw;
 }
 
 /* Smooth global transitions */
@@ -56,6 +58,12 @@ body {
   color: #4A3B3B;
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#root {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 /* Dark mode body */

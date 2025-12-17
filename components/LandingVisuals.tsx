@@ -36,7 +36,7 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
             <div className="hidden md:block absolute top-24 left-10 text-4xl opacity-20 rotate-12 animate-float pointer-events-none">✨</div>
             <div className="hidden md:block absolute bottom-20 right-20 text-6xl opacity-10 -rotate-12 animate-float pointer-events-none">🌸</div>
 
-            <div className="max-w-7xl mx-auto relative z-10 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <div className="max-w-screen-xl w-full mx-auto relative z-10 grid lg:grid-cols-2 gap-10 lg:gap-16 items-center overflow-hidden px-1">
                 {/* Left Column: Copy */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -386,8 +386,8 @@ export const BattleTestedMarquee = () => {
     ];
 
     return (
-        <div className="w-full bg-white border-y border-rose-100 py-12 overflow-hidden relative">
-            <div className="flex gap-20 animate-scroll w-max hover:[animation-play-state:paused] relative z-10">
+        <div className="w-full bg-white border-y border-rose-100 py-12 overflow-hidden relative px-4">
+            <div className="flex gap-12 sm:gap-20 animate-scroll w-max hover:[animation-play-state:paused] relative z-10 max-w-screen">
                 {[...testimonials, ...testimonials, ...testimonials].map((text, i) => (
                     <div key={i} className="flex items-center gap-4 opacity-60 hover:opacity-100 transition-opacity cursor-default group">
                         <div className="w-2 h-2 rounded-full bg-rose-400 group-hover:scale-150 transition-transform"></div>

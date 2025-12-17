@@ -45,9 +45,6 @@ const lazyWithRetry = <T extends { default: React.ComponentType<any> }>(importer
 // Lazy load heavy components with retry guard for chunk load failures
 const HowItWorks = lazyWithRetry(() => import('./components/HowItWorks').then((module) => ({ default: module.HowItWorks })));
 
-// Create smart defaults with auto-detection
-const initialPrefs: UserPreferences = createSmartDefaults();
-
 type ViewState = 'landing' | 'how-it-works' | 'results' | 'about' | 'algorithm' | 'privacy' | 'terms' | 'region-us' | 'region-uk' | 'region-ca' | 'region-au' | 'strategy-demos';
 
 // --- Solver Terminal ---
@@ -107,7 +104,8 @@ const LoadingFallback = () => (
 const App: React.FC = () => {
   const [view, setView] = useState<ViewState>('landing');
   const [step, setStep] = useState<number>(0);
-  const [prefs, setPrefs] = useState<UserPreferences>(initialPrefs);
+  // Use lazy initialization to create smart defaults only once
+  const [prefs, setPrefs] = useState<UserPreferences>(() => createSmartDefaults());
   const [result, setResult] = useState<OptimizationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [progressMessage, setProgressMessage] = useState<string | null>(null);
@@ -124,7 +122,7 @@ const App: React.FC = () => {
   const [direction, setDirection] = useState<'next' | 'back'>('next');
 
   // localStorage hooks
-  const { saveProgress, loadProgress, clearProgress } = useWizardProgress(initialPrefs);
+  const { saveProgress, loadProgress, clearProgress } = useWizardProgress(prefs);
   const { savedPlans, savePlan } = useSavedPlans();
   const { isDark, toggleDarkMode } = useDarkMode();
   const { trigger: triggerHaptic } = useHaptics();
@@ -347,7 +345,7 @@ const App: React.FC = () => {
 
   const handleReset = useCallback(() => {
     setStep(0);
-    setPrefs(initialPrefs);
+    setPrefs(createSmartDefaults()); // Recreate smart defaults on reset
     setResult(null);
     setIsLocked(true);
     setShowSuccessMessage(false);

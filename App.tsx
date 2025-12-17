@@ -141,6 +141,49 @@ const App: React.FC = () => {
   const { isDark, toggleDarkMode } = useDarkMode();
   const { trigger: triggerHaptic } = useHaptics();
 
+  const totalPto = prefs.ptoDays + (prefs.hasBuddy ? prefs.buddyPtoDays : 0);
+
+  const stepSummaries = [
+    {
+      id: 1,
+      label: 'Time off',
+      detail: totalPto > 0 ? `${totalPto} days banked` : 'Add your PTO',
+      done: totalPto > 0,
+    },
+    {
+      id: 2,
+      label: 'Timeline',
+      detail:
+        prefs.timeframe === TimeframeType.ROLLING_12
+          ? 'Next 12 months'
+          : prefs.timeframe === TimeframeType.CALENDAR_2026
+            ? 'Planning 2026'
+            : 'Finishing 2025',
+      done: Boolean(prefs.timeframe),
+    },
+    {
+      id: 3,
+      label: 'Vibe',
+      detail:
+        prefs.strategy === OptimizationStrategy.LONG_WEEKENDS
+          ? 'Weekend warrior'
+          : prefs.strategy === OptimizationStrategy.EXTENDED
+            ? 'Deep resets'
+            : prefs.strategy === OptimizationStrategy.MINI_BREAKS
+              ? 'Steady wellness'
+              : 'Balanced pace',
+      done: Boolean(prefs.strategy),
+    },
+    {
+      id: 4,
+      label: 'Region',
+      detail: prefs.country
+        ? `${prefs.country}${prefs.region ? ` · ${prefs.region}` : ''}`
+        : 'Add your country',
+      done: Boolean(prefs.country && (!prefs.hasBuddy || prefs.buddyCountry)),
+    },
+  ];
+
   // PWA hooks
   const { isInstallable, promptInstall } = usePWAInstall();
   const { showIOSPrompt, dismissIOSPrompt } = useIOSInstallPrompt();
@@ -243,7 +286,34 @@ const App: React.FC = () => {
     }, 80);
   }, [scrollWizardIntoView, triggerHaptic, view]);
 
+  const validateReadyState = useCallback(() => {
+    if (!isOnline) {
+      setError('You appear to be offline. Reconnect to generate a new plan.');
+      scrollWizardIntoView();
+      return false;
+    }
+
+    if (prefs.ptoDays <= 0) {
+      setError('Add at least 1 PTO day so we can optimize your calendar.');
+      setStep((prev) => Math.max(prev, 1));
+      scrollWizardIntoView();
+      return false;
+    }
+
+    if (!prefs.country) {
+      setError('Pick your country so we can fetch the right public holidays.');
+      setStep((prev) => Math.max(prev, 4));
+      scrollWizardIntoView();
+      return false;
+    }
+
+    setError(null);
+    return true;
+  }, [isOnline, prefs.country, prefs.ptoDays, scrollWizardIntoView]);
+
   const handleGenerate = useCallback(async () => {
+    if (!validateReadyState()) return;
+
     setStep(5);
     setError(null);
     try {
@@ -260,8 +330,6 @@ const App: React.FC = () => {
         strategy: prefs.strategy,
       }).catch(err => console.error('Failed to log plan:', err));
 
-
-
       setTimeout(() => {
         setStep(6);
         setView('results');
@@ -272,7 +340,7 @@ const App: React.FC = () => {
       setError("We couldn't generate a plan. Please check your inputs.");
       setStep(4);
     }
-  }, [prefs]);
+  }, [prefs, validateReadyState]);
 
   const handlePaymentSuccess = useCallback(() => {
     setIsLocked(false);
@@ -820,6 +888,26 @@ const App: React.FC = () => {
               <div className="text-center mb-10 md:mb-12">
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold bg-gradient-to-r from-rose-accent via-lavender-accent to-peach-accent bg-clip-text text-transparent mb-3">Let's Plan Your Perfect Year ✨</h2>
                 <p className="text-gray-600 text-base sm:text-lg">Build your optimized schedule in 60 seconds.</p>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-8" aria-live="polite">
+                {stepSummaries.map((item) => (
+                  <div
+                    key={item.id}
+                    className={`flex flex-col gap-2 p-3 md:p-4 rounded-2xl border shadow-sm bg-white/70 backdrop-blur ${item.done ? 'border-emerald-100' : 'border-rose-100'}`}
+                  >
+                    <div className="flex items-center gap-2 text-[10px] md:text-xs font-bold uppercase tracking-[0.14em] text-gray-500">
+                      <span className={`w-1.5 h-1.5 rounded-full ${item.done ? 'bg-emerald-400 animate-pulse' : 'bg-rose-accent animate-ping'}`} />
+                      {item.label}
+                    </div>
+                    <p className={`text-sm md:text-base font-semibold ${item.done ? 'text-gray-800' : 'text-rose-500'}`}>
+                      {item.detail}
+                    </p>
+                    {!item.done && item.id === step && (
+                      <p className="text-[11px] text-gray-500">Complete this step to keep the wizard flowing.</p>
+                    )}
+                  </div>
+                ))}
               </div>
 
               {/* FIX: Removed 'overflow-hidden' and 'backdrop-blur' to fix mobile sticky buttons */}

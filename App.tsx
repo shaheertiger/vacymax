@@ -118,6 +118,7 @@ const App: React.FC = () => {
   const [prefs, setPrefs] = useState<UserPreferences>(initialPrefs);
   const [result, setResult] = useState<OptimizationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [progressMessage, setProgressMessage] = useState<string | null>(null);
   const [isLocked, setIsLocked] = useState(true);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -189,6 +190,7 @@ const App: React.FC = () => {
   const { showIOSPrompt, dismissIOSPrompt } = useIOSInstallPrompt();
   const isOnline = useOnlineStatus();
   const [showInstallBanner, setShowInstallBanner] = useState(false);
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Show install banner after user has engaged (scrolled or completed step 1)
   useEffect(() => {
@@ -267,6 +269,33 @@ const App: React.FC = () => {
     setStep((prev) => prev - 1);
   }, []);
 
+  useEffect(() => () => clearProgressMessage(), [clearProgressMessage]);
+
+  const clearProgressMessage = useCallback(() => {
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+      progressIntervalRef.current = null;
+    }
+    setProgressMessage(null);
+  }, []);
+
+  const startProgressLoop = useCallback(() => {
+    const messages = [
+      'Aligning your PTO with public holidays...',
+      'Scanning for the juiciest long weekends...',
+      'Balancing travel vibes with recharge time...'
+    ];
+
+    clearProgressMessage();
+    let index = 0;
+    setProgressMessage(messages[index]);
+
+    progressIntervalRef.current = setInterval(() => {
+      index = (index + 1) % messages.length;
+      setProgressMessage(messages[index]);
+    }, 700);
+  }, [clearProgressMessage]);
+
   // Mobile Swipe Handlers
   const swipeHandlers = useSwipe({
     onSwipeRight: () => {
@@ -316,9 +345,11 @@ const App: React.FC = () => {
 
     setStep(5);
     setError(null);
+    startProgressLoop();
+
     try {
-      await new Promise((resolve) => setTimeout(resolve, 4000)); // Longer wait for effect
       const data = await generateVacationPlan(prefs);
+      clearProgressMessage();
       setResult(data);
 
       // Track plan generation in Supabase
@@ -330,17 +361,16 @@ const App: React.FC = () => {
         strategy: prefs.strategy,
       }).catch(err => console.error('Failed to log plan:', err));
 
-      setTimeout(() => {
-        setStep(6);
-        setView('results');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }, 500);
+      setStep(6);
+      setView('results');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       console.error(err);
-      setError("We couldn't generate a plan. Please check your inputs.");
+      clearProgressMessage();
+      setError('Plan generation failed. Check your connection and inputs, then try again.');
       setStep(4);
     }
-  }, [prefs, validateReadyState]);
+  }, [clearProgressMessage, prefs, startProgressLoop, validateReadyState]);
 
   const handlePaymentSuccess = useCallback(() => {
     setIsLocked(false);
@@ -943,12 +973,20 @@ const App: React.FC = () => {
                 </div>
 
                 <div className="min-h-[52px] mb-4" aria-live="polite" aria-atomic="true">
-                  <div
-                    className={`bg-rose-100 text-rose-700 px-4 py-3 rounded-2xl text-sm border border-rose-200 text-center transition-all duration-300 ${error ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}`}
-                    role={error ? 'alert' : undefined}
-                  >
-                    {error || ' '}
-                  </div>
+                  {error ? (
+                    <div
+                      className="bg-rose-100 text-rose-700 px-4 py-3 rounded-2xl text-sm border border-rose-200 text-center transition-all duration-300"
+                      role="alert"
+                    >
+                      {error}
+                    </div>
+                  ) : progressMessage ? (
+                    <div className="bg-white text-rose-accent px-4 py-3 rounded-2xl text-sm border border-rose-100 text-center transition-all duration-300 shadow-sm">
+                      {progressMessage}
+                    </div>
+                  ) : (
+                    <div className="px-4 py-3" aria-hidden="true">&nbsp;</div>
+                  )}
                 </div>
 
                 {step === 0 && (

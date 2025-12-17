@@ -455,12 +455,7 @@ export const Step4Location: React.FC<StepProps> = React.memo(({ prefs, updatePre
 
         setGenerating(true);
         setLoadingText("✨ Manifesting...");
-        setTimeout(() => setLoadingText("Analysing 14,000+ combos..."), 400);
-        setTimeout(() => setLoadingText("Finalizing your dream year..."), 1200);
-
-        setTimeout(() => {
-            onNext();
-        }, 1800);
+        onNext();
     };
 
     return (

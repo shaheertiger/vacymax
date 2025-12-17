@@ -92,7 +92,9 @@ export function useIOSInstallPrompt() {
     // Show iOS install prompt if on iOS Safari and not already installed
     if (isIOS && isSafari && !isInStandaloneMode) {
       // Check if user has dismissed the prompt before
-      const dismissed = localStorage.getItem('dmh-ios-prompt-dismissed');
+      const dismissed = typeof localStorage !== 'undefined'
+        ? localStorage.getItem('dmh-ios-prompt-dismissed')
+        : null;
       if (!dismissed) {
         // Delay showing the prompt
         const timer = setTimeout(() => setShowIOSPrompt(true), 5000);
@@ -103,7 +105,9 @@ export function useIOSInstallPrompt() {
 
   const dismissIOSPrompt = useCallback(() => {
     setShowIOSPrompt(false);
-    localStorage.setItem('dmh-ios-prompt-dismissed', 'true');
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('dmh-ios-prompt-dismissed', 'true');
+    }
   }, []);
 
   return {

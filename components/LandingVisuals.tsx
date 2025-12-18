@@ -152,30 +152,30 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
                     <div className="glass-panel rounded-[2.5rem] p-4 sm:p-7 md:p-12 border border-white/60 relative min-h-[320px] sm:min-h-[380px] md:min-h-[500px] flex flex-col shadow-xl bg-white/60 backdrop-blur-xl overflow-visible">
 
                         {/* Decorative UI Header */}
-                        <div className="flex justify-between items-center mb-8 border-b border-rose-100 pb-6">
-                            <div className="flex gap-2">
-                                <span className="w-3 h-3 rounded-full bg-rose-200"></span>
-                                <span className="w-3 h-3 rounded-full bg-peach-accent/30"></span>
-                                <span className="w-3 h-3 rounded-full bg-lavender-accent/30"></span>
+                        <div className="flex justify-between items-center mb-4 sm:mb-8 border-b border-rose-100 pb-4 sm:pb-6">
+                            <div className="flex gap-1.5 sm:gap-2">
+                                <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-rose-200"></span>
+                                <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-peach-accent/30"></span>
+                                <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-lavender-accent/30"></span>
                             </div>
-                            <div className="text-[10px] text-rose-accent uppercase tracking-widest bg-rose-50 px-3 py-1 rounded-full font-bold">
+                            <div className="text-[8px] sm:text-[10px] text-rose-accent uppercase tracking-widest bg-rose-50 px-2 sm:px-3 py-1 rounded-full font-bold">
                                 ✨ VIBE CHECK
                             </div>
                         </div>
 
                         {status === 'idle' && (
                             <div className="flex-1 flex flex-col justify-center animate-fade-up">
-                                <h3 className="text-2xl font-display font-bold text-gray-800 mb-2">Where to next, bestie? 🌍</h3>
-                                <p className="text-gray-500 mb-8 text-sm">Select a region to unlock your time off.</p>
+                                <h3 className="text-xl sm:text-2xl font-display font-bold text-gray-800 mb-1 sm:mb-2">Where to next, bestie? 🌍</h3>
+                                <p className="text-gray-500 mb-4 sm:mb-8 text-xs sm:text-sm">Select a region to unlock your time off.</p>
 
-                                <div className="space-y-3">
+                                <div className="space-y-2 sm:space-y-3">
                                     {['United States', 'United Kingdom', 'Canada', 'Australia'].map((r) => (
                                         <button
                                             key={r}
                                             onClick={() => handleRegionSelect(r)}
-                                            className="w-full text-left px-6 py-4 rounded-2xl bg-white hover:bg-rose-50 border border-rose-100 hover:border-rose-200 transition-all flex justify-between items-center group shadow-sm hover:shadow-md"
+                                            className="w-full text-left px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-white hover:bg-rose-50 border border-rose-100 hover:border-rose-200 transition-all flex justify-between items-center group shadow-sm hover:shadow-md active:scale-[0.98]"
                                         >
-                                            <span className="text-gray-700 font-medium group-hover:text-rose-accent transition-colors">{r}</span>
+                                            <span className="text-gray-700 font-medium text-sm sm:text-base group-hover:text-rose-accent transition-colors">{r}</span>
                                             <span className="text-rose-200 group-hover:text-rose-accent transition-colors">🌸</span>
                                         </button>
                                     ))}
@@ -187,43 +187,43 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
                             <div className="flex-1 flex flex-col items-center justify-center text-center animate-fade-up relative">
                                 <div className="absolute inset-0 bg-rose-50 animate-pulse rounded-full blur-3xl opacity-50"></div>
                                 <div className="relative z-10 flex flex-col items-center">
-                                    <div className="w-24 h-24 border-4 border-rose-100 border-t-rose-accent rounded-full animate-spin mb-8"></div>
-                                    <h4 className="text-2xl font-bold text-gray-800 mb-2">Manifesting... 🧘‍♀️</h4>
-                                    <p className="text-gray-500 mb-8 text-xs uppercase tracking-widest">Checking {region} Vibes</p>
-                                    <div className="text-6xl font-display font-bold text-rose-accent tabular-nums">
+                                    <div className="w-16 h-16 sm:w-24 sm:h-24 border-4 border-rose-100 border-t-rose-accent rounded-full animate-spin mb-4 sm:mb-8"></div>
+                                    <h4 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Manifesting... 🧘‍♀️</h4>
+                                    <p className="text-gray-500 mb-4 sm:mb-8 text-[10px] sm:text-xs uppercase tracking-widest">Checking {region} Vibes</p>
+                                    <div className="text-4xl sm:text-6xl font-display font-bold text-rose-accent tabular-nums">
                                         {scannedDays}
                                     </div>
-                                    <p className="text-rose-400 text-sm font-bold mt-2">LONG WEEKENDS FOUND</p>
+                                    <p className="text-rose-400 text-xs sm:text-sm font-bold mt-2">LONG WEEKENDS FOUND</p>
                                 </div>
                             </div>
                         )}
 
                         {status === 'complete' && (
                             <div className="flex-1 flex flex-col items-center justify-center text-center animate-fade-up">
-                                <div className="w-20 h-20 bg-gradient-to-br from-rose-accent to-peach-accent rounded-full flex items-center justify-center text-4xl mb-6 shadow-lg rotate-3 text-white">
+                                <div className="w-14 h-14 sm:w-20 sm:h-20 bg-gradient-to-br from-rose-accent to-peach-accent rounded-full flex items-center justify-center text-2xl sm:text-4xl mb-4 sm:mb-6 shadow-lg rotate-3 text-white">
                                     💖
                                 </div>
-                                <h4 className="text-3xl font-display font-bold text-gray-800 mb-4">Glow Up Complete!</h4>
-                                <div className="bg-white/50 border border-rose-100 rounded-2xl p-6 mb-8 w-full shadow-inner">
+                                <h4 className="text-2xl sm:text-3xl font-display font-bold text-gray-800 mb-3 sm:mb-4">Glow Up Complete!</h4>
+                                <div className="bg-white/50 border border-rose-100 rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-4 sm:mb-8 w-full shadow-inner">
                                     <div className="flex justify-between items-center mb-2">
-                                        <span className="text-gray-500 text-xs font-bold uppercase">YOUR INPUT</span>
-                                        <span className="text-gray-800 font-bold">10 DAYS PTO</span>
+                                        <span className="text-gray-500 text-[10px] sm:text-xs font-bold uppercase">YOUR INPUT</span>
+                                        <span className="text-gray-800 font-bold text-sm sm:text-base">10 DAYS PTO</span>
                                     </div>
-                                    <div className="w-full h-px bg-rose-100 my-3"></div>
+                                    <div className="w-full h-px bg-rose-100 my-2 sm:my-3"></div>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-rose-accent text-xs font-bold uppercase">YOUR REALITY</span>
-                                        <span className="text-rose-accent font-bold text-xl">24 DAYS OFF ✨</span>
+                                        <span className="text-rose-accent text-[10px] sm:text-xs font-bold uppercase">YOUR REALITY</span>
+                                        <span className="text-rose-accent font-bold text-lg sm:text-xl">24 DAYS OFF ✨</span>
                                     </div>
                                 </div>
                                 <button
                                     onClick={onCta}
-                                    className="w-full py-4 bg-gray-900 text-white font-bold tracking-wide rounded-xl hover:bg-black transition-colors shadow-lg flex items-center justify-center gap-2"
+                                    className="w-full py-3 sm:py-4 bg-gray-900 text-white font-bold tracking-wide rounded-xl hover:bg-black transition-colors shadow-lg flex items-center justify-center gap-2 text-sm sm:text-base active:scale-[0.98]"
                                 >
                                     Unlock My Best Life
                                 </button>
                                 <button
                                     onClick={() => setStatus('idle')}
-                                    className="mt-6 text-xs text-rose-400 hover:text-rose-600 uppercase tracking-widest font-bold"
+                                    className="mt-4 sm:mt-6 text-[10px] sm:text-xs text-rose-400 hover:text-rose-600 uppercase tracking-widest font-bold"
                                 >
                                     Check Another Region
                                 </button>

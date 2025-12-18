@@ -54,13 +54,13 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
             <div className="hidden md:block absolute top-24 left-10 text-4xl opacity-20 rotate-12 animate-float pointer-events-none">✨</div>
             <div className="hidden md:block absolute bottom-20 right-20 text-6xl opacity-10 -rotate-12 animate-float pointer-events-none">🌸</div>
 
-            <div className="max-w-screen-md md:max-w-screen-lg lg:max-w-screen-xl w-full mx-auto relative z-10 grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-16 items-center px-1 gap-y-8 sm:gap-y-10">
+            <div className="max-w-screen-md md:max-w-screen-lg lg:max-w-screen-xl w-full mx-auto relative z-10 grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-16 items-center px-0 gap-y-8 sm:gap-y-10">
                 {/* Left Column: Copy */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
-                    className="text-left"
+                    className="text-left overflow-hidden"
                 >
                     <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full border border-rose-200 bg-rose-50 text-rose-accent text-xs font-bold tracking-widest uppercase shadow-sm">
                         <span className="w-2 h-2 rounded-full bg-rose-accent animate-pulse"></span>
@@ -72,7 +72,7 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-accent to-peach-accent italic">Holidays.</span>
                     </h1>
 
-                    <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-[calc(100%-1rem)] sm:max-w-xl leading-relaxed mb-7 md:mb-10 border-l-4 border-rose-200 pl-4 md:pl-6 text-balance hero-subtitle">
+                    <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-full sm:max-w-xl leading-relaxed mb-7 md:mb-10 border-l-4 border-rose-200 pl-4 md:pl-6 hero-subtitle break-words">
                         Stop wasting your paid time off. <strong className="text-rose-accent">Our algorithm finds the "Bridge Days"</strong> that connect public holidays to weekends. Turn <span className="font-bold underline decoration-rose-300 decoration-2">10 days of PTO</span> into <span className="font-bold underline decoration-emerald-300 decoration-2">24+ days of freedom</span>. Instantly. 🥂
                     </p>
 

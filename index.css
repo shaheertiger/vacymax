@@ -600,3 +600,226 @@ select {
 .animate-fade-up {
   animation: slideInUpMain 0.5s ease-out forwards;
 }
+
+/* ========================================
+   WCAG 2.1 & INTERNATIONAL MOBILE STANDARDS
+   ======================================== */
+
+/* Skip Link for Screen Readers (WCAG 2.4.1) */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #E11D48;
+  color: white;
+  padding: 8px 16px;
+  z-index: 9999;
+  font-weight: 600;
+  border-radius: 0 0 8px 0;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Focus-Visible Styles (WCAG 2.4.7 - Keyboard Accessibility) */
+:focus-visible {
+  outline: 2px solid #E11D48;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Remove default outline for mouse users, keep for keyboard */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Enhanced Focus for Interactive Elements */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #E11D48;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.15);
+}
+
+/* Focus within for card-like components */
+.focus-within-ring:focus-within {
+  outline: 2px solid #E11D48;
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode Support (WCAG 1.4.11) */
+@media (forced-colors: active) {
+  button,
+  a,
+  [role="button"] {
+    border: 2px solid currentColor;
+  }
+
+  :focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 3px;
+  }
+}
+
+/* Touch Target Sizes - Apple HIG (44px) & Material Design (48dp) */
+@media (hover: none) and (pointer: coarse) {
+  /* Ensure minimum touch targets */
+  button,
+  a,
+  [role="button"],
+  input[type="checkbox"],
+  input[type="radio"],
+  select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Inline links can be smaller but need more padding */
+  p a,
+  span a {
+    min-height: auto;
+    min-width: auto;
+    padding: 8px 4px;
+    margin: -8px -4px;
+  }
+}
+
+/* Text Sizing - Prevent iOS Zoom on Input Focus */
+@media screen and (max-width: 768px) {
+  /* Base font size minimum 16px to prevent zoom */
+  html {
+    font-size: 16px;
+  }
+
+  /* Ensure body text is readable */
+  body {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  /* Small text should still be legible (min 12px) */
+  .text-xs {
+    font-size: max(0.75rem, 12px);
+  }
+
+  .text-\[10px\],
+  .text-\[11px\] {
+    font-size: max(10px, 0.625rem);
+  }
+}
+
+/* Spacing - Adequate for Touch (min 8px between targets) */
+@media (hover: none) and (pointer: coarse) {
+  .touch-spacing > * + * {
+    margin-top: 8px;
+  }
+}
+
+/* Safe Area Insets - iPhone X+ Notch Support */
+@supports (padding: max(0px)) {
+  .safe-area-top {
+    padding-top: max(env(safe-area-inset-top), 16px);
+  }
+
+  .safe-area-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 16px);
+  }
+
+  .safe-area-left {
+    padding-left: max(env(safe-area-inset-left), 16px);
+  }
+
+  .safe-area-right {
+    padding-right: max(env(safe-area-inset-right), 16px);
+  }
+}
+
+/* Selection Color for Better UX */
+::selection {
+  background-color: rgba(225, 29, 72, 0.2);
+  color: inherit;
+}
+
+/* Print Styles */
+@media print {
+  /* Hide interactive elements */
+  button,
+  nav,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Ensure readability */
+  body {
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #000;
+    background: #fff;
+  }
+
+  /* Show URLs for links */
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+  }
+}
+
+/* Orientation Support */
+@media (orientation: landscape) and (max-height: 500px) {
+  /* Reduce vertical padding in landscape on small screens */
+  .landscape-compact {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
+
+/* Marquee Animation (for footer) */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Loading/Skeleton States */
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Smooth scroll with reduced motion fallback */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Dark mode preference detection (for future use) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: light dark;
+  }
+}

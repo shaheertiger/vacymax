@@ -897,7 +897,7 @@ const App: React.FC = () => {
           <PainHero onCta={scrollToWizard} />
 
           {/* THE WIZARD - Moved up to reduce friction */}
-          <div id="wizard-section" ref={wizardRef} className="w-full bg-gradient-to-br from-light-100 via-light-200 to-light-300 py-10 md:py-24 px-3 sm:px-4 safe-px scroll-mt-20 md:scroll-mt-24 relative z-[55]">
+          <main id="wizard-section" ref={wizardRef} role="main" aria-label="Vacation planning wizard" className="w-full bg-gradient-to-br from-light-100 via-light-200 to-light-300 py-10 md:py-24 px-3 sm:px-4 safe-px scroll-mt-20 md:scroll-mt-24 relative z-[55]">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-6 md:mb-12">
                 <h2 className="text-2xl sm:text-3xl md:text-5xl font-display font-bold bg-gradient-to-r from-rose-accent via-lavender-accent to-peach-accent bg-clip-text text-transparent mb-2 md:mb-3 px-2">Let's Plan Your Perfect Year ✨</h2>
@@ -917,7 +917,7 @@ const App: React.FC = () => {
                     Start over
                   </button>
                 </div>
-                <div className="mt-2 md:mt-3 h-1.5 md:h-2 bg-rose-50 rounded-full overflow-hidden">
+                <div className="mt-2 md:mt-3 h-1.5 md:h-2 bg-rose-50 rounded-full overflow-hidden" role="progressbar" aria-valuenow={Math.round(stepProgress)} aria-valuemin={0} aria-valuemax={100} aria-label={`Step ${step === 0 ? 1 : clampedStep} of ${stepLabels.length}`}>
                   <div
                     className="h-full bg-gradient-to-r from-rose-accent to-peach-accent rounded-full transition-all duration-300"
                     style={{ width: `${Math.max(stepProgress, 8)}%` }}
@@ -994,7 +994,7 @@ const App: React.FC = () => {
                 {step === 4 && <SolverTerminal timeframe={prefs.timeframe} />}
               </div>
             </div>
-          </div>
+          </main>
 
           {/* Educational sections moved below wizard */}
           <SolutionGrid />

@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
   <!-- Performance Hints -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -81,6 +81,8 @@
 </head>
 
 <body>
+  <!-- Skip Link for Screen Readers (WCAG 2.4.1) -->
+  <a href="#wizard-section" class="skip-link">Skip to main content</a>
   <div class="bg-noise"></div>
   <div id="root"></div>
   <script type="module" src="/index.tsx"></script>

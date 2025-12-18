@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // --- PHASE 1: THE HOOK (Interactive Hero) ---
@@ -6,10 +6,26 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
     const [region, setRegion] = useState<string | null>(null);
     const [status, setStatus] = useState<'idle' | 'scanning' | 'complete'>('idle');
     const [scannedDays, setScannedDays] = useState(0);
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+                intervalRef.current = null;
+            }
+        };
+    }, []);
 
     const handleRegionSelect = (r: string) => {
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+        }
+
         setRegion(r);
         setStatus('scanning');
+        setScannedDays(0);
 
         // Simulated scan effect
         let count = 0;
@@ -18,9 +34,11 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
             setScannedDays(count);
             if (count >= 14) {
                 clearInterval(interval);
+                intervalRef.current = null;
                 setStatus('complete');
             }
         }, 100);
+        intervalRef.current = interval;
     };
 
     return (

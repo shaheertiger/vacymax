@@ -112,85 +112,65 @@ const LiveActivityFeed = () => {
 
 export const TrustSection: React.FC = () => {
   return (
-    <section className="w-full bg-gradient-to-b from-white to-light-200 border-t border-rose-50 py-12 sm:py-16 md:py-24 px-3 sm:px-4 md:px-6 relative" id="trust">
-      <div className="max-w-6xl mx-auto space-y-10 sm:space-y-12 md:space-y-24 relative z-10">
+    <section className="w-full bg-white border-t border-gray-100 py-10 sm:py-16 md:py-24 px-4 sm:px-6" id="trust">
+      <div className="max-w-4xl mx-auto space-y-8 sm:space-y-12 md:space-y-16">
 
-        {/* Header with Live Feed */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4 md:gap-6 relative">
-          <div className="space-y-1.5 sm:space-y-2 md:space-y-4 max-w-2xl">
-            <h2 className="text-xl sm:text-2xl md:text-5xl font-display font-bold text-gray-800">Your Privacy, Our Priority.</h2>
-            <p className="text-gray-500 text-xs sm:text-sm md:text-lg leading-relaxed">
-              Your data never leaves your browser. Local-first architecture.
-            </p>
-          </div>
-          <LiveActivityFeed />
+        {/* Header - Clean and simple */}
+        <div className="text-center">
+          <h2 className="text-xl sm:text-2xl md:text-4xl font-display font-bold text-gray-800 mb-2 sm:mb-3">
+            Your Privacy Matters
+          </h2>
+          <p className="text-gray-500 text-sm sm:text-base max-w-md mx-auto">
+            Data stays in your browser. Nothing stored on our servers.
+          </p>
         </div>
 
-        {/* Integration Grid */}
-        <div className="grid md:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
-          <div className="bg-white rounded-xl sm:rounded-2xl md:rounded-3xl p-4 sm:p-5 md:p-8 border border-rose-100 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-            <div>
-              <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-800 mb-1.5 sm:mb-2 flex items-center gap-2 flex-wrap">
-                Seamless Integration
-                <span className="bg-rose-50 text-rose-600 border border-rose-100 text-[8px] sm:text-[9px] md:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-wide">Instant</span>
-              </h3>
-              <p className="text-gray-500 text-[11px] sm:text-xs md:text-sm">Works with your existing calendar tools.</p>
-            </div>
-            <div className="mt-4 sm:mt-6 md:mt-8 flex gap-2 sm:gap-3 md:gap-4">
-              {integrations.map((item) => (
-                <div key={item.name} className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg sm:rounded-xl flex items-center justify-center text-base sm:text-lg md:text-xl font-bold bg-gray-50 border border-gray-100 text-gray-400 hover:text-gray-600 hover:border-rose-200 hover:bg-white transition-all cursor-pointer shadow-sm">
-                  {item.initials}
-                </div>
-              ))}
-            </div>
+        {/* Simple Trust Indicators - Horizontal on mobile */}
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
+          <div className="flex items-center gap-3 bg-gray-50 rounded-xl px-4 py-3">
+            <svg className="w-5 h-5 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span className="text-sm text-gray-700 font-medium">Local Processing</span>
           </div>
-
-          <div className="bg-white rounded-xl sm:rounded-2xl md:rounded-3xl p-4 sm:p-5 md:p-8 border border-rose-100 shadow-sm relative overflow-hidden flex flex-col justify-center hover:shadow-md transition-shadow">
-            <div className="relative z-10">
-              <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 mb-2 sm:mb-3 md:mb-4 text-rose-accent">
-                <svg className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                <span className="font-bold tracking-widest uppercase text-[9px] sm:text-[10px] md:text-xs">Secure & Private</span>
-              </div>
-              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-1.5 sm:mb-2">Your Data Stays Yours</h3>
-              <p className="text-gray-500 text-[11px] sm:text-xs md:text-sm leading-relaxed">
-                Processed in your browser. Never stored on our servers.
-              </p>
-            </div>
+          <div className="flex items-center gap-3 bg-gray-50 rounded-xl px-4 py-3">
+            <svg className="w-5 h-5 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <span className="text-sm text-gray-700 font-medium">No Data Stored</span>
+          </div>
+          <div className="flex items-center gap-3 bg-gray-50 rounded-xl px-4 py-3">
+            <svg className="w-5 h-5 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span className="text-sm text-gray-700 font-medium">Calendar Export</span>
           </div>
         </div>
 
-        {/* Wall of Love - Horizontal scroll on mobile */}
-        <div className="space-y-4 sm:space-y-6 md:space-y-8">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-6 sm:w-8 md:w-10 h-[2px] bg-rose-accent"></div>
-            <p className="text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.15em] sm:tracking-[0.2em] md:tracking-[0.3em] text-gray-400 font-bold">14,000+ Happy Planners</p>
-          </div>
-          <div className="flex md:grid md:grid-cols-3 gap-3 sm:gap-4 md:gap-6 overflow-x-auto pb-3 sm:pb-4 md:pb-0 -mx-3 px-3 sm:-mx-4 sm:px-4 md:mx-0 md:px-0 scrollbar-hide snap-x snap-mandatory">
-            {wallOfLove.map((post) => (
-              <motion.div
+        {/* Testimonials - Hidden on small mobile, show only 1 on medium */}
+        <div className="hidden sm:block">
+          <p className="text-center text-xs text-gray-400 uppercase tracking-wider mb-4">Trusted by 14,000+ users</p>
+          <div className="grid sm:grid-cols-1 md:grid-cols-3 gap-4">
+            {wallOfLove.slice(0, 3).map((post, index) => (
+              <div
                 key={post.handle}
-                whileHover={{ y: -5 }}
-                className="flex-shrink-0 w-[250px] sm:w-[280px] md:w-auto bg-white rounded-xl sm:rounded-2xl md:rounded-3xl p-4 sm:p-5 md:p-8 border border-rose-100 relative overflow-hidden group shadow-sm hover:shadow-lg transition-all snap-center"
+                className={`bg-gray-50 rounded-xl p-4 ${index > 0 ? 'hidden md:block' : ''}`}
               >
-                <div className="relative z-10">
-                  <div className="flex items-center gap-2 sm:gap-3 md:gap-4 mb-3 sm:mb-4 md:mb-6">
-                    <img src={post.avatar} alt={`${post.role} profile picture`} className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full border-2 border-rose-100" loading="lazy" />
-                    <div>
-                      <div className="flex items-center gap-2 text-gray-800 font-bold text-xs sm:text-sm md:text-base">
-                        <span>{post.handle}</span>
-                      </div>
-                      <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 font-medium">{post.role}</p>
-                    </div>
+                <p className="text-gray-600 text-sm italic mb-3">"{post.quote}"</p>
+                <div className="flex items-center gap-2">
+                  <img src={post.avatar} alt="" className="w-8 h-8 rounded-full" loading="lazy" />
+                  <div>
+                    <p className="text-xs font-medium text-gray-800">{post.handle}</p>
+                    <p className="text-xs text-gray-400">{post.role}</p>
                   </div>
-                  <p className="text-gray-600 leading-relaxed text-xs sm:text-sm md:text-base italic">"{post.quote}"</p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
 
-        {/* Success Stories Section */}
-        <div className="space-y-4 sm:space-y-6 md:space-y-8">
+        {/* Success Stories Section - Desktop only */}
+        <div className="hidden md:block space-y-6 md:space-y-8">
           <div className="text-center max-w-2xl mx-auto px-2">
             <span className="inline-block bg-gradient-to-r from-rose-100 to-lavender-100 text-rose-accent px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-3 sm:mb-4">
               Real Results

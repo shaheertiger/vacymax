@@ -1129,110 +1129,48 @@ const App: React.FC = () => {
         </main>
       )}
 
-      {/* GLOBAL FOOTER */}
-      <footer className="w-full bg-gradient-to-br from-rose-50 to-lavender-50 border-t border-rose-accent/20 pt-10 sm:pt-14 md:pt-16 pb-8 sm:pb-10 md:pb-12 relative z-[60] overflow-hidden text-sm leading-relaxed selection:bg-rose-accent selection:text-white">
-        {/* Soft decorative overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-rose-100/20 to-lavender-100/20 pointer-events-none"></div>
-
-        {/* Scrolling Marquee */}
-        <div className="absolute top-0 left-0 right-0 h-8 sm:h-10 bg-gradient-to-r from-rose-100/50 to-lavender-100/50 border-b border-rose-accent/20 flex items-center overflow-hidden">
-          <div className="animate-[marquee_25s_linear_infinite] whitespace-nowrap text-[10px] sm:text-xs text-rose-accent/70 font-medium tracking-wide px-4 flex gap-4 sm:gap-8">
+      {/* GLOBAL FOOTER - Simplified for mobile */}
+      <footer className="w-full bg-white border-t border-gray-100 py-8 sm:py-12 md:py-16 relative z-[60] text-sm">
+        {/* Marquee - Desktop only */}
+        <div className="hidden md:block absolute top-0 left-0 right-0 h-10 bg-gradient-to-r from-rose-50 to-lavender-50 border-b border-rose-100 overflow-hidden">
+          <div className="animate-[marquee_25s_linear_infinite] whitespace-nowrap text-xs text-rose-accent/60 font-medium tracking-wide px-4 flex gap-8 items-center h-full">
             <span>✨ Your time is precious</span>
-            <span>💖 Plan smarter, not harder</span>
-            <span>🌸 Maximize your wellbeing</span>
-            <span>✨ Create perfect moments</span>
-            <span>💫 Balance work and life</span>
+            <span>💖 Plan smarter</span>
+            <span>🌸 Maximize wellbeing</span>
             <span>✨ Your time is precious</span>
-            <span>💖 Plan smarter, not harder</span>
-            <span>🌸 Maximize your wellbeing</span>
-            <span>✨ Create perfect moments</span>
-            <span>💫 Balance work and life</span>
+            <span>💖 Plan smarter</span>
+            <span>🌸 Maximize wellbeing</span>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-20 pt-8 sm:pt-10 md:pt-12 pb-4 sm:pb-6 md:pb-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 mb-6 md:mb-16">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-0 md:pt-6">
+          {/* Mobile: Simple stacked layout */}
+          <div className="space-y-6 sm:space-y-8">
 
-            {/* Left: Brand Identity */}
-            <div className="lg:col-span-6 flex flex-col justify-between">
-              <div>
-                <div className="inline-block border border-rose-accent/30 text-rose-accent bg-rose-50 px-2.5 sm:px-3 py-1 rounded-full text-[9px] sm:text-[10px] mb-4 sm:mb-6 font-bold tracking-widest shadow-sm">
-                  THE #1 PLANNER FOR HER 🌸
-                </div>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-bold text-gray-800 mb-4 sm:mb-6 tracking-tight">
-                  Rest is <span className="bg-gradient-to-r from-rose-accent to-lavender-accent bg-clip-text text-transparent italic">productive.</span>
-                </h2>
-                <div className="max-w-md border-l-2 sm:border-l-4 border-rose-200 pl-4 sm:pl-6 py-1 sm:py-2">
-                  <p className="text-gray-600 mb-2 sm:mb-4 font-sans text-sm sm:text-base md:text-lg italic">
-                    "Because you can't pour from an empty cup. Let's fill yours up." 🥂
-                  </p>
-                </div>
-              </div>
+            {/* Brand - Simplified */}
+            <div className="text-center sm:text-left">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-gray-800 mb-2">
+                DoubleMyHolidays
+              </h2>
+              <p className="text-gray-500 text-sm">Smart PTO optimization</p>
             </div>
 
-            {/* Right: Links */}
-            <div className="lg:col-span-6 grid grid-cols-1 gap-4 sm:gap-6">
-
-              {/* Glass Card */}
-              <div className="bg-white/40 backdrop-blur-md border border-white/60 p-5 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl shadow-lg relative overflow-hidden group hover:bg-white/60 transition-all duration-500">
-                <div className="absolute -right-10 -top-10 w-24 sm:w-32 h-24 sm:h-32 bg-rose-100 rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
-
-                <h4 className="text-gray-800 font-bold mb-4 sm:mb-6 flex items-center gap-2 text-sm sm:text-base">
-                  <span className="w-2 h-2 rounded-full bg-rose-accent"></span>
-                  Explore More
-                </h4>
-                <ul className="space-y-2 sm:space-y-4">
-                  <li>
-                    <button onClick={(e) => handleFooterLink(e, 'about')} className="flex items-center gap-2 sm:gap-3 w-full text-left group/link p-1.5 sm:p-2 -mx-1.5 sm:-mx-2 hover:bg-white/50 rounded-xl transition-all min-h-[44px]">
-                      <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-rose-50 text-rose-accent flex items-center justify-center text-[10px] sm:text-xs group-hover/link:bg-rose-accent group-hover/link:text-white transition-all flex-shrink-0">01</span>
-                      <span className="text-gray-600 font-medium group-hover/link:text-rose-accent transition-colors text-sm sm:text-base">Our Manifesto</span>
-                      <span className="ml-auto text-rose-200 group-hover/link:text-rose-accent">→</span>
-                    </button>
-                  </li>
-                  <li>
-                    <button onClick={(e) => handleFooterLink(e, 'strategy-demos')} className="flex items-center gap-2 sm:gap-3 w-full text-left group/link p-1.5 sm:p-2 -mx-1.5 sm:-mx-2 hover:bg-white/50 rounded-xl transition-all min-h-[44px]">
-                      <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-lavender-50 text-lavender-accent flex items-center justify-center text-[10px] sm:text-xs group-hover/link:bg-lavender-accent group-hover/link:text-white transition-all flex-shrink-0">02</span>
-                      <span className="text-gray-600 font-medium group-hover/link:text-lavender-accent transition-colors text-sm sm:text-base">Vacation Styles</span>
-                      <span className="ml-auto text-lavender-200 group-hover/link:text-lavender-accent">→</span>
-                    </button>
-                  </li>
-                  <li>
-                    <button onClick={(e) => handleFooterLink(e, 'privacy')} className="flex items-center gap-2 sm:gap-3 w-full text-left group/link p-1.5 sm:p-2 -mx-1.5 sm:-mx-2 hover:bg-white/50 rounded-xl transition-all min-h-[44px]">
-                      <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-rose-50 text-rose-accent flex items-center justify-center text-[10px] sm:text-xs group-hover/link:bg-rose-accent group-hover/link:text-white transition-all flex-shrink-0">03</span>
-                      <span className="text-gray-600 font-medium group-hover/link:text-rose-accent transition-colors text-sm sm:text-base">Your Privacy</span>
-                      <span className="ml-auto text-rose-200 group-hover/link:text-rose-accent">→</span>
-                    </button>
-                  </li>
-                  <li>
-                    <button onClick={(e) => handleFooterLink(e, 'terms')} className="flex items-center gap-2 sm:gap-3 w-full text-left group/link p-1.5 sm:p-2 -mx-1.5 sm:-mx-2 hover:bg-white/50 rounded-xl transition-all min-h-[44px]">
-                      <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-rose-50 text-rose-accent flex items-center justify-center text-[10px] sm:text-xs group-hover/link:bg-rose-accent group-hover/link:text-white transition-all flex-shrink-0">04</span>
-                      <span className="text-gray-600 font-medium group-hover/link:text-rose-accent transition-colors text-sm sm:text-base">Terms of Service</span>
-                      <span className="ml-auto text-rose-200 group-hover/link:text-rose-accent">→</span>
-                    </button>
-                  </li>
-                </ul>
-              </div>
-
+            {/* Links - Horizontal on mobile, cleaner */}
+            <div className="flex flex-wrap justify-center sm:justify-start gap-x-6 gap-y-3">
+              <button onClick={(e) => handleFooterLink(e, 'about')} className="text-gray-600 hover:text-rose-accent transition-colors min-h-[44px] flex items-center">
+                About
+              </button>
+              <button onClick={(e) => handleFooterLink(e, 'privacy')} className="text-gray-600 hover:text-rose-accent transition-colors min-h-[44px] flex items-center">
+                Privacy
+              </button>
+              <button onClick={(e) => handleFooterLink(e, 'terms')} className="text-gray-600 hover:text-rose-accent transition-colors min-h-[44px] flex items-center">
+                Terms
+              </button>
             </div>
-          </div>
 
-          {/* Footer Status Bar */}
-          <div className="border-t border-rose-200 pt-4 sm:pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4 text-[10px] sm:text-xs font-medium text-gray-500">
-            <div className="flex flex-wrap justify-center md:justify-start gap-4 sm:gap-8">
-              <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>System Online</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span>✨ Made with love</span>
-              </div>
-            </div>
-            <div className="text-center md:text-right">
-              <div className="flex items-center justify-center md:justify-end gap-1.5 sm:gap-2 flex-wrap">
-                <span>DoubleMyHolidays © 2025</span>
-                <span className="text-rose-300 hidden sm:inline">|</span>
-                <span className="text-rose-accent hidden sm:inline">Authorized Personnel Only 💖</span>
-              </div>
+            {/* Copyright - Simple */}
+            <div className="pt-4 border-t border-gray-100 text-center sm:text-left">
+              <p className="text-xs text-gray-400">© 2025 DoubleMyHolidays. All rights reserved.</p>
             </div>
           </div>
         </div>

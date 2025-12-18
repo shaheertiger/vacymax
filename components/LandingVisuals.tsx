@@ -62,91 +62,54 @@ export const PainHero = ({ onCta }: { onCta: () => void }) => {
                     transition={{ duration: 0.8 }}
                     className="text-left overflow-hidden"
                 >
-                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full border border-rose-200 bg-rose-50 text-rose-accent text-xs font-bold tracking-widest uppercase shadow-sm">
+                    {/* Badge - hidden on mobile for cleaner look */}
+                    <div className="hidden sm:inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full border border-rose-200 bg-rose-50 text-rose-accent text-xs font-bold tracking-widest uppercase shadow-sm">
                         <span className="w-2 h-2 rounded-full bg-rose-accent animate-pulse"></span>
-                        The Journey to Freedom 🕊️
+                        Smart PTO Planning
                     </div>
 
-                    <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-bold tracking-tight text-gray-800 leading-[1.05] mb-3 sm:mb-4 md:mb-6 text-balance hero-title">
-                        We Double Your<br />
+                    <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-bold tracking-tight text-gray-800 leading-[1.05] mb-4 sm:mb-4 md:mb-6 text-balance hero-title">
+                        Double Your<br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-accent to-peach-accent italic">Holidays.</span>
                     </h1>
 
-                    <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-full sm:max-w-xl leading-relaxed mb-7 md:mb-10 border-l-4 border-rose-200 pl-4 md:pl-6 hero-subtitle break-words">
-                        Stop wasting your paid time off. <strong className="text-rose-accent">Our algorithm finds the "Bridge Days"</strong> that connect public holidays to weekends. Turn <span className="font-bold underline decoration-rose-300 decoration-2">10 days of PTO</span> into <span className="font-bold underline decoration-emerald-300 decoration-2">24+ days of freedom</span>. Instantly. 🥂
+                    <p className="text-sm sm:text-lg md:text-xl text-gray-600 max-w-full sm:max-w-xl leading-relaxed mb-6 md:mb-10 hero-subtitle break-words">
+                        Turn <strong className="text-rose-accent">10 PTO days</strong> into <strong className="text-emerald-600">24+ days off</strong> by finding the perfect bridge days between holidays and weekends.
                     </p>
 
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-5 hero-cta-stack w-full">
-                        <button
-                            onClick={onCta}
-                            className="w-full sm:w-auto px-8 sm:px-10 py-4 sm:py-5 bg-gradient-to-r from-rose-accent to-peach-accent hover:shadow-lg hover:shadow-rose-accent/40 text-white font-bold text-base sm:text-lg rounded-full hover:scale-[1.02] transition-all flex items-center justify-center gap-3 group active:scale-95 min-h-[56px]"
-                        >
-                            Unlock My Freedom
-                            <span className="group-hover:translate-x-1 transition-transform">🕊️</span>
-                        </button>
-                        <div className="flex sm:hidden items-center gap-3 px-4 py-3 rounded-full bg-white/80 border border-rose-100 shadow-sm">
-                            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-rose-accent">
-                                <span className="w-2 h-2 rounded-full bg-lavender-accent animate-pulse"></span>
-                                1-Min Wizard
-                            </div>
-                            <span className="text-gray-500 text-xs">Optimized for one-thumb use</span>
-                        </div>
-                    </div>
+                    {/* Single clean CTA */}
+                    <button
+                        onClick={onCta}
+                        className="w-full sm:w-auto px-8 sm:px-10 py-4 sm:py-5 bg-gradient-to-r from-rose-accent to-peach-accent hover:shadow-lg hover:shadow-rose-accent/40 text-white font-bold text-base sm:text-lg rounded-full hover:scale-[1.02] transition-all flex items-center justify-center gap-3 group active:scale-95 min-h-[56px]"
+                    >
+                        Start Planning
+                        <span className="group-hover:translate-x-1 transition-transform">→</span>
+                    </button>
 
-                    {/* Mobile highlight cards */}
-                    <div className="mt-5 -mx-2 flex sm:hidden items-stretch gap-3 overflow-x-auto px-2 pb-2 scrollbar-hide" aria-label="Mobile comforts">
-                        {[{
-                            title: 'Swipe friendly',
-                            desc: 'Tap or swipe through 4 steps',
-                            icon: '📲'
-                        }, {
-                            title: 'Lightweight',
-                            desc: '<30s to unlock first plan',
-                            icon: '⚡'
-                        }, {
-                            title: 'Save & resume',
-                            desc: 'We auto-save your progress',
-                            icon: '💾'
-                        }].map((item) => (
-                            <div
-                                key={item.title}
-                                className="min-w-[180px] max-w-[200px] flex-shrink-0 bg-white/80 border border-rose-100 rounded-2xl px-4 py-3 shadow-sm backdrop-blur-md"
-                            >
-                                <div className="flex items-center gap-3 mb-2">
-                                    <div className="w-9 h-9 rounded-xl bg-rose-50 flex items-center justify-center text-lg flex-shrink-0">
-                                        {item.icon}
-                                    </div>
-                                    <p className="text-sm font-bold text-gray-800">{item.title}</p>
-                                </div>
-                                <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Social Proof - Simplified on mobile */}
-                    <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-rose-100 flex items-center gap-4 md:gap-6">
+                    {/* Social Proof - Clean and minimal, hidden on small mobile */}
+                    <div className="hidden sm:flex mt-8 md:mt-12 pt-6 md:pt-8 border-t border-rose-100 items-center gap-4 md:gap-6">
                         <div className="flex -space-x-3 md:-space-x-4">
                             {[1, 2, 3].map(i => (
                                 <div key={i} className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-white bg-rose-100 flex items-center justify-center text-xs shadow-sm overflow-hidden ring-2 ring-rose-50">
-                                    <img src={`https://api.dicebear.com/9.x/micah/svg?seed=${i + 40}&backgroundColor=ffe4e6`} className="w-full h-full object-cover" alt={`VacyMax user ${i} avatar`} loading="lazy" />
+                                    <img src={`https://api.dicebear.com/9.x/micah/svg?seed=${i + 40}&backgroundColor=ffe4e6`} className="w-full h-full object-cover" alt={`User ${i}`} loading="lazy" />
                                 </div>
                             ))}
                         </div>
                         <div className="text-sm">
-                            <div className="flex text-rose-400 mb-0.5 text-[10px] md:text-[12px] gap-0.5">
+                            <div className="flex text-rose-400 mb-0.5 text-[12px] gap-0.5">
                                 <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
                             </div>
-                            <p className="text-gray-800 font-bold text-sm md:text-base">14,000+ Planning</p>
+                            <p className="text-gray-800 font-bold text-base">14,000+ users</p>
                         </div>
                     </div>
                 </motion.div>
 
-                {/* Right Column: Interactive Demo */}
+                {/* Right Column: Interactive Demo - Hidden on mobile for clean experience */}
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
-                    className="relative max-w-lg sm:max-w-xl mx-auto w-full lg:ml-auto"
+                    className="relative max-w-lg sm:max-w-xl mx-auto w-full lg:ml-auto hidden sm:block"
                 >
                     <div className="absolute inset-0 bg-gradient-to-tr from-rose-100 to-lavender-100 rounded-[2.5rem] blur-3xl -z-10 transform rotate-3"></div>
                     <div className="glass-panel rounded-[2.5rem] p-4 sm:p-7 md:p-12 border border-white/60 relative min-h-[320px] sm:min-h-[380px] md:min-h-[500px] flex flex-col shadow-xl bg-white/60 backdrop-blur-xl overflow-visible">

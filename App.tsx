@@ -897,38 +897,32 @@ const App: React.FC = () => {
           <PainHero onCta={scrollToWizard} />
 
           {/* THE WIZARD - Moved up to reduce friction */}
-          <main id="wizard-section" ref={wizardRef} role="main" aria-label="Vacation planning wizard" className="w-full bg-gradient-to-br from-light-100 via-light-200 to-light-300 py-10 md:py-24 px-3 sm:px-4 safe-px scroll-mt-20 md:scroll-mt-24 relative z-[55]">
+          <main id="wizard-section" ref={wizardRef} role="main" aria-label="Vacation planning wizard" className="w-full bg-gradient-to-br from-light-100 via-light-200 to-light-300 py-6 sm:py-10 md:py-24 px-3 sm:px-4 safe-px scroll-mt-16 sm:scroll-mt-20 md:scroll-mt-24 relative z-[55]">
             <div className="max-w-4xl mx-auto">
-              <div className="text-center mb-6 md:mb-12">
-                <h2 className="text-2xl sm:text-3xl md:text-5xl font-display font-bold bg-gradient-to-r from-rose-accent via-lavender-accent to-peach-accent bg-clip-text text-transparent mb-2 md:mb-3 px-2">Let's Plan Your Perfect Year ✨</h2>
-                <p className="text-gray-600 text-sm sm:text-base md:text-lg">Build your optimized schedule in 60 seconds.</p>
+              <div className="text-center mb-4 sm:mb-6 md:mb-12">
+                <h2 className="text-xl sm:text-3xl md:text-5xl font-display font-bold bg-gradient-to-r from-rose-accent via-lavender-accent to-peach-accent bg-clip-text text-transparent mb-1.5 sm:mb-2 md:mb-3 px-2">Plan Your Perfect Year</h2>
+                <p className="text-gray-600 text-xs sm:text-base md:text-lg">Optimized schedule in 60 seconds.</p>
               </div>
 
-              <div className="bg-white/80 rounded-2xl md:rounded-3xl border border-rose-100 shadow-md p-3 md:p-6 mb-4 md:mb-6">
+              {/* Progress indicator - Simplified on mobile */}
+              <div className="bg-white/80 rounded-xl sm:rounded-2xl md:rounded-3xl border border-rose-100 shadow-sm sm:shadow-md p-2.5 sm:p-3 md:p-6 mb-3 sm:mb-4 md:mb-6">
                 <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 md:gap-3 flex-wrap">
-                    <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.14em] md:tracking-[0.18em] text-rose-accent">Step {step === 0 ? 1 : clampedStep} / {stepLabels.length}</span>
-                    <span className="text-xs md:text-sm text-gray-500 hidden sm:inline">{step === 0 ? 'The essentials' : stepLabels[clampedStep - 1]}</span>
-                  </div>
-                  <button
-                    onClick={handleReset}
-                    className="text-xs font-semibold text-gray-500 hover:text-rose-accent hidden md:inline-flex"
-                  >
-                    Start over
-                  </button>
+                  <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-rose-accent">
+                    Step {step === 0 ? 1 : clampedStep}/{stepLabels.length}
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-gray-400 hidden sm:inline">{step === 0 ? 'The essentials' : stepLabels[clampedStep - 1]}</span>
                 </div>
-                <div className="mt-2 md:mt-3 h-1.5 md:h-2 bg-rose-50 rounded-full overflow-hidden" role="progressbar" aria-valuenow={Math.round(stepProgress)} aria-valuemin={0} aria-valuemax={100} aria-label={`Step ${step === 0 ? 1 : clampedStep} of ${stepLabels.length}`}>
+                <div className="mt-1.5 sm:mt-2 md:mt-3 h-1 sm:h-1.5 md:h-2 bg-rose-50 rounded-full overflow-hidden" role="progressbar" aria-valuenow={Math.round(stepProgress)} aria-valuemin={0} aria-valuemax={100} aria-label={`Step ${step === 0 ? 1 : clampedStep} of ${stepLabels.length}`}>
                   <div
                     className="h-full bg-gradient-to-r from-rose-accent to-peach-accent rounded-full transition-all duration-300"
                     style={{ width: `${Math.max(stepProgress, 8)}%` }}
                   />
                 </div>
-                <p className="mt-1.5 md:mt-2 text-[10px] md:text-xs text-gray-500">{totalPto > 0 ? `${totalPto} PTO days ready` : 'Just 3 quick steps to your dream year.'}</p>
               </div>
 
-              <div {...swipeHandlers} className="relative z-[60] bg-white/95 border border-rose-100 rounded-2xl md:rounded-[1.75rem] p-4 sm:p-6 md:p-10 flex flex-col shadow-xl touch-pan-y">
+              <div {...swipeHandlers} className="relative z-[60] bg-white/95 border border-rose-100 rounded-xl sm:rounded-2xl md:rounded-[1.75rem] p-3 sm:p-5 md:p-10 flex flex-col shadow-lg sm:shadow-xl touch-pan-y">
 
-                <div className="min-h-[52px] mb-4" aria-live="polite" aria-atomic="true">
+                <div className="min-h-[44px] sm:min-h-[52px] mb-3 sm:mb-4" aria-live="polite" aria-atomic="true">
                   {error ? (
                     <div
                       className="bg-rose-100 text-rose-700 px-4 py-3 rounded-2xl text-sm border border-rose-200 text-center transition-all duration-300"
@@ -1000,65 +994,43 @@ const App: React.FC = () => {
           <SolutionGrid />
           <TrustSection />
 
-          {/* Saved Plans Section */}
+          {/* Saved Plans Section - Simplified for mobile */}
           {savedPlans.length > 0 && (
-            <div className="w-full bg-gradient-to-br from-lavender-50 to-rose-50 py-16 px-4">
+            <div className="w-full bg-gradient-to-br from-lavender-50 to-rose-50 py-8 sm:py-12 md:py-16 px-3 sm:px-4">
               <div className="max-w-4xl mx-auto">
-                <div className="flex items-center justify-between mb-8">
-                  <div>
-                    <h2 className="text-2xl md:text-3xl font-display font-bold text-gray-800">Your Saved Plans</h2>
-                    <p className="text-gray-500 text-sm mt-1">Pick up where you left off</p>
-                  </div>
-                  <span className="text-xs font-bold text-lavender-accent bg-lavender-100 px-3 py-1 rounded-full">
-                    {savedPlans.length} saved
+                <div className="flex items-center justify-between mb-4 sm:mb-6 md:mb-8">
+                  <h2 className="text-lg sm:text-2xl md:text-3xl font-display font-bold text-gray-800">Saved Plans</h2>
+                  <span className="text-[10px] sm:text-xs font-bold text-lavender-accent bg-lavender-100 px-2 sm:px-3 py-1 rounded-full">
+                    {savedPlans.length}
                   </span>
                 </div>
-                <div className="grid gap-4">
-                  {savedPlans.slice(0, 3).map((plan) => (
-                    <button
-                      key={plan.id}
-                      onClick={() => openSavedPlan(plan.id)}
-                      className="w-full bg-white border border-lavender-100 rounded-2xl p-5 text-left hover:shadow-lg hover:border-lavender-200 transition-all group"
-                    >
-                      {(() => {
-                        const planName = plan.result?.planName || plan.metadata.planName || plan.name;
-                        const totalDaysOff = plan.result?.totalDaysOff ?? plan.metadata.totalDaysOff ?? 0;
-                        const totalPtoUsed = plan.result?.totalPtoUsed ?? plan.metadata.totalPtoUsed ?? 0;
-                        const tripCount = plan.result?.vacationBlocks?.length ?? plan.metadata.tripCount ?? 0;
-                        const totalValueRecovered = plan.result?.totalValueRecovered ?? plan.metadata.totalValueRecovered ?? 0;
+                <div className="grid gap-3 sm:gap-4">
+                  {savedPlans.slice(0, 2).map((plan) => {
+                    const totalDaysOff = plan.result?.totalDaysOff ?? plan.metadata.totalDaysOff ?? 0;
+                    const totalPtoUsed = plan.result?.totalPtoUsed ?? plan.metadata.totalPtoUsed ?? 0;
 
-                        return (
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="text-xs font-bold text-lavender-accent bg-lavender-50 px-2 py-0.5 rounded">
-                                  {planName}
-                                </span>
-                                <span className="text-xs text-gray-400">
-                                  {new Date(plan.savedAt).toLocaleDateString()}
-                                </span>
-                              </div>
-                              <h3 className="font-bold text-gray-800 truncate group-hover:text-lavender-accent transition-colors">
-                                {totalDaysOff} days off with {totalPtoUsed} PTO
-                              </h3>
-                              <p className="text-sm text-gray-500 truncate">
-                                {plan.prefs.country}{plan.prefs.region ? `, ${plan.prefs.region}` : ''} • {tripCount} trips
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-3 ml-4">
-                              <div className="text-right hidden sm:block">
-                                <p className="text-xs text-gray-400 uppercase tracking-wider">Value</p>
-                                <p className="font-bold text-rose-accent">${totalValueRecovered.toLocaleString()}</p>
-                              </div>
-                              <svg className="w-5 h-5 text-gray-300 group-hover:text-lavender-accent group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                              </svg>
-                            </div>
+                    return (
+                      <button
+                        key={plan.id}
+                        onClick={() => openSavedPlan(plan.id)}
+                        className="w-full bg-white border border-lavender-100 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 text-left hover:shadow-md hover:border-lavender-200 transition-all group min-h-[44px]"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-gray-800 text-sm sm:text-base truncate group-hover:text-lavender-accent transition-colors">
+                              {totalDaysOff} days off • {totalPtoUsed} PTO
+                            </h3>
+                            <p className="text-xs sm:text-sm text-gray-500 truncate">
+                              {plan.prefs.country}
+                            </p>
                           </div>
-                        );
-                      })()}
-                    </button>
-                  ))}
+                          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-300 group-hover:text-lavender-accent flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -1067,27 +1039,21 @@ const App: React.FC = () => {
         </>
       )}
 
-      {/* Mobile quick action bar for thumb-friendly access */}
+      {/* Mobile quick action bar - Simplified for cleaner UX */}
       {view !== 'results' && (
         <div
-          className="fixed md:hidden inset-x-3 bottom-3 z-[95] pointer-events-none"
+          className="fixed md:hidden inset-x-3 bottom-3 z-[95] pointer-events-none safe-area-bottom"
           style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 6px)' }}
         >
-          <div className="bg-white/95 border border-rose-100 shadow-2xl rounded-2xl px-4 py-3 flex items-center gap-3 pointer-events-auto">
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-rose-accent flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-accent animate-pulse"></span>
-                Quick Access
-              </p>
-              <p className="text-sm font-semibold text-gray-800 truncate">
-                {step === 0 ? 'Start planning in under a minute' : step < 3 ? `Continue step ${clampedStep} of 2` : 'Generating your plan...'}
-              </p>
-            </div>
+          <div className="bg-white/95 backdrop-blur-sm border border-rose-100 shadow-xl rounded-2xl px-4 py-2.5 flex items-center justify-between gap-3 pointer-events-auto">
+            <p className="text-sm font-medium text-gray-600 truncate">
+              {step === 0 ? 'Plan your dream year' : step < 4 ? `Step ${clampedStep} of 3` : 'Creating plan...'}
+            </p>
             <button
               onClick={handleMobileCta}
-              className="px-4 py-2 bg-gradient-to-r from-rose-accent to-peach-accent text-white font-bold text-sm rounded-xl shadow-lg active:scale-95 transition-all"
+              className="px-5 py-2.5 bg-gradient-to-r from-rose-accent to-peach-accent text-white font-bold text-sm rounded-xl shadow-md active:scale-95 transition-all min-h-[44px] flex-shrink-0"
             >
-              {step === 0 ? 'Start' : 'Resume'}
+              {step === 0 ? 'Start' : 'Continue'}
             </button>
           </div>
         </div>

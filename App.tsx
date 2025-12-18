@@ -634,72 +634,75 @@ const App: React.FC = () => {
       <SEOHead view={view} prefs={prefs} result={result || undefined} country={prefs.country} />
 
       {/* Navigation */}
-      <nav className="w-full py-3 md:py-6 px-4 md:px-12 safe-px flex justify-between items-center z-[60] fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-rose-100 transition-all duration-300 safe-pt shadow-sm">
-        <div className="flex items-center gap-2 cursor-pointer group flex-shrink-0" onClick={handleReset}>
-          <div className="w-8 h-8 bg-gradient-to-br from-rose-accent to-peach-accent rounded-xl flex items-center justify-center shadow-lg transform group-hover:rotate-12 transition-transform">
-            <span className="text-white text-lg">🌸</span>
+      <nav className="w-full py-3 md:py-6 px-3 sm:px-4 md:px-12 safe-px z-[60] fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-rose-100 transition-all duration-300 safe-pt shadow-sm">
+        <div className="w-full max-w-screen-lg lg:max-w-screen-xl mx-auto flex items-center justify-between gap-1.5 sm:gap-2 md:gap-3">
+          <div className="flex items-center gap-2 cursor-pointer group min-w-0" onClick={handleReset}>
+            <div className="w-8 h-8 bg-gradient-to-br from-rose-accent to-peach-accent rounded-xl flex items-center justify-center shadow-lg transform group-hover:rotate-12 transition-transform flex-shrink-0">
+              <span className="text-white text-lg">🌸</span>
+            </div>
+            <span className="font-display font-bold text-sm text-gray-900 sm:hidden truncate">DMH</span>
+            <span className="hidden sm:inline font-display font-bold text-base sm:text-lg md:text-xl bg-gradient-to-r from-rose-accent to-peach-accent bg-clip-text text-transparent truncate">DoubleMyHolidays</span>
           </div>
-          <span className="font-display font-bold text-lg md:text-xl bg-gradient-to-r from-rose-accent to-peach-accent bg-clip-text text-transparent">DoubleMyHolidays</span>
-        </div>
 
-        <div className="flex items-center gap-2 md:gap-6">
-          <button
-            onClick={() => setView('how-it-works')}
-            className="text-xs md:text-sm font-medium text-slate-500 hover:text-rose-accent transition-colors hidden md:block"
-          >
-            How it Works
-          </button>
-          <button
-            onClick={() => setView('strategy-demos')}
-            className="text-xs md:text-sm font-medium text-slate-500 hover:text-lavender-accent transition-colors hidden md:block"
-          >
-            Vacation Styles
-          </button>
-
-          {/* Create User/Restart logic links for Desktop */}
-          {step > 0 && (
+          <div className="flex items-center gap-1.5 sm:gap-2 md:gap-6 min-w-0">
             <button
-              onClick={handleReset}
+              onClick={() => setView('how-it-works')}
               className="text-xs md:text-sm font-medium text-slate-500 hover:text-rose-accent transition-colors hidden md:block"
             >
-              Restart
+              How it Works
             </button>
-          )}
+            <button
+              onClick={() => setView('strategy-demos')}
+              className="text-xs md:text-sm font-medium text-slate-500 hover:text-lavender-accent transition-colors hidden md:block"
+            >
+              Vacation Styles
+            </button>
 
-          {/* Mobile Hamburger */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 text-gray-600 hover:text-rose-accent transition-colors relative z-50 rounded-lg active:bg-rose-50"
-            aria-label="Toggle Menu"
-          >
-            {isMobileMenuOpen ? (
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            ) : (
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+            {/* Create User/Restart logic links for Desktop */}
+            {step > 0 && (
+              <button
+                onClick={handleReset}
+                className="text-xs md:text-sm font-medium text-slate-500 hover:text-rose-accent transition-colors hidden md:block"
+              >
+                Restart
+              </button>
             )}
-          </button>
 
-          <button
-            onClick={() => {
-              if (view !== 'landing') {
-                setView('landing');
-                setStep(1);
-                setTimeout(() => {
-                  const el = document.getElementById('wizard-section');
-                  el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
-              } else {
-                scrollToWizard();
-              }
-            }}
-            className="px-4 py-2 md:px-6 md:py-2.5 text-xs md:text-sm font-bold bg-gradient-to-r from-rose-accent to-peach-accent hover:shadow-lg hover:shadow-rose-accent/30 text-white rounded-full transition-all active:scale-95 transform hover:-translate-y-0.5"
-          >
-            {step > 0 ? 'Resume ✨' : 'Plan 💖'}
-          </button>
+            {/* Mobile Hamburger */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 text-gray-600 hover:text-rose-accent transition-colors relative z-50 rounded-lg active:bg-rose-50"
+              aria-label="Toggle Menu"
+            >
+              {isMobileMenuOpen ? (
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
+
+            <button
+              onClick={() => {
+                if (view !== 'landing') {
+                  setView('landing');
+                  setStep(1);
+                  setTimeout(() => {
+                    const el = document.getElementById('wizard-section');
+                    el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }, 100);
+                } else {
+                  scrollToWizard();
+                }
+              }}
+              className="px-3 py-2 sm:px-4 md:px-6 md:py-2.5 text-[13px] sm:text-sm font-bold bg-gradient-to-r from-rose-accent to-peach-accent hover:shadow-lg hover:shadow-rose-accent/30 text-white rounded-full transition-all active:scale-95 transform hover:-translate-y-0.5 whitespace-nowrap flex-shrink min-w-0"
+            >
+              {step > 0 ? 'Resume ✨' : 'Plan 💖'}
+            </button>
+          </div>
         </div>
       </nav>
 

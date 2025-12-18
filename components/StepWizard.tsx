@@ -223,7 +223,7 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
     const selectedTimeframe = React.useMemo(() => TIMEFRAME_OPTIONS.find((opt) => opt.value === prefs.timeframe), [prefs.timeframe]);
 
     return (
-        <div className={`flex flex-col h-full relative pb-24 sm:pb-28 md:pb-24 animate-in fade-in ${direction === 'back' ? 'slide-in-from-left-8' : 'slide-in-from-right-8'} duration-500 will-change-transform`}>
+        <div className={`flex flex-col h-full relative pb-32 sm:pb-36 md:pb-24 animate-in fade-in ${direction === 'back' ? 'slide-in-from-left-8' : 'slide-in-from-right-8'} duration-500 will-change-transform`}>
             <div className="pt-2">
                 <StepHeader
                     stepNumber={1}
@@ -366,7 +366,7 @@ export const Step2Timeframe: React.FC<StepProps> = React.memo(({ prefs, updatePr
     };
 
     return (
-        <div className={`flex flex-col h-full justify-between pb-24 sm:pb-28 md:pb-24 relative animate-in fade-in ${direction === 'back' ? 'slide-in-from-left-8' : 'slide-in-from-right-8'} duration-500 will-change-transform`}>
+        <div className={`flex flex-col h-full justify-between pb-32 sm:pb-36 md:pb-24 relative animate-in fade-in ${direction === 'back' ? 'slide-in-from-left-8' : 'slide-in-from-right-8'} duration-500 will-change-transform`}>
             <StepHeader
                 stepNumber={2}
                 totalSteps={TOTAL_STEPS}
@@ -403,7 +403,7 @@ export const Step3Strategy: React.FC<StepProps> = React.memo(({ prefs, updatePre
     };
 
     return (
-        <div className={`flex flex-col h-full justify-between pb-24 sm:pb-28 md:pb-24 relative animate-in fade-in ${direction === 'back' ? 'slide-in-from-left-8' : 'slide-in-from-right-8'} duration-500 will-change-transform`}>
+        <div className={`flex flex-col h-full justify-between pb-32 sm:pb-36 md:pb-24 relative animate-in fade-in ${direction === 'back' ? 'slide-in-from-left-8' : 'slide-in-from-right-8'} duration-500 will-change-transform`}>
             <StepHeader
                 stepNumber={3}
                 totalSteps={TOTAL_STEPS}
@@ -411,7 +411,7 @@ export const Step3Strategy: React.FC<StepProps> = React.memo(({ prefs, updatePre
                 subtitle="How do you want to spend your well-deserved breaks?"
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mb-8 pr-1">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 max-w-4xl mb-6 sm:mb-8 pr-1">
                 {STRATEGIES.map((strat) => (
                     <SelectionCard
                         key={strat.id}
@@ -463,7 +463,7 @@ export const Step4Location: React.FC<StepProps> = React.memo(({ prefs, updatePre
     };
 
     return (
-        <div className={`flex flex-col h-full justify-between pb-24 sm:pb-28 md:pb-24 relative animate-in fade-in ${direction === 'back' ? 'slide-in-from-left-8' : 'slide-in-from-right-8'} duration-500 will-change-transform`}>
+        <div className={`flex flex-col h-full justify-between pb-32 sm:pb-36 md:pb-24 relative animate-in fade-in ${direction === 'back' ? 'slide-in-from-left-8' : 'slide-in-from-right-8'} duration-500 will-change-transform`}>
             <StepHeader
                 stepNumber={4}
                 totalSteps={TOTAL_STEPS}

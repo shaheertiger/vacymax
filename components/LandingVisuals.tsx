@@ -308,44 +308,44 @@ export const BurnCalculator = () => {
     );
 };
 
-// --- PHASE 3: THE SOLUTION (Features) ---
+// --- PHASE 3: THE SOLUTION (Features) - Desktop only for cleaner mobile experience ---
 export const SolutionGrid = () => {
     return (
-        <div className="w-full bg-light-100 py-32 px-6 relative">
+        <div className="hidden md:block w-full bg-light-100 py-16 md:py-32 px-6 relative">
             {/* Connector from above */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-24 bg-gradient-to-b from-rose-200 to-transparent hidden md:block"></div>
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-24 bg-gradient-to-b from-rose-200 to-transparent"></div>
 
             <div className="max-w-7xl mx-auto relative z-10">
-                <div className="mb-20 text-center">
-                    <h2 className="text-4xl md:text-6xl font-display font-bold text-gray-900 mb-6">The DoubleMyHolidays<br /><span className="text-rose-400 italic">Journey.</span></h2>
-                    <p className="text-gray-500 text-xl max-w-2xl mx-auto font-light">
+                <div className="mb-12 md:mb-20 text-center">
+                    <h2 className="text-3xl md:text-6xl font-display font-bold text-gray-900 mb-4 md:mb-6">The DoubleMyHolidays<br /><span className="text-rose-400 italic">Journey.</span></h2>
+                    <p className="text-gray-500 text-base md:text-xl max-w-2xl mx-auto font-light">
                         We don't just find dates. We architect your year of rest.
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid md:grid-cols-3 gap-6 md:gap-8">
                     {/* Step 1 */}
-                    <div className="bg-white border border-rose-100 rounded-3xl p-8 relative overflow-hidden group hover:shadow-lg transition-all">
-                        <div className="absolute top-0 right-0 p-4 opacity-10 text-6xl font-display font-bold text-rose-300">01</div>
-                        <div className="w-14 h-14 bg-rose-50 rounded-2xl flex items-center justify-center text-2xl mb-6">🗓️</div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3">We Audit Your Year</h3>
-                        <p className="text-gray-500 leading-relaxed">We scan every federal holiday and weekend to find the "Hidden Anchors" in your schedule.</p>
+                    <div className="bg-white border border-rose-100 rounded-2xl md:rounded-3xl p-6 md:p-8 relative overflow-hidden group hover:shadow-lg transition-all">
+                        <div className="absolute top-0 right-0 p-4 opacity-10 text-4xl md:text-6xl font-display font-bold text-rose-300">01</div>
+                        <div className="w-12 h-12 md:w-14 md:h-14 bg-rose-50 rounded-xl md:rounded-2xl flex items-center justify-center text-xl md:text-2xl mb-4 md:mb-6">🗓️</div>
+                        <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 md:mb-3">We Audit Your Year</h3>
+                        <p className="text-gray-500 text-sm md:text-base leading-relaxed">We scan every federal holiday and weekend to find the "Hidden Anchors" in your schedule.</p>
                     </div>
 
                     {/* Step 2 */}
-                    <div className="bg-white border border-rose-100 rounded-3xl p-8 relative overflow-hidden group hover:shadow-lg transition-all md:-translate-y-4">
-                        <div className="absolute top-0 right-0 p-4 opacity-10 text-6xl font-display font-bold text-rose-300">02</div>
-                        <div className="w-14 h-14 bg-rose-50 rounded-2xl flex items-center justify-center text-2xl mb-6">🧠</div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3">We Find the Bridges</h3>
-                        <p className="text-gray-500 leading-relaxed">Our engine identifies the "Bridge Days"—single PTO days that seamlessly connect holidays to weekends.</p>
+                    <div className="bg-white border border-rose-100 rounded-2xl md:rounded-3xl p-6 md:p-8 relative overflow-hidden group hover:shadow-lg transition-all md:-translate-y-4">
+                        <div className="absolute top-0 right-0 p-4 opacity-10 text-4xl md:text-6xl font-display font-bold text-rose-300">02</div>
+                        <div className="w-12 h-12 md:w-14 md:h-14 bg-rose-50 rounded-xl md:rounded-2xl flex items-center justify-center text-xl md:text-2xl mb-4 md:mb-6">🧠</div>
+                        <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 md:mb-3">We Find the Bridges</h3>
+                        <p className="text-gray-500 text-sm md:text-base leading-relaxed">Our engine identifies the "Bridge Days"—single PTO days that seamlessly connect holidays to weekends.</p>
                     </div>
 
                     {/* Step 3 */}
-                    <div className="bg-white border border-rose-100 rounded-3xl p-8 relative overflow-hidden group hover:shadow-lg transition-all">
-                        <div className="absolute top-0 right-0 p-4 opacity-10 text-6xl font-display font-bold text-rose-300">03</div>
-                        <div className="w-14 h-14 bg-rose-50 rounded-2xl flex items-center justify-center text-2xl mb-6">✈️</div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3">You Escape</h3>
-                        <p className="text-gray-500 leading-relaxed">Turn 10 days into 24. Export to your calendar and book the flight. You're free.</p>
+                    <div className="bg-white border border-rose-100 rounded-2xl md:rounded-3xl p-6 md:p-8 relative overflow-hidden group hover:shadow-lg transition-all">
+                        <div className="absolute top-0 right-0 p-4 opacity-10 text-4xl md:text-6xl font-display font-bold text-rose-300">03</div>
+                        <div className="w-12 h-12 md:w-14 md:h-14 bg-rose-50 rounded-xl md:rounded-2xl flex items-center justify-center text-xl md:text-2xl mb-4 md:mb-6">✈️</div>
+                        <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 md:mb-3">You Escape</h3>
+                        <p className="text-gray-500 text-sm md:text-base leading-relaxed">Turn 10 days into 24. Export to your calendar and book the flight. You're free.</p>
                     </div>
                 </div>
             </div>

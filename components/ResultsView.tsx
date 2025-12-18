@@ -653,7 +653,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({
                     <div className="absolute inset-0 z-10 backdrop-blur-xl bg-white/90 flex items-center justify-center rounded-3xl border border-rose-100">
                         <div className="text-center p-6 md:p-8 max-w-lg mx-auto relative w-full">
 
-                            <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-gradient-to-r from-rose-accent to-peach-accent text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-[0_4px_10px_rgba(244,63,94,0.3)] z-20 whitespace-nowrap transform group-hover:-translate-y-1 transition-transform">
+                            <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-gradient-to-r from-rose-accent to-peach-accent text-white text-[10px] sm:text-xs font-bold px-3 sm:px-4 py-1.5 rounded-full uppercase tracking-widest shadow-[0_4px_10px_rgba(244,63,94,0.3)] z-20 whitespace-nowrap transform group-hover:-translate-y-1 transition-transform max-w-[90vw] truncate">
                                 Your Best Life Awaits: Unlock {formatCurrency(hiddenValue)} Value
                             </div>
 

@@ -25,27 +25,32 @@ export const StepHeader = React.memo(({ stepNumber, totalSteps, title, subtitle 
 ));
 
 export const NavButtons = React.memo(({ onNext, onBack, nextDisabled, nextLabel = "Continue", isLoading = false, stepLabel }: { onNext: () => void, onBack?: () => void, nextDisabled?: boolean, nextLabel?: string | null, isLoading?: boolean, stepLabel?: string }) => (
-    <div className="fixed bottom-0 left-0 right-0 z-[100] p-3 pb-5 bg-white/95 backdrop-blur-xl border-t-2 border-rose-100 md:sticky md:bottom-6 md:left-12 md:right-12 md:p-0 md:bg-transparent md:border-none flex flex-row justify-between items-center gap-3 md:gap-4 animate-fade-up transition-all duration-300 safe-pb shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:shadow-none">
-        <div className="flex items-center gap-3 flex-1 md:flex-none md:justify-start">
-            {stepLabel && (
-                <span className="md:hidden inline-flex items-center px-3 py-1 rounded-full bg-rose-50 text-rose-accent text-xs font-bold tracking-wide shadow-sm border border-rose-100">
+    <div className="fixed bottom-0 left-0 right-0 z-[100] p-3 pb-5 bg-white/95 backdrop-blur-xl border-t-2 border-rose-100 md:sticky md:bottom-6 md:left-12 md:right-12 md:p-0 md:bg-transparent md:border-none flex flex-col md:flex-row md:justify-between md:items-center gap-2 md:gap-4 animate-fade-up transition-all duration-300 safe-pb shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:shadow-none">
+        {/* Mobile: Step label on its own row */}
+        {stepLabel && (
+            <div className="md:hidden flex justify-center pb-1">
+                <span className="inline-flex items-center px-3 py-1 rounded-full bg-rose-50 text-rose-accent text-xs font-bold tracking-wide shadow-sm border border-rose-100">
                     {stepLabel}
                 </span>
-            )}
+            </div>
+        )}
 
-            {onBack ? (
-                <button onClick={onBack} disabled={isLoading} className="text-gray-500 hover:text-rose-accent px-5 py-3.5 md:px-4 md:py-2 font-bold transition-colors flex items-center gap-2 text-sm md:text-xs uppercase tracking-widest group rounded-xl md:rounded-lg bg-white hover:bg-rose-50 md:bg-transparent disabled:opacity-50 active:scale-95 min-h-[52px] shadow-md md:shadow-none border border-rose-200 md:border-rose-100 md:border-none">
-                    <span className="group-hover:-translate-x-1 transition-transform">←</span>
-                    <span className="inline">Back</span>
-                </button>
-            ) : <div className="hidden md:block" />}
-        </div>
+        {/* Buttons row */}
+        <div className="flex flex-row justify-between items-center gap-3 w-full md:w-auto">
+            <div className="flex items-center gap-3 md:flex-none md:justify-start">
+                {onBack ? (
+                    <button onClick={onBack} disabled={isLoading} className="text-gray-500 hover:text-rose-accent px-4 py-3 md:px-4 md:py-2 font-bold transition-colors flex items-center gap-2 text-sm md:text-xs uppercase tracking-widest group rounded-xl md:rounded-lg bg-white hover:bg-rose-50 md:bg-transparent disabled:opacity-50 active:scale-95 min-h-[52px] shadow-md md:shadow-none border border-rose-200 md:border-rose-100 md:border-none whitespace-nowrap">
+                        <span className="group-hover:-translate-x-1 transition-transform">←</span>
+                        <span className="inline">Back</span>
+                    </button>
+                ) : <div className="hidden md:block" />}
+            </div>
 
-        <button
-            onClick={onNext}
-            disabled={nextDisabled || isLoading}
-            className="flex-1 md:flex-none md:w-auto relative group overflow-hidden px-6 md:px-10 py-4 rounded-xl bg-gradient-to-r from-rose-accent to-peach-accent text-white font-bold font-display text-lg tracking-wide hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed shadow-[0_4px_20px_rgba(244,63,94,0.3)] hover:shadow-[0_6px_30px_rgba(244,63,94,0.4)] active:scale-95 border border-white/20 min-h-[56px]"
-        >
+            <button
+                onClick={onNext}
+                disabled={nextDisabled || isLoading}
+                className="flex-1 md:flex-none md:w-auto relative group overflow-hidden px-5 md:px-10 py-3.5 md:py-4 rounded-xl bg-gradient-to-r from-rose-accent to-peach-accent text-white font-bold font-display text-base md:text-lg tracking-wide hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed shadow-[0_4px_20px_rgba(244,63,94,0.3)] hover:shadow-[0_6px_30px_rgba(244,63,94,0.4)] active:scale-95 border border-white/20 min-h-[52px] md:min-h-[56px]"
+            >
             {isLoading && (
                 <div
                     className="absolute inset-0 bg-white/30 z-0"
@@ -78,7 +83,8 @@ export const NavButtons = React.memo(({ onNext, onBack, nextDisabled, nextLabel 
                     </>
                 )}
             </span>
-        </button>
+            </button>
+        </div>
     </div>
 ));
 

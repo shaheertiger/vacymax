@@ -286,7 +286,7 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
                         </div>
                     </div>
 
-                    <div className="relative flex items-baseline gap-2 mb-3 sm:mb-4">
+                    <div className="flex items-baseline gap-2 mb-3 sm:mb-4">
                         <input
                             type="number"
                             inputMode="numeric"
@@ -295,10 +295,10 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
                             max={PTO_MAX}
                             value={localPto}
                             onChange={(e) => handlePtoChange(e.target.value)}
-                            className="bg-transparent text-4xl sm:text-5xl md:text-6xl font-display font-bold text-gray-800 focus:outline-none placeholder-gray-200 tracking-tight w-full"
+                            className="bg-transparent text-4xl sm:text-5xl md:text-6xl font-display font-bold text-gray-800 focus:outline-none placeholder-gray-200 tracking-tight w-20 sm:w-28 md:w-32"
                             placeholder="15"
                         />
-                        <span className="text-lg font-bold text-gray-300 absolute right-0 bottom-3 uppercase tracking-widest pointer-events-none">Days</span>
+                        <span className="text-sm sm:text-lg font-bold text-gray-300 uppercase tracking-widest">Days</span>
                     </div>
 
                     <input
@@ -312,7 +312,7 @@ export const Step1PTO: React.FC<StepProps> = React.memo(({ prefs, updatePrefs, o
                     <div className="flex justify-between text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-widest">
                         <span>{PTO_MIN} days</span>
                         <span>{Math.floor((PTO_MAX - PTO_MIN) / 2)} days</span>
-                        <span className="text-rose-accent">Max {PTO_MAX} days</span>
+                        <span className="text-rose-accent">Max {PTO_MAX}</span>
                     </div>
                 </div>
 

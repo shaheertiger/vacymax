@@ -3,23 +3,23 @@ import React, { useState, useEffect, useRef } from 'react';
 export const StepHeader = React.memo(({ stepNumber, totalSteps, title, subtitle }: { stepNumber: number, totalSteps: number, title: React.ReactNode, subtitle: string }) => (
     <div className="space-y-1.5 sm:space-y-2 md:space-y-4 mb-3 sm:mb-4 md:mb-10 animate-fade-up px-0.5 sm:px-1">
         <div className="flex items-center gap-2 sm:gap-3">
-            <span className="w-6 sm:w-8 h-[1px] bg-rose-accent"></span>
-            <span className="text-rose-accent text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.15em] sm:tracking-[0.2em] uppercase">Step {stepNumber} of {totalSteps}</span>
+            <span className="w-4 sm:w-6 md:w-8 h-[1px] bg-rose-accent"></span>
+            <span className="text-rose-accent text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.12em] sm:tracking-[0.2em] uppercase">Step {stepNumber}/{totalSteps}</span>
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
-            <div className="flex-1 h-1.5 sm:h-2 rounded-full bg-rose-100 overflow-hidden">
+            <div className="flex-1 h-1 sm:h-1.5 md:h-2 rounded-full bg-rose-100 overflow-hidden">
                 <div
                     className="h-full bg-gradient-to-r from-rose-accent to-peach-accent transition-all duration-500"
                     style={{ width: `${Math.min((stepNumber / totalSteps) * 100, 100)}%` }}
                 />
             </div>
-            <span className="text-[10px] sm:text-xs font-bold text-rose-300 min-w-[40px] sm:min-w-[46px] text-right">{Math.round((stepNumber / totalSteps) * 100)}%</span>
+            <span className="text-[9px] sm:text-[10px] md:text-xs font-bold text-rose-300 min-w-[32px] sm:min-w-[46px] text-right">{Math.round((stepNumber / totalSteps) * 100)}%</span>
         </div>
         <div className="space-y-0.5 sm:space-y-1">
-            <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-display font-bold text-gray-800 tracking-tight leading-[1.1]">
+            <h2 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-display font-bold text-gray-800 tracking-tight leading-[1.1]">
                 {title}
             </h2>
-            <p className="text-xs sm:text-sm md:text-lg text-gray-500 max-w-xl leading-relaxed">{subtitle}</p>
+            <p className="text-[11px] sm:text-sm md:text-base text-gray-500 max-w-xl leading-relaxed">{subtitle}</p>
         </div>
     </div>
 ));
@@ -244,8 +244,8 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
                         {selected && <span className={`${activeText} text-xl animate-pulse`}>✨</span>}
                     </div>
                 </div>
-                <h3 className={`text-xl md:text-2xl font-display font-bold mb-1 ${selected ? 'text-gray-900 ' + (isRose ? 'group-hover:text-rose-accent' : 'group-hover:text-lavender-accent') : 'text-gray-700'}`}>{title}</h3>
-                <p className={`text-xs md:text-sm leading-relaxed ${selected ? 'text-gray-600' : 'text-gray-500'}`}>{desc}</p>
+                <h3 className={`text-base sm:text-xl md:text-2xl font-display font-bold mb-1 ${selected ? 'text-gray-900 ' + (isRose ? 'group-hover:text-rose-accent' : 'group-hover:text-lavender-accent') : 'text-gray-700'}`}>{title}</h3>
+                <p className={`text-[11px] sm:text-xs md:text-sm leading-relaxed ${selected ? 'text-gray-600' : 'text-gray-500'}`}>{desc}</p>
             </div>
         </button>
     );
